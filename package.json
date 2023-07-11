@@ -1,0 +1,11 @@
+{
+  "name": "monbudgetcarbone",
+  "version": "0.1.0",
+  "description": "Tool to calculate and add co2-consuming personal activities like travelling, driving, eating ...",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nicolas Daudin",
+  "license": "ISC"
+}
