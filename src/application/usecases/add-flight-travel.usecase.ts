@@ -1,28 +1,33 @@
 import { convertDistance, getDistance, getPreciseDistance } from "geolib";
 import { FlightTravel } from "../../domain/flight-travel";
+import { AirportRepository } from "../airport.repository";
 
 export type AddFlightTravelCommand = {
   user: string,
-  from: string,
-  to: string,
+  fromIataCode: string,
+  toIataCode: string,
   date: Date
 }
 
 export class AddFlightTravelUseCase {
   travels: FlightTravel[] = []
 
+  constructor(private readonly airportRepository: AirportRepository) { }
+
   async handle(addFlightTravelCommand: AddFlightTravelCommand): Promise<void> {
     console.log(this.travels.length);
-    const coordMAD = "-3.56264, 40.471926";
-    const coordBRU = "4.48443984985, 50.901401519800004";
 
-    const distance = calculateDistanceBetweenTwoCoordinates(coordMAD, coordBRU);
+    const fromAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.fromIataCode);
+    const toAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.toIataCode);
+
+
+    const distance = calculateDistanceBetweenTwoCoordinates(fromAirport.coordinates, toAirport.coordinates);
     const kgCO2eq = calculateFlightTravelCO2eqFromDistance(distance);
 
     this.travels.push({
       user: addFlightTravelCommand.user,
-      from: addFlightTravelCommand.from,
-      to: addFlightTravelCommand.to,
+      from: addFlightTravelCommand.fromIataCode,
+      to: addFlightTravelCommand.toIataCode,
       date: addFlightTravelCommand.date,
       transportType: 'plane',
       distance,

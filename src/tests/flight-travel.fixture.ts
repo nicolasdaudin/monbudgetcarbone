@@ -1,17 +1,22 @@
+import { Airport } from "../application/airport.repository";
 import { AddFlightTravelCommand, AddFlightTravelUseCase } from "../application/usecases/add-flight-travel.usecase";
 import { FlightTravel } from "../domain/flight-travel";
+import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository";
 
 
 export const createTravelFixture = () => {
   let distance: { from: string; to: string; distance: number }
   let carbonFootprint: { from: string; to: string; kgCO2eq: number; }
+  const airportRepository = new InMemoryAirportRepository();
 
-  const addFlightTravelUseCase = new AddFlightTravelUseCase();
+  const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository);
 
   return {
 
 
-
+    whenGivenAirportsAre(airports: Airport[]) {
+      airportRepository.givenExistingAirports(airports)
+    },
 
 
 
