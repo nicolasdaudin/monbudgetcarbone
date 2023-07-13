@@ -1,23 +1,26 @@
+import { jest } from '@jest/globals';
 import { Airport } from "../application/airport.repository";
 import { AddFlightTravelCommand, AddFlightTravelUseCase } from "../application/usecases/add-flight-travel.usecase";
 import { FlightTravel } from "../domain/flight-travel";
 import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository";
+import { StubDistanceCalculator } from '../infra/stub-distance-calculator';
 
 
 export const createTravelFixture = () => {
-  let distance: { from: string; to: string; distance: number }
-  let carbonFootprint: { from: string; to: string; kgCO2eq: number; }
   const airportRepository = new InMemoryAirportRepository();
+  const distanceCalculator = new StubDistanceCalculator();
 
-  const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository);
+  const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, distanceCalculator);
 
   return {
 
-
-    whenGivenAirportsAre(airports: Airport[]) {
+    givenAirportsAre(airports: Airport[]) {
       airportRepository.givenExistingAirports(airports)
     },
 
+    givenDistanceBetweenAirportsIs(distanceInKilometers: number) {
+      distanceCalculator.enforceDistance(distanceInKilometers);
+    },
 
 
     async whenUserAddsTravel(addFlightTravelCommand: AddFlightTravelCommand) {
@@ -25,8 +28,6 @@ export const createTravelFixture = () => {
     },
 
     thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
-      console.log(addFlightTravelUseCase.travels[0]);//?
-      console.log(expectedTravel);//?
       expect(addFlightTravelUseCase.travels[0]).toEqual(expectedTravel);
     }
   }

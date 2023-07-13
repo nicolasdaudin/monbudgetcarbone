@@ -1,6 +1,7 @@
 import { convertDistance, getDistance, getPreciseDistance } from "geolib";
 import { FlightTravel } from "../../domain/flight-travel";
 import { AirportRepository } from "../airport.repository";
+import { DistanceCalculator } from "../distance-calculator";
 
 export type AddFlightTravelCommand = {
   user: string,
@@ -12,7 +13,9 @@ export type AddFlightTravelCommand = {
 export class AddFlightTravelUseCase {
   travels: FlightTravel[] = []
 
-  constructor(private readonly airportRepository: AirportRepository) { }
+  constructor(
+    private readonly airportRepository: AirportRepository,
+    private readonly distanceCalculator: DistanceCalculator) { }
 
   async handle(addFlightTravelCommand: AddFlightTravelCommand): Promise<void> {
     console.log(this.travels.length);
@@ -21,7 +24,7 @@ export class AddFlightTravelUseCase {
     const toAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.toIataCode);
 
 
-    const distance = calculateDistanceBetweenTwoCoordinates(fromAirport.coordinates, toAirport.coordinates);
+    const distance = this.distanceCalculator.calculate(fromAirport.coordinates, toAirport.coordinates); //?
     const kgCO2eq = calculateFlightTravelCO2eqFromDistance(distance);
 
     this.travels.push({
@@ -36,25 +39,19 @@ export class AddFlightTravelUseCase {
     console.log(this.travels.length);
 
   }
-}
-
-export const calculateDistanceBetweenTwoCoordinates = (lngLatFrom: string, lngLatTo: string): number => {
-  const [fromLongitude, fromLatitude] = lngLatFrom.split(', ');//?
-  const [toLongitude, toLatitude] = lngLatTo.split(', ');
-
-  const distanceInMeters = getPreciseDistance(
-    { latitude: fromLatitude, longitude: fromLongitude },
-    { latitude: toLatitude, longitude: toLongitude }
-  );
-
-  const distanceInKilometers = convertDistance(distanceInMeters, 'km')
-
-  return Math.round(distanceInKilometers);
 
 
 }
 
-const calculateFlightTravelCO2eqFromDistance = (distance: number): number => {
-  return 234.248
+
+
+const calculateFlightTravelCO2eqFromDistance = (distanceInKm: number): number => {
+  if (distanceInKm < 1000)
+    return distanceInKm * 0.230; //?
+  else if (distanceInKm < 3500)
+    return distanceInKm * 0.178;
+  //? 
+
+  return distanceInKm * 0.151;
 
 }
