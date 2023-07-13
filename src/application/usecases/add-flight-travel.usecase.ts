@@ -13,7 +13,6 @@ export type AddFlightTravelCommand = {
 }
 
 export class AddFlightTravelUseCase {
-  travels: FlightTravel[] = []
 
   constructor(
     private readonly airportRepository: AirportRepository,
@@ -38,7 +37,6 @@ export class AddFlightTravelUseCase {
       distance,
       kgCO2eq,
     })
-    console.log(this.travels.length);
 
   }
 
