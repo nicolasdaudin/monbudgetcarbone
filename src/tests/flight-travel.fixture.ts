@@ -4,13 +4,16 @@ import { AddFlightTravelCommand, AddFlightTravelUseCase } from "../application/u
 import { FlightTravel } from "../domain/flight-travel";
 import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository";
 import { StubDistanceCalculator } from '../infra/stub-distance-calculator';
+import { InMomeryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
 
 
 export const createTravelFixture = () => {
   const airportRepository = new InMemoryAirportRepository();
+  const flightTravelRepository = new InMomeryFlightTravelRepository();
+
   const distanceCalculator = new StubDistanceCalculator();
 
-  const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, distanceCalculator);
+  const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
 
   return {
 
@@ -27,8 +30,9 @@ export const createTravelFixture = () => {
       await addFlightTravelUseCase.handle(addFlightTravelCommand);
     },
 
-    thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
-      expect(addFlightTravelUseCase.travels[0]).toEqual(expectedTravel);
+    async thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
+      const actualTravel = await flightTravelRepository.getTravelById(expectedTravel.id);//?
+      expect(actualTravel).toEqual(expectedTravel);
     }
   }
 }

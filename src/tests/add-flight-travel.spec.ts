@@ -31,9 +31,10 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', date: new Date('2023-05-17') });
+      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', date: new Date('2023-05-17') });
 
-      fixture.thenAddedTravelShouldBe({
+      await fixture.thenAddedTravelShouldBe({
+        id: 1,
         user: 'Nicolas', from: 'MAD',
         to: 'BRU',
         date: new Date('2023-05-17'),
@@ -75,6 +76,7 @@ describe('Feature: Add a flight travel', () => {
       });
 
       fixture.thenAddedTravelShouldBe({
+        id: 1,
         user: 'Nicolas',
         from: 'AAA',
         to: 'BBB',
@@ -114,6 +116,7 @@ describe('Feature: Add a flight travel', () => {
       });
 
       fixture.thenAddedTravelShouldBe({
+        id: 1,
         user: 'Nicolas',
         from: 'AAA',
         to: 'BBB',
@@ -153,6 +156,7 @@ describe('Feature: Add a flight travel', () => {
       });
 
       fixture.thenAddedTravelShouldBe({
+        id: 1,
         user: 'Nicolas',
         from: 'AAA',
         to: 'BBB',
@@ -192,6 +196,7 @@ describe('Feature: Add a flight travel', () => {
       });
 
       fixture.thenAddedTravelShouldBe({
+        id: 1,
         user: 'Nicolas',
         from: 'AAA',
         to: 'BBB',

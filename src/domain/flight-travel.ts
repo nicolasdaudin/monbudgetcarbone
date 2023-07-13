@@ -1,4 +1,5 @@
 export type FlightTravel = {
+  id: number,
   user: string,
   transportType: 'plane',
   from: string,
