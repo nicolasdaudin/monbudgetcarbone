@@ -33,7 +33,6 @@ export class AddFlightTravelUseCase {
       from: addFlightTravelCommand.fromIataCode,
       to: addFlightTravelCommand.toIataCode,
       date: addFlightTravelCommand.date,
-      transportType: 'plane',
       distance,
       kgCO2eq,
     })

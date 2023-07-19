@@ -1,5 +1,6 @@
 import { Airport } from "../application/airport.repository";
 import { airportBuilder } from "./airport.builder";
+import { flightTravelBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 
 describe('Feature: Add a flight travel', () => {
@@ -21,29 +22,31 @@ describe('Feature: Add a flight travel', () => {
 
       await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', date: new Date('2023-05-17') });
 
-      fixture.thenAddedTravelShouldBe({
-        id: 1,
-        user: 'Nicolas', from: 'MAD',
-        to: 'BRU',
-        date: new Date('2023-05-17'),
-        distance: 1316,
-        kgCO2eq: 234.248,
-        transportType: 'plane'
-      });
+      fixture.thenAddedTravelShouldBe(
+        flightTravelBuilder()
+          .travelledOn(new Date('2023-05-17'))
+          .withDistance(1316)
+          .withCarbonFootprint(234.248)
+          .build()
+      );
     });
+  });
+  describe("Rule: The carbon footprint of a flight travel depends on the distance of that flight: 0.230kgCO2/km for flights less than 1000 km, 0.178kgCO2/km for flights between 1000 and 3500 km, and 0.151kgCO2/km for flights over 3500 km", () => {
+
+    const airports = [
+      airportBuilder().withIataCode('AAA').build(),
+      airportBuilder().withIataCode('BBB').build()
+    ]
+    const baseFlightTravelBuilder = flightTravelBuilder()
+      .from('AAA')
+      .to('BBB')
+      .travelledOn(new Date('2023-05-17'))
 
     test("Nicolas adds a 999km flight travel to his list of travels", async () => {
 
-      const airports = [
-        airportBuilder().withIataCode('AAA').build(),
-        airportBuilder().withIataCode('BBB').build()
-      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(999);
-
-
-
 
       await fixture.whenUserAddsTravel({
         user: 'Nicolas',
@@ -52,24 +55,16 @@ describe('Feature: Add a flight travel', () => {
         date: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe({
-        id: 1,
-        user: 'Nicolas',
-        from: 'AAA',
-        to: 'BBB',
-        date: new Date('2023-05-17'),
-        distance: 999,
-        kgCO2eq: 229.770,
-        transportType: 'plane'
-      });
+      fixture.thenAddedTravelShouldBe(
+        baseFlightTravelBuilder
+          .withDistance(999)
+          .withCarbonFootprint(229.770)
+          .build()
+      );
+
     });
 
     test("Nicolas adds a 1000km flight travel to his list of travels", async () => {
-
-      const airports = [
-        airportBuilder().withIataCode('AAA').build(),
-        airportBuilder().withIataCode('BBB').build()
-      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(1000)
@@ -81,24 +76,17 @@ describe('Feature: Add a flight travel', () => {
         date: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe({
-        id: 1,
-        user: 'Nicolas',
-        from: 'AAA',
-        to: 'BBB',
-        date: new Date('2023-05-17'),
-        distance: 1000,
-        kgCO2eq: 178,
-        transportType: 'plane'
-      });
+      fixture.thenAddedTravelShouldBe(
+        baseFlightTravelBuilder
+          .withDistance(1000)
+          .withCarbonFootprint(178)
+          .build()
+      );
+
+
     });
 
     test("Nicolas adds a 3499km flight travel to his list of travels", async () => {
-
-      const airports = [
-        airportBuilder().withIataCode('AAA').build(),
-        airportBuilder().withIataCode('BBB').build()
-      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(3499)
@@ -110,24 +98,18 @@ describe('Feature: Add a flight travel', () => {
         date: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe({
-        id: 1,
-        user: 'Nicolas',
-        from: 'AAA',
-        to: 'BBB',
-        date: new Date('2023-05-17'),
-        distance: 3499,
-        kgCO2eq: 622.822,
-        transportType: 'plane'
-      });
+      fixture.thenAddedTravelShouldBe(
+        baseFlightTravelBuilder
+          .withDistance(3499)
+          .withCarbonFootprint(622.822)
+          .build()
+      );
+
+
     });
 
     test("Nicolas adds a 3500km flight travel to his list of travels", async () => {
 
-      const airports = [
-        airportBuilder().withIataCode('AAA').build(),
-        airportBuilder().withIataCode('BBB').build()
-      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(3500)
@@ -139,18 +121,13 @@ describe('Feature: Add a flight travel', () => {
         date: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe({
-        id: 1,
-        user: 'Nicolas',
-        from: 'AAA',
-        to: 'BBB',
-        date: new Date('2023-05-17'),
-        distance: 3500,
-        kgCO2eq: 528.5,
-        transportType: 'plane'
-      });
+      fixture.thenAddedTravelShouldBe(
+        baseFlightTravelBuilder
+          .withDistance(3500)
+          .withCarbonFootprint(528.5)
+          .build()
+      );
     });
-
   });
 });
 
