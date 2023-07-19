@@ -1,6 +1,6 @@
 import { FlightTravel } from "../domain/flight-travel";
 
 export interface FlightTravelRepository {
-  addTravel(travel: FlightTravel): Promise<void>;
-  getTravelById(id: number): Promise<FlightTravel>;
+  add(travel: FlightTravel): Promise<void>;
+  getById(id: number): Promise<FlightTravel>;
 }

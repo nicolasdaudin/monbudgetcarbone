@@ -30,8 +30,8 @@ export const createTravelFixture = () => {
       await addFlightTravelUseCase.handle(addFlightTravelCommand);
     },
 
-    async thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
-      const actualTravel = await flightTravelRepository.getTravelById(expectedTravel.id);//?
+    thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
+      const actualTravel = flightTravelRepository.getFlightTravelById(expectedTravel.id);//?
       expect(actualTravel).toEqual(expectedTravel);
     }
   }

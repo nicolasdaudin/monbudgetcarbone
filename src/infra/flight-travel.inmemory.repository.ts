@@ -5,11 +5,15 @@ export class InMomeryFlightTravelRepository implements FlightTravelRepository {
 
   travels = new Map<number, FlightTravel>();
 
-  async addTravel(travel: FlightTravel): Promise<void> {
+  async add(travel: FlightTravel): Promise<void> {
     this.travels.set(travel.id, travel);
   }
 
-  async getTravelById(id: number): Promise<FlightTravel> {
+  async getById(id: number): Promise<FlightTravel> {
+    return this.getFlightTravelById(id);
+  }
+
+  getFlightTravelById(id: number): FlightTravel {
     return this.travels.get(id)!;
   }
 

@@ -1,4 +1,5 @@
 import { Airport } from "../application/airport.repository";
+import { airportBuilder } from "./airport.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 
 describe('Feature: Add a flight travel', () => {
@@ -11,29 +12,16 @@ describe('Feature: Add a flight travel', () => {
 
     test("Nicolas adds a flight travel to his list of travels", async () => {
 
-      const airports: Airport[] = [{
-        iataCode: 'MAD',
-        coordinates: "-3.56264, 40.471926",
-        isoCountry: 'ES',
-        municipality: 'Madrid',
-        name: 'Barajas',
-        type: 'large_airport'
-      },
-      {
-        iataCode: 'BRU',
-        coordinates: "4.48443984985, 50.901401519800004",
-        isoCountry: 'BE',
-        municipality: 'Brussels',
-        name: 'Brussels Airport',
-        type: 'large_airport'
-      }
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
       ]
       fixture.givenAirportsAre(airports);
 
 
       await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', date: new Date('2023-05-17') });
 
-      await fixture.thenAddedTravelShouldBe({
+      fixture.thenAddedTravelShouldBe({
         id: 1,
         user: 'Nicolas', from: 'MAD',
         to: 'BRU',
@@ -46,21 +34,10 @@ describe('Feature: Add a flight travel', () => {
 
     test("Nicolas adds a 999km flight travel to his list of travels", async () => {
 
-      const airports: Airport[] = [{
-        iataCode: 'AAA',
-        coordinates: "-3.56264, 40.471926",
-        isoCountry: 'AA',
-        municipality: 'AAAmuni',
-        name: 'AAAname',
-        type: 'large_airport'
-      }, {
-        iataCode: 'BBB',
-        coordinates: "-4.56264, 41.471926",
-        isoCountry: 'BB',
-        municipality: 'BBBmuni',
-        name: 'BBBname',
-        type: 'large_airport'
-      }]
+      const airports = [
+        airportBuilder().withIataCode('AAA').build(),
+        airportBuilder().withIataCode('BBB').build()
+      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(999);
@@ -89,21 +66,10 @@ describe('Feature: Add a flight travel', () => {
 
     test("Nicolas adds a 1000km flight travel to his list of travels", async () => {
 
-      const airports: Airport[] = [{
-        iataCode: 'AAA',
-        coordinates: "-3.56264, 40.471926",
-        isoCountry: 'AA',
-        municipality: 'AAAmuni',
-        name: 'AAAname',
-        type: 'large_airport'
-      }, {
-        iataCode: 'BBB',
-        coordinates: "-5.56264, 42.471926",
-        isoCountry: 'BB',
-        municipality: 'BBBmuni',
-        name: 'BBBname',
-        type: 'large_airport'
-      }]
+      const airports = [
+        airportBuilder().withIataCode('AAA').build(),
+        airportBuilder().withIataCode('BBB').build()
+      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(1000)
@@ -129,21 +95,10 @@ describe('Feature: Add a flight travel', () => {
 
     test("Nicolas adds a 3499km flight travel to his list of travels", async () => {
 
-      const airports: Airport[] = [{
-        iataCode: 'AAA',
-        coordinates: "-3.56264, 40.471926",
-        isoCountry: 'AA',
-        municipality: 'AAAmuni',
-        name: 'AAAname',
-        type: 'large_airport'
-      }, {
-        iataCode: 'BBB',
-        coordinates: "-5.56264, 42.471926",
-        isoCountry: 'BB',
-        municipality: 'BBBmuni',
-        name: 'BBBname',
-        type: 'large_airport'
-      }]
+      const airports = [
+        airportBuilder().withIataCode('AAA').build(),
+        airportBuilder().withIataCode('BBB').build()
+      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(3499)
@@ -169,21 +124,10 @@ describe('Feature: Add a flight travel', () => {
 
     test("Nicolas adds a 3500km flight travel to his list of travels", async () => {
 
-      const airports: Airport[] = [{
-        iataCode: 'AAA',
-        coordinates: "-3.56264, 40.471926",
-        isoCountry: 'AA',
-        municipality: 'AAAmuni',
-        name: 'AAAname',
-        type: 'large_airport'
-      }, {
-        iataCode: 'BBB',
-        coordinates: "-5.56264, 42.471926",
-        isoCountry: 'BB',
-        municipality: 'BBBmuni',
-        name: 'BBBname',
-        type: 'large_airport'
-      }]
+      const airports = [
+        airportBuilder().withIataCode('AAA').build(),
+        airportBuilder().withIataCode('BBB').build()
+      ]
 
       fixture.givenAirportsAre(airports);
       fixture.givenDistanceBetweenAirportsIs(3500)

@@ -27,7 +27,7 @@ export class AddFlightTravelUseCase {
     const distance = this.distanceCalculator.calculate(fromAirport.coordinates, toAirport.coordinates); //?
     const kgCO2eq = calculateFlightTravelCO2eqFromDistance(distance);
 
-    this.flightTravelRepository.addTravel({
+    this.flightTravelRepository.add({
       id: addFlightTravelCommand.id || 1,
       user: addFlightTravelCommand.user,
       from: addFlightTravelCommand.fromIataCode,
