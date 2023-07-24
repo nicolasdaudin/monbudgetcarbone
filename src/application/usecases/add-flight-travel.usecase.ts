@@ -9,7 +9,8 @@ export type AddFlightTravelCommand = {
   user: string,
   fromIataCode: string,
   toIataCode: string,
-  outboundDate: Date
+  outboundDate: Date,
+  inboundDate?: Date
 }
 
 export class AddFlightTravelUseCase {
@@ -27,19 +28,44 @@ export class AddFlightTravelUseCase {
     const distance = this.distanceCalculator.calculate(fromAirport.coordinates, toAirport.coordinates);
     const kgCO2eq = calculateFlightTravelCO2eqFromDistance(distance);
 
-    this.flightTravelRepository.add({
-      id: addFlightTravelCommand.id || 1,
-      user: addFlightTravelCommand.user,
-      routes: [{
-        type: 'outbound',
-        from: addFlightTravelCommand.fromIataCode,
-        to: addFlightTravelCommand.toIataCode,
-        date: addFlightTravelCommand.outboundDate,
-        distance,
-        kgCO2eq,
-      }]
+    if (addFlightTravelCommand.inboundDate) {
+      this.flightTravelRepository.add({
+        id: addFlightTravelCommand.id || 1,
+        user: addFlightTravelCommand.user,
+        routes: [{
+          type: 'outbound',
+          from: addFlightTravelCommand.fromIataCode,
+          to: addFlightTravelCommand.toIataCode,
+          date: addFlightTravelCommand.outboundDate,
+          distance,
+          kgCO2eq,
+        },
+        {
+          type: 'inbound',
+          from: addFlightTravelCommand.toIataCode,
+          to: addFlightTravelCommand.fromIataCode,
+          date: addFlightTravelCommand.inboundDate,
+          distance,
+          kgCO2eq,
+        }]
 
-    })
+      })
+    } else {
+      this.flightTravelRepository.add({
+        id: addFlightTravelCommand.id || 1,
+        user: addFlightTravelCommand.user,
+        routes: [{
+          type: 'outbound',
+          from: addFlightTravelCommand.fromIataCode,
+          to: addFlightTravelCommand.toIataCode,
+          date: addFlightTravelCommand.outboundDate,
+          distance,
+          kgCO2eq,
+        }]
+      })
+    }
+
+
 
   }
 

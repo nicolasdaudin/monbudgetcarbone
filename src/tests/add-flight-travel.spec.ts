@@ -9,9 +9,9 @@ describe('Feature: Add a flight travel', () => {
     fixture = createTravelFixture();
   })
 
-  describe('Rule: The flight travel should have a departure and arrival airport', () => {
+  describe('Rule: The flight travel should have a departure and arrival airport and can be only outbound', () => {
 
-    test("Nicolas adds a flight travel to his list of travels", async () => {
+    test("Nicolas adds a outbound flight travel from Madrid to Brussels to his list of travels", async () => {
 
       const airports = [
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
@@ -39,6 +39,7 @@ describe('Feature: Add a flight travel', () => {
       );
     });
   });
+
   describe("Rule: The carbon footprint of a flight travel depends on the distance of that flight: 0.230kgCO2/km for flights less than 1000 km, 0.178kgCO2/km for flights between 1000 and 3500 km, and 0.151kgCO2/km for flights over 3500 km", () => {
 
     const airports = [
@@ -153,6 +154,44 @@ describe('Feature: Add a flight travel', () => {
       );
     });
   });
+
+  describe('Rule: the flight travel can have an outbound and inbound journey', () => {
+    test('Nicolas adds a outbound and inbound flight travel from Madrid to Brussels to his list of travels', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+      ]
+      fixture.givenAirportsAre(airports);
+
+
+      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
+
+      const outboundRoute = routeBuilder()
+        .from('MAD')
+        .to('BRU')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(1316)
+        .withCarbonFootprint(234.248)
+        .withType('outbound')
+        .build()
+      const inboundRoute = routeBuilder()
+        .from('BRU')
+        .to('MAD')
+        .travelledOn(new Date('2023-05-20'))
+        .withDistance(1316)
+        .withCarbonFootprint(234.248)
+        .withType('inbound')
+        .build()
+
+      fixture.thenAddedTravelShouldBe(
+        flightTravelBuilder()
+          .withId(1)
+          .withUser('Nicolas')
+          .withRoutes([outboundRoute, inboundRoute])
+          .build()
+      );
+    })
+  })
 });
 
 
