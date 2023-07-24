@@ -9,7 +9,7 @@ export type AddFlightTravelCommand = {
   user: string,
   fromIataCode: string,
   toIataCode: string,
-  date: Date
+  outboundDate: Date
 }
 
 export class AddFlightTravelUseCase {
@@ -24,17 +24,21 @@ export class AddFlightTravelUseCase {
     const toAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.toIataCode);
 
 
-    const distance = this.distanceCalculator.calculate(fromAirport.coordinates, toAirport.coordinates); //?
+    const distance = this.distanceCalculator.calculate(fromAirport.coordinates, toAirport.coordinates);
     const kgCO2eq = calculateFlightTravelCO2eqFromDistance(distance);
 
     this.flightTravelRepository.add({
       id: addFlightTravelCommand.id || 1,
       user: addFlightTravelCommand.user,
-      from: addFlightTravelCommand.fromIataCode,
-      to: addFlightTravelCommand.toIataCode,
-      date: addFlightTravelCommand.date,
-      distance,
-      kgCO2eq,
+      routes: [{
+        type: 'outbound',
+        from: addFlightTravelCommand.fromIataCode,
+        to: addFlightTravelCommand.toIataCode,
+        date: addFlightTravelCommand.outboundDate,
+        distance,
+        kgCO2eq,
+      }]
+
     })
 
   }
@@ -46,10 +50,9 @@ export class AddFlightTravelUseCase {
 
 const calculateFlightTravelCO2eqFromDistance = (distanceInKm: number): number => {
   if (distanceInKm < 1000)
-    return distanceInKm * 0.230; //?
+    return distanceInKm * 0.230;
   else if (distanceInKm < 3500)
     return distanceInKm * 0.178;
-  //? 
 
   return distanceInKm * 0.151;
 

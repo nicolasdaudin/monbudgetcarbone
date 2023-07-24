@@ -1,15 +1,11 @@
-import { FlightTravel } from "../domain/flight-travel";
+import { Route, FlightTravel, OutboundInboundType } from "../domain/flight-travel";
 
 export const flightTravelBuilder = ({
   id = 1,
   user = 'Nicolas',
-  from = 'MAD',
-  to = 'BRU',
-  date = new Date(),
-  distance = 0,
-  kgCO2eq = 0
-}: { id?: number, user?: string, from?: string, to?: string, date?: Date, distance?: number, kgCO2eq?: number } = {}) => {
-  const props = { id, user, from, to, date, distance, kgCO2eq };
+  routes = []
+}: { id?: number, user?: string, routes?: Route[] } = {}) => {
+  const props = { id, user, routes };
   return {
     withId(id: number) {
       return flightTravelBuilder({ ...props, id })
@@ -17,25 +13,48 @@ export const flightTravelBuilder = ({
     withUser(user: string) {
       return flightTravelBuilder({ ...props, user })
     },
-    from(from: string) {
-      return flightTravelBuilder({ ...props, from })
-    },
-    to(to: string) {
-      return flightTravelBuilder({ ...props, to })
-    },
-    travelledOn(date: Date) {
-      return flightTravelBuilder({ ...props, date })
-    },
-    withDistance(distance: number) {
-      return flightTravelBuilder({ ...props, distance })
-    },
-    withCarbonFootprint(kgCO2eq: number) {
-      return flightTravelBuilder({ ...props, kgCO2eq })
+    withRoutes(routes: Route[]) {
+      return flightTravelBuilder({ ...props, routes })
     },
     build(): FlightTravel {
       return {
         id: props.id,
         user: props.user,
+        routes: props.routes
+      }
+    }
+  }
+}
+
+export const routeBuilder = ({ type = 'outbound', from = 'MAD',
+  to = 'BRU',
+  date = new Date(),
+  distance = 0,
+  kgCO2eq = 0
+}: { type?: OutboundInboundType, from?: string, to?: string, date?: Date, distance?: number, kgCO2eq?: number } = {}) => {
+  const props = { type, from, to, date, distance, kgCO2eq };
+  return {
+    withType(type: OutboundInboundType) {
+      return routeBuilder({ ...props, type })
+    },
+    from(from: string) {
+      return routeBuilder({ ...props, from })
+    },
+    to(to: string) {
+      return routeBuilder({ ...props, to })
+    },
+    travelledOn(date: Date) {
+      return routeBuilder({ ...props, date })
+    },
+    withDistance(distance: number) {
+      return routeBuilder({ ...props, distance })
+    },
+    withCarbonFootprint(kgCO2eq: number) {
+      return routeBuilder({ ...props, kgCO2eq })
+    },
+    build(): Route {
+      return {
+        type: props.type,
         from: props.from,
         to: props.to,
         date: props.date,
@@ -44,7 +63,5 @@ export const flightTravelBuilder = ({
       }
     }
   }
-
-
 
 }

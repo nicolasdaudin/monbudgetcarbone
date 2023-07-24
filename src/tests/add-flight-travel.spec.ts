@@ -1,6 +1,6 @@
 import { Airport } from "../application/airport.repository";
 import { airportBuilder } from "./airport.builder";
-import { flightTravelBuilder } from "./flight-travel.builder";
+import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 
 describe('Feature: Add a flight travel', () => {
@@ -20,13 +20,21 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', date: new Date('2023-05-17') });
+      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17') });
+
 
       fixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
-          .travelledOn(new Date('2023-05-17'))
-          .withDistance(1316)
-          .withCarbonFootprint(234.248)
+          .withId(1)
+          .withUser('Nicolas')
+          .withRoutes(
+            [routeBuilder()
+              .from('MAD')
+              .to('BRU')
+              .travelledOn(new Date('2023-05-17'))
+              .withDistance(1316)
+              .withCarbonFootprint(234.248)
+              .build()])
           .build()
       );
     });
@@ -38,6 +46,10 @@ describe('Feature: Add a flight travel', () => {
       airportBuilder().withIataCode('BBB').build()
     ]
     const baseFlightTravelBuilder = flightTravelBuilder()
+      .withId(1)
+      .withUser('Nicolas')
+
+    const baseRouteBuilder = routeBuilder()
       .from('AAA')
       .to('BBB')
       .travelledOn(new Date('2023-05-17'))
@@ -52,13 +64,15 @@ describe('Feature: Add a flight travel', () => {
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
-        date: new Date('2023-05-17')
+        outboundDate: new Date('2023-05-17')
       });
 
       fixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
-          .withDistance(999)
-          .withCarbonFootprint(229.770)
+          .withRoutes([baseRouteBuilder
+            .withDistance(999)
+            .withCarbonFootprint(229.770)
+            .build()])
           .build()
       );
 
@@ -73,14 +87,17 @@ describe('Feature: Add a flight travel', () => {
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
-        date: new Date('2023-05-17')
+        outboundDate: new Date('2023-05-17')
       });
 
       fixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
-          .withDistance(1000)
-          .withCarbonFootprint(178)
+          .withRoutes([baseRouteBuilder
+            .withDistance(1000)
+            .withCarbonFootprint(178)
+            .build()])
           .build()
+
       );
 
 
@@ -95,14 +112,17 @@ describe('Feature: Add a flight travel', () => {
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
-        date: new Date('2023-05-17')
+        outboundDate: new Date('2023-05-17')
       });
 
       fixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
-          .withDistance(3499)
-          .withCarbonFootprint(622.822)
+          .withRoutes([baseRouteBuilder
+            .withDistance(3499)
+            .withCarbonFootprint(622.822)
+            .build()])
           .build()
+
       );
 
 
@@ -118,14 +138,18 @@ describe('Feature: Add a flight travel', () => {
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
-        date: new Date('2023-05-17')
+        outboundDate: new Date('2023-05-17')
       });
 
       fixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
-          .withDistance(3500)
-          .withCarbonFootprint(528.5)
+          .withRoutes([baseRouteBuilder
+            .withDistance(3500)
+            .withCarbonFootprint(528.5)
+            .build()])
           .build()
+
+
       );
     });
   });
