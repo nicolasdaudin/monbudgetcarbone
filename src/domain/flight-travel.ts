@@ -6,6 +6,7 @@ export type FlightTravel = {
 
 export type Route = {
   type: OutboundInboundType,
+  order?: 1 | 2,
   from: string,
   to: string,
   date: Date,

@@ -26,16 +26,19 @@ export const flightTravelBuilder = ({
   }
 }
 
-export const routeBuilder = ({ type = 'outbound', from = 'MAD',
+export const routeBuilder = ({ type = 'outbound', from = 'MAD', order = undefined,
   to = 'BRU',
   date = new Date(),
   distance = 0,
   kgCO2eq = 0
-}: { type?: OutboundInboundType, from?: string, to?: string, date?: Date, distance?: number, kgCO2eq?: number } = {}) => {
-  const props = { type, from, to, date, distance, kgCO2eq };
+}: { type?: OutboundInboundType, order?: 1 | 2, from?: string, to?: string, date?: Date, distance?: number, kgCO2eq?: number } = {}) => {
+  const props = { type, order, from, to, date, distance, kgCO2eq };
   return {
     withType(type: OutboundInboundType) {
       return routeBuilder({ ...props, type })
+    },
+    withOrder(order: 1 | 2) {
+      return routeBuilder({ ...props, order })
     },
     from(from: string) {
       return routeBuilder({ ...props, from })
@@ -59,7 +62,8 @@ export const routeBuilder = ({ type = 'outbound', from = 'MAD',
         to: props.to,
         date: props.date,
         distance: props.distance,
-        kgCO2eq: props.kgCO2eq
+        kgCO2eq: props.kgCO2eq,
+        ...(props.order ? { order: props.order } : {})
       }
     }
   }
