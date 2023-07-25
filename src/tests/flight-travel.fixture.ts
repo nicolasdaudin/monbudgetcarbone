@@ -4,12 +4,12 @@ import { AddFlightTravelCommand, AddFlightTravelUseCase } from "../application/u
 import { FlightTravel } from "../domain/flight-travel";
 import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository";
 import { StubDistanceCalculator } from '../infra/stub-distance-calculator';
-import { InMomeryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
+import { InMemoryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
 
 
 export const createTravelFixture = () => {
   const airportRepository = new InMemoryAirportRepository();
-  const flightTravelRepository = new InMomeryFlightTravelRepository();
+  const flightTravelRepository = new InMemoryFlightTravelRepository();
 
   const distanceCalculator = new StubDistanceCalculator();
 

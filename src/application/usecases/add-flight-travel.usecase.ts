@@ -5,7 +5,6 @@ import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 
 export type AddFlightTravelCommand = {
-  id?: number,
   user: string,
   fromIataCode: string,
   toIataCode: string,
@@ -54,7 +53,6 @@ export class AddFlightTravelUseCase {
     }
 
     return await this.flightTravelRepository.add({
-      id: addFlightTravelCommand.id || 1,
       user: addFlightTravelCommand.user,
       routes
     })

@@ -1,4 +1,5 @@
 import { Route, FlightTravel, OutboundInboundType } from "../domain/flight-travel";
+import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
 
 export const flightTravelBuilder = ({
   id = 1,
@@ -7,6 +8,9 @@ export const flightTravelBuilder = ({
 }: { id?: number, user?: string, routes?: Route[] } = {}) => {
   const props = { id, user, routes };
   return {
+    withDefaultId() {
+      return flightTravelBuilder({ ...props, id: DEFAULT_ID })
+    },
     withId(id: number) {
       return flightTravelBuilder({ ...props, id })
     },

@@ -1,6 +1,6 @@
-import { FlightTravel } from "../domain/flight-travel";
+import { FlightTravel, FlightTravelWithoutId } from "../domain/flight-travel";
 
 export interface FlightTravelRepository {
-  add(travel: FlightTravel): Promise<void>;
+  add(travel: FlightTravelWithoutId): Promise<void>;
   getById(id: number): Promise<FlightTravel>;
 }

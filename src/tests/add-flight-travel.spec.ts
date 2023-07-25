@@ -1,4 +1,5 @@
 import { Airport } from "../application/airport.repository";
+import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
 import { airportBuilder } from "./airport.builder";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
@@ -20,12 +21,12 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17') });
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17') });
 
 
       fixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
-          .withId(1)
+          .withDefaultId()
           .withUser('Nicolas')
           .withRoutes(
             [routeBuilder()
@@ -47,7 +48,7 @@ describe('Feature: Add a flight travel', () => {
       airportBuilder().withIataCode('BBB').build()
     ]
     const baseFlightTravelBuilder = flightTravelBuilder()
-      .withId(1)
+      .withDefaultId()
       .withUser('Nicolas')
 
     const baseRouteBuilder = routeBuilder()
@@ -164,7 +165,7 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
 
       const outboundRoute = routeBuilder()
         .from('MAD')
@@ -185,7 +186,7 @@ describe('Feature: Add a flight travel', () => {
 
       fixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
-          .withId(1)
+          .withDefaultId()
           .withUser('Nicolas')
           .withRoutes([outboundRoute, inboundRoute])
           .build()
@@ -204,7 +205,7 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
 
       const routeBeforeConnection = routeBuilder()
         .from('MAD')
@@ -228,7 +229,7 @@ describe('Feature: Add a flight travel', () => {
 
       fixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
-          .withId(1)
+          .withDefaultId()
           .withUser('Nicolas')
           .withRoutes([routeBeforeConnection, routeAfterConnection])
           .build()
@@ -248,7 +249,7 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
 
       const outboundRouteBeforeConnection = routeBuilder()
         .from('MAD')
@@ -309,7 +310,7 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
 
       const outboundRouteBeforeConnection = routeBuilder()
         .from('MAD')
@@ -341,7 +342,7 @@ describe('Feature: Add a flight travel', () => {
 
       fixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
-          .withId(1)
+          .withDefaultId()
           .withUser('Nicolas')
           .withRoutes([outboundRouteBeforeConnection, outboundRouteAfterConnection, inboundRoute])
           .build()
@@ -360,7 +361,7 @@ describe('Feature: Add a flight travel', () => {
       fixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ id: 1, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
 
       const outboundRoute = routeBuilder()
         .from('MAD')
@@ -392,17 +393,11 @@ describe('Feature: Add a flight travel', () => {
 
       fixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
-          .withId(1)
+          .withDefaultId()
           .withUser('Nicolas')
           .withRoutes([outboundRoute, inboundRouteBeforeConnection, inboundRouteAfterConnection])
           .build()
       );
-
     })
-
-
-
   })
 });
-
-

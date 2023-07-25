@@ -4,6 +4,8 @@ export type FlightTravel = {
   routes: Route[]
 }
 
+export type FlightTravelWithoutId = Omit<FlightTravel, 'id'>
+
 export type Route = {
   type: OutboundInboundType,
   order?: 1 | 2,

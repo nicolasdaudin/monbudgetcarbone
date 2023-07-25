@@ -1,12 +1,18 @@
 import { FlightTravelRepository } from "../application/flight-travel.repository";
-import { FlightTravel } from "../domain/flight-travel";
+import { FlightTravel, FlightTravelWithoutId } from "../domain/flight-travel";
 
-export class InMomeryFlightTravelRepository implements FlightTravelRepository {
+export const DEFAULT_ID = 1;
+
+export class InMemoryFlightTravelRepository implements FlightTravelRepository {
+
+  private autoIncrementedId = DEFAULT_ID;
 
   travels = new Map<number, FlightTravel>();
 
-  async add(travel: FlightTravel): Promise<void> {
-    this.travels.set(travel.id, travel);
+  async add(travel: FlightTravelWithoutId): Promise<void> {
+
+    this.travels.set(this.autoIncrementedId, { ...travel, id: this.autoIncrementedId });
+    this.autoIncrementedId++;
   }
 
   async getById(id: number): Promise<FlightTravel> {
@@ -16,7 +22,4 @@ export class InMomeryFlightTravelRepository implements FlightTravelRepository {
   getFlightTravelById(id: number): FlightTravel {
     return this.travels.get(id)!;
   }
-
-
-
 }
