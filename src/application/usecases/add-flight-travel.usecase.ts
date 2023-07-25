@@ -106,11 +106,14 @@ export class AddFlightTravelUseCase {
 
 
 const calculateFlightTravelCO2eqFromDistance = (distanceInKm: number): number => {
+  let distance;
   if (distanceInKm < 1000)
-    return distanceInKm * 0.230;
+    distance = distanceInKm * 0.230;
   else if (distanceInKm < 3500)
-    return distanceInKm * 0.178;
+    distance = distanceInKm * 0.178;
+  else
+    distance = distanceInKm * 0.151;
 
-  return distanceInKm * 0.151;
+  return (parseFloat(distance.toFixed(3)) * 100 / 100)
 
 }
