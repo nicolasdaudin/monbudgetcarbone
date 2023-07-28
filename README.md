@@ -71,3 +71,6 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+Mon Budget Carbone (MBC) est un outil pour calculer au jour le jour votre empreinte carbone réelle et la comparer avec votre budget théorique (2 tonnes de CO2).
+
+Pour en savoir plus sur les budgets carbones, vous pouvez visiter le site de l'[ADEME](https://datagir.ademe.fr/blog/budget-empreinte-carbone-c-est-quoi/). 
