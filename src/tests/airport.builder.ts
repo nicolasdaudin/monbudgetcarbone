@@ -5,7 +5,7 @@ import { Airport, AirportType } from "../application/airport.repository";
 export const airportBuilder = (
   {
     iataCode = 'AAA',
-    coordinates = '-3.56264, 40.471926',
+    coordinates = '0, 0',
     isoCountry = 'AA',
     municipality = 'AAA_municipality',
     name = 'AAA_name',

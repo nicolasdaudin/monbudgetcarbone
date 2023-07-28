@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
+export const AUTHORIZED_AIRPORT_TYPES = ['large_airport', 'medium_airport', 'small_airport']
 export type AirportType = 'large_airport' | 'medium_airport' | 'small_airport'
 
 export type Airport = {

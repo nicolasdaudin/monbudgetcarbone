@@ -1,12 +1,9 @@
-import { Controller, Post, Get } from '@nestjs/common';
-import { AddFlightTravelCommand, AddFlightTravelUseCase } from './application/usecases/add-flight-travel.usecase';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller()
 export class AppController {
-  constructor(private readonly addFlightTravelUseCase: AddFlightTravelUseCase) { }
-
   @Get()
   getHello(): string {
-    return 'Bienvenue sur Mon Budget Carbone'
+    return 'Bienvenue sur Mon Budget Carbone';
   }
 }

@@ -2,3 +2,5 @@ node_modules
 .vs_code
 TODO.md
 dist
+.DS_Store
+*-test.json
