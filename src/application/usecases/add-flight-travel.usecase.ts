@@ -3,6 +3,7 @@ import { FlightTravel, OutboundInboundType, Route } from "../../domain/flight-tr
 import { Airport, AirportRepository } from "../airport.repository";
 import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
+import { Injectable } from "@nestjs/common"
 
 export type AddFlightTravelCommand = {
   user: string,
@@ -14,7 +15,7 @@ export type AddFlightTravelCommand = {
   inboundConnection?: string,
 }
 
-
+@Injectable()
 export class AddFlightTravelUseCase {
 
   constructor(

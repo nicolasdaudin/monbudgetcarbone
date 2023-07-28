@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common'
+
 export type AirportType = 'large_airport' | 'medium_airport' | 'small_airport'
 
 export type Airport = {
@@ -9,6 +11,7 @@ export type Airport = {
   type: AirportType
 }
 
-export interface AirportRepository {
-  getByIataCode(iata: string): Promise<Airport>;
+@Injectable()
+export abstract class AirportRepository {
+  abstract getByIataCode(iata: string): Promise<Airport>;
 }

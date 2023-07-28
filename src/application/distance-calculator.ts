@@ -1,7 +1,7 @@
 import { convertDistance, getPreciseDistance } from "geolib";
 
-export interface DistanceCalculator {
-  calculate(lngLatFrom: string, lngLatTo: string): number;
+export abstract class DistanceCalculator {
+  abstract calculate(lngLatFrom: string, lngLatTo: string): number;
 }
 
 export const calculateFromCoordinates = (lngLatFrom: string, lngLatTo: string): number => {

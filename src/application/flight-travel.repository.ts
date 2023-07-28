@@ -1,6 +1,8 @@
 import { FlightTravel, FlightTravelWithoutId } from "../domain/flight-travel";
+import { Injectable } from '@nestjs/common'
 
-export interface FlightTravelRepository {
-  add(travel: FlightTravelWithoutId): Promise<void>;
-  getById(id: number): Promise<FlightTravel>;
+@Injectable()
+export abstract class FlightTravelRepository {
+  abstract add(travel: FlightTravelWithoutId): Promise<void>;
+  abstract getById(id: number): Promise<FlightTravel>;
 }
