@@ -7,15 +7,18 @@ import { FlightTravelRepository } from './application/flight-travel.repository';
 import { InMemoryFlightTravelRepository } from './infra/flight-travel.inmemory.repository';
 import { DistanceCalculator } from './application/distance-calculator';
 import { RealDistanceCalculator } from './infra/real-distance-calculator';
+import { FileAirportRepository } from './infra/airport.file.repository';
+import { FlightTravelController } from './flight-travel.controller';
+
 
 @Module({
   imports: [],
-  controllers: [AppController],
+  controllers: [AppController, FlightTravelController],
   providers: [
     AddFlightTravelUseCase,
     {
       provide: AirportRepository,
-      useClass: InMemoryAirportRepository
+      useClass: FileAirportRepository
     },
     {
       provide: FlightTravelRepository,
