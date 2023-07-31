@@ -5,6 +5,7 @@ export const DEFAULT_ID = 1;
 
 export class InMemoryFlightTravelRepository implements FlightTravelRepository {
 
+
   private autoIncrementedId = DEFAULT_ID;
 
   travels = new Map<number, FlightTravel>();
@@ -19,7 +20,18 @@ export class InMemoryFlightTravelRepository implements FlightTravelRepository {
     return this.getFlightTravelById(id);
   }
 
+  async getAllOfUser(user: string): Promise<FlightTravel[]> {
+    return Promise.resolve([...this.travels.values()].filter(travel => travel.user === user))
+
+  }
+
   getFlightTravelById(id: number): FlightTravel {
     return this.travels.get(id)!;
   }
-}
+
+  givenExistingFlightTravels(flightTravels: FlightTravel[]) {
+    flightTravels.forEach(travel => {
+      this.travels.set(travel.id, travel);
+    });
+  }
+} 
