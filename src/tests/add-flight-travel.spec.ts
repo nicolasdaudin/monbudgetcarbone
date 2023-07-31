@@ -4,15 +4,15 @@ import { airportBuilder } from "./airport.builder";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 
-describe('Feature: Add a flight travel', () => {
+describe('Feature: Add a flight travel and calculate its corresponding carbon footprint', () => {
   let fixture: FlightTravelFixture;
   beforeEach(() => {
     fixture = createTravelFixture();
   })
 
-  describe('Rule: The flight travel should have a departure and arrival airport and can be only outbound', () => {
+  describe('Rule: A flight travel should have a departure and arrival airport and can be only outbound. A carbon footprint should be calculated', () => {
 
-    test("Nicolas adds a outbound flight travel from Madrid to Brussels to his list of travels", async () => {
+    test("Nicolas adds a outbound flight travel from Madrid to Brussels to his list of travels and distance and carbon footprint are calculated", async () => {
 
       const airports = [
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
@@ -156,7 +156,7 @@ describe('Feature: Add a flight travel', () => {
     });
   });
 
-  describe('Rule: the flight travel can have an outbound and inbound journey', () => {
+  describe('Rule: The carbon footprint of a flight travel with an outbound and inbound journey can be calculated', () => {
     test('Nicolas adds a outbound and inbound flight travel from Madrid to Brussels to his list of travels', async () => {
       const airports = [
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
@@ -194,7 +194,7 @@ describe('Feature: Add a flight travel', () => {
     })
   })
 
-  describe('Rule: a flight travel can have 0 or 1 connections', () => {
+  describe('Rule: The carbon footprint of a flight travel can be calculated for flights with 0 or 1 connections', () => {
     test('Nicolas adds an outbound flight travel from Madrid MAD to Quito UIO with a connection in Amsterdam AMS to his list of travels', async () => {
       const airports = [
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),

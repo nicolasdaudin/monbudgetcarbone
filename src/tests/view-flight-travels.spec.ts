@@ -2,14 +2,14 @@ import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture"
 
-describe('Feature: View flight travels', () => {
+describe("Feature: View a user's flight travels and their carbon footprint", () => {
   let fixture: FlightTravelFixture;
   beforeEach(() => {
     fixture = createTravelFixture();
   })
 
   describe('Rule: A user can see all of his flight travels', () => {
-    test.only('Nicolas can see his single flight with no connection', async () => {
+    test.only('Nicolas can see a single flight travel with no connection and the corresponding carbon footprint', async () => {
       fixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
