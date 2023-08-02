@@ -6,6 +6,7 @@ import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository"
 import { StubDistanceCalculator } from '../infra/stub-distance-calculator';
 import { DEFAULT_ID, InMemoryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
 import e from 'express';
+import { ViewFlightTravelsUseCase } from '../application/usecases/view-flight-travels.usecase';
 
 
 export const createTravelFixture = () => {
@@ -15,8 +16,9 @@ export const createTravelFixture = () => {
   const distanceCalculator = new StubDistanceCalculator();
 
   const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
+  const viewFlightTravelsUseCase = new ViewFlightTravelsUseCase(flightTravelRepository);
 
-  let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, kgCO2eqTotal }[];
+  let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[];
   return {
 
     givenAirportsAre(airports: Airport[]) {
@@ -37,16 +39,7 @@ export const createTravelFixture = () => {
     },
 
     async whenUserViewFlightTravelsOf(user: string) {
-      const flightTravels = await flightTravelRepository.getAllOfUser(user);
-
-
-      actualFlightTravelsList = flightTravels.map(t => ({
-        id: t.id,
-        from: t.routes[0].from,
-        to: t.routes[0].to,
-        outboundDate: t.routes[0].date,
-        kgCO2eqTotal: t.routes[0].kgCO2eq
-      }))
+      actualFlightTravelsList = await viewFlightTravelsUseCase.handle({ user });
 
 
     },
@@ -56,7 +49,7 @@ export const createTravelFixture = () => {
       expect(actualTravel).toEqual(expectedTravel);
     },
 
-    thenUserShouldSee(expectedFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, kgCO2eqTotal }[]) {
+    thenUserShouldSee(expectedFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundConnection?: string, kgCO2eqTotal }[]) {
       expect(actualFlightTravelsList).toEqual(expectedFlightTravelsList)
     }
 
