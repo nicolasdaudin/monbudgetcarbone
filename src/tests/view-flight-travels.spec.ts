@@ -291,4 +291,50 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
       ])
     })
   })
+
+  describe('Rule: A user can only see his own flight travels', () => {
+    test("Arnaud can see his flight travels but not Nicolas's flight travels", async () => {
+
+      fixture.givenFollowingFlightTravelsExist(
+        [
+          flightTravelBuilder()
+            .withId(1)
+            .withUser('Arnaud')
+            .withRoutes([routeBuilder()
+              .withType('outbound')
+              .from('BOD')
+              .to('DUB')
+              .travelledOn(new Date('2023-05-18'))
+              .withDistance(1100)
+              .withCarbonFootprint(250)
+              .build()])
+            .build(),
+          flightTravelBuilder()
+            .withId(2)
+            .withUser('Nicolas')
+            .withRoutes([routeBuilder()
+              .withType('outbound')
+              .from('MAD')
+              .to('BRU')
+              .travelledOn(new Date('2023-05-17'))
+              .withDistance(1000)
+              .withCarbonFootprint(230)
+              .build()])
+            .build()
+        ]
+      );
+
+      await fixture.whenUserViewFlightTravelsOf('Arnaud');
+
+      fixture.thenUserShouldSee([
+        {
+          id: 1,
+          from: 'BOD',
+          to: 'DUB',
+          outboundDate: new Date('2023-05-18'),
+          kgCO2eqTotal: 250
+        }
+      ])
+    });
+  });
 })
