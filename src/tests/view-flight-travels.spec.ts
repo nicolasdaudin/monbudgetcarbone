@@ -337,4 +337,58 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
       ])
     });
   });
+
+  describe('Rule: A user sees his flight travels in reverse chronological order', () => {
+    test("Nicolas has 2 flight travels, and when he sees them he sees first the most recent one", async () => {
+
+      fixture.givenFollowingFlightTravelsExist(
+        [
+          flightTravelBuilder()
+            .withId(1)
+            .withUser('Nicolas')
+            .withRoutes([routeBuilder()
+              .withType('outbound')
+              .from('MAD')
+              .to('BRU')
+              .travelledOn(new Date('2023-01-23'))
+              .withDistance(1316)
+              .withCarbonFootprint(234)
+              .build()])
+            .build(),
+          flightTravelBuilder()
+            .withId(2)
+            .withUser('Nicolas')
+            .withRoutes([routeBuilder()
+              .withType('outbound')
+              .from('TLS')
+              .to('DUB')
+              .travelledOn(new Date('2023-05-17'))
+              .withDistance(1000)
+              .withCarbonFootprint(200)
+              .build()])
+            .build()
+        ]
+      );
+
+      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+
+      fixture.thenUserShouldSee([
+        {
+          id: 2,
+          from: 'TLS',
+          to: 'DUB',
+          outboundDate: new Date('2023-05-17'),
+          kgCO2eqTotal: 200
+        },
+        {
+          id: 1,
+          from: 'MAD',
+          to: 'BRU',
+          outboundDate: new Date('2023-01-23'),
+          kgCO2eqTotal: 234
+        }
+      ])
+    });
+
+  })
 })

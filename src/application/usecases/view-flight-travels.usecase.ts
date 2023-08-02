@@ -83,7 +83,7 @@ export class ViewFlightTravelsUseCase {
       }
     })
 
-    return actualFlightTravelsList;
+    return actualFlightTravelsList.sort((a, b) => b.outboundDate.getTime() - a.outboundDate.getTime());
 
   }
 }
