@@ -1,9 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AddFlightTravelCommand, AddFlightTravelUseCase } from './application/usecases/add-flight-travel.usecase';
+import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-travels.usecase';
 
 @Controller('flight-travel')
 export class FlightTravelController {
-  constructor(private readonly addFlightTravelUseCase: AddFlightTravelUseCase) { }
+  constructor(
+    private readonly addFlightTravelUseCase: AddFlightTravelUseCase,
+    private readonly viewFlightTravelsUseCase: ViewFlightTravelsUseCase) { }
 
   @Post()
   async addFlightTravel(@Body() body: {
@@ -20,5 +23,11 @@ export class FlightTravelController {
     }
     await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
 
+  }
+
+  @Get()
+  async getFlightTravels(@Query('user') user: string) {
+    const flightTravels = await this.viewFlightTravelsUseCase.handle({ user });//?
+    return flightTravels;
   }
 }

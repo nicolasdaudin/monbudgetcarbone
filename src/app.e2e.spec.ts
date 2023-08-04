@@ -3,17 +3,22 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './app.module';
 import { FlightTravelRepository } from './application/flight-travel.repository';
-import { DEFAULT_ID } from './infra/flight-travel.inmemory.repository';
+import { DEFAULT_ID, InMemoryFlightTravelRepository } from './infra/flight-travel.inmemory.repository';
+import { flightTravelBuilder, routeBuilder } from './tests/flight-travel.builder';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
   let moduleFixture: TestingModule;
+  let flightTravelRepository = new InMemoryFlightTravelRepository();
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(FlightTravelRepository)
+      .useValue(flightTravelRepository)
+      .compile();
 
 
     app = moduleFixture.createNestApplication();
@@ -27,6 +32,40 @@ describe('AppController (e2e)', () => {
       .expect('Bienvenue sur Mon Budget Carbone');
   });
 
+  test('GET /flight-travel', async () => {
+    flightTravelRepository.givenExistingFlightTravels(
+      [flightTravelBuilder()
+        .withId(1)
+        .withUser('Nicolas')
+        .withRoutes([routeBuilder()
+          .withType('outbound')
+          .from('MAD')
+          .to('BRU')
+          .travelledOn(new Date('2023-05-17'))
+          .withDistance(1000)
+          .withCarbonFootprint(230)
+          .build()
+        ])
+        .build()
+      ])
+
+    expect.assertions(1);
+    await request(app.getHttpServer())
+      .get('/flight-travel?user=Nicolas').expect(200).then(response => {
+        expect(response.body).toEqual([
+          {
+            id: 1,
+            from: 'MAD',
+            to: 'BRU',
+            outboundDate: (new Date('2023-05-17')).toISOString(),
+            kgCO2eqTotal: 230
+          }
+        ])
+      })
+
+
+  })
+
   test('POST /flight-travel', async () => {
     await request(app.getHttpServer())
       .post('/flight-travel')
@@ -39,7 +78,6 @@ describe('AppController (e2e)', () => {
       .expect(201)
 
 
-    const flightTravelRepository = moduleFixture.get(FlightTravelRepository);
 
     const actualFlightTravel = await flightTravelRepository.getById(DEFAULT_ID);
 
@@ -47,14 +85,7 @@ describe('AppController (e2e)', () => {
     expect(actualFlightTravel.routes[0].from).toEqual('MAD');
     expect(actualFlightTravel.routes[0].to).toEqual('BRU');
     expect(actualFlightTravel.routes[0].date).toEqual(new Date('2023-05-11'));
-
-
-
-
-
-
-
-
-
   })
+
+
 });

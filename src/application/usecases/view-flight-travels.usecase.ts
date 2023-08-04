@@ -1,11 +1,12 @@
 import { FlightTravelRepository } from "../flight-travel.repository";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class ViewFlightTravelsUseCase {
   constructor(private readonly flightTravelRepository: FlightTravelRepository) { }
 
   async handle({ user }: { user: string }): Promise<{ id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[]> {
     const flightTravels = await this.flightTravelRepository.getAllOfUser(user);
-
 
     const actualFlightTravelsList = flightTravels.map(t => {
 
