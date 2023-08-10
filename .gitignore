@@ -4,3 +4,4 @@ TODO.md
 dist
 .DS_Store
 *-test.json
+.env

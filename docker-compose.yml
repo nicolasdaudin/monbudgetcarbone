@@ -1,0 +1,9 @@
+version: '3'
+services:
+  monbudgetcarbone:
+    image: postgres
+    restart: always
+    ports:
+      - '5435:5432'
+    environment:
+      POSTGRES_PASSWORD: mbcPass123

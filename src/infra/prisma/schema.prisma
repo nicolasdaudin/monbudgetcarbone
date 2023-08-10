@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model FlightTravel {
+  id     Int     @id @default(autoincrement())
+  user   String
+  routes Route[]
+}
+
+model Route {
+  id       Int                 @id @default(autoincrement())
+  type     OutboundInboundType
+  order    Int?
+  from     String
+  to       String
+  date     DateTime
+  distance Int
+  kgCO2eq  Float
+
+  flightTravel   FlightTravel @relation(fields: [flightTravelId], references: [id])
+  flightTravelId Int
+}
+
+enum OutboundInboundType {
+  outbound
+  inbound
+}
+
+// TODO:
+// Next steps:
+// 1. Set the DATABASE_URL in the .env file to point to your existing database. If your database has no tables yet, read https://pris.ly/d/getting-started
+// 2. Run prisma db pull to turn your database schema into a Prisma schema.
+// 3. Run prisma generate to generate the Prisma Client. You can then start querying your database.
+
+// More information in our documentation:
+// https://pris.ly/d/getting-started
