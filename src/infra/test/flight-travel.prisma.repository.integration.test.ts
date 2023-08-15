@@ -9,7 +9,7 @@ const asyncExec = promisify(exec);
 
 jest.setTimeout(10000);
 
-describe.only('PrismaFlightTravelRepository', () => {
+describe('PrismaFlightTravelRepository', () => {
 
   let prismaClient: PrismaClient;
   let container: StartedPostgreSqlContainer;
@@ -42,7 +42,7 @@ describe.only('PrismaFlightTravelRepository', () => {
     await prismaClient.$disconnect();
   });
 
-  test('add() adds a travel in database', async () => {
+  test('add() adds a single way flight travel in database', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
     await flightTravelRepository.add(
@@ -75,5 +75,137 @@ describe.only('PrismaFlightTravelRepository', () => {
           })]
       }
     ));
+  })
+
+  test('add() adds a return flight travel with connections in database', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+    const outboundRouteBeforeConnection = routeBuilder()
+      .from('MAD')
+      .to('AMS')
+      .travelledOn(new Date('2023-05-17'))
+      .withDistance(1461)
+      .withCarbonFootprint(260.058)
+      .withType('outbound')
+      .withOrder(1)
+      .build();
+    const outboundRouteAfterConnection = routeBuilder()
+      .from('AMS')
+      .to('UIO')
+      .travelledOn(new Date('2023-05-17'))
+      .withDistance(9551)
+      .withCarbonFootprint(1442.201)
+      .withType('outbound')
+      .withOrder(2)
+      .build();
+    const inboundRouteBeforeConnection = routeBuilder()
+      .from('UIO')
+      .to('BOG')
+      .travelledOn(new Date('2023-06-04'))
+      .withDistance(710)
+      .withCarbonFootprint(163.3)
+      .withType('inbound')
+      .withOrder(1)
+      .build();
+    const inboundRouteAfterConnection = routeBuilder()
+      .from('BOG')
+      .to('MAD')
+      .travelledOn(new Date('2023-06-04'))
+      .withDistance(8034)
+      .withCarbonFootprint(1213.134)
+      .withType('inbound')
+      .withOrder(2)
+      .build();
+
+    await flightTravelRepository.add(
+      flightTravelBuilder().withUser('Nicolas').withRoutes([
+        outboundRouteBeforeConnection, outboundRouteAfterConnection, inboundRouteBeforeConnection, inboundRouteAfterConnection]).build()
+    )
+
+    const actualFlightTravel = await prismaClient.flightTravel.findFirst({
+      where: { user: 'Nicolas' },
+      include: { routes: true }
+    })
+
+    console.log({ actualFlightTravel });
+    console.log('routes', actualFlightTravel.routes)
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining(
+      {
+        user: 'Nicolas',
+        routes: [
+          expect.objectContaining({
+            from: 'MAD',
+            to: 'AMS',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 260.058
+          }),
+          expect.objectContaining({
+            from: 'AMS',
+            to: 'UIO',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 1442.201
+          }),
+          expect.objectContaining({
+            from: 'UIO',
+            to: 'BOG',
+            date: new Date('2023-06-04'),
+            kgCO2eq: 163.3
+          }),
+          expect.objectContaining({
+            from: 'BOG',
+            to: 'MAD',
+            date: new Date('2023-06-04'),
+            kgCO2eq: 1213.134
+          }),
+        ]
+      }
+    ));
+  })
+
+  test.only('getById() returns the correct Flight Travel', async () => {
+
+    const id = 365;
+
+    await prismaClient.flightTravel.create({
+      data: {
+        id,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'BRU',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 120,
+            type: 'outbound',
+            distance: 1000
+          }]
+        }
+      }
+    })
+
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    const actualFlightTravel = await flightTravelRepository.getById(id);
+
+    expect(actualFlightTravel).toEqual(
+      flightTravelBuilder()
+        .withId(id)
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-18'))
+            .withDistance(1000)
+            .withCarbonFootprint(100)
+            .withType('outbound')
+            .build()]
+        )
+        .build()
+    )
+
+
   })
 })

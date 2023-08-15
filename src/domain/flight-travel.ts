@@ -8,7 +8,7 @@ export type FlightTravelWithoutId = Omit<FlightTravel, 'id'>
 
 export type Route = {
   type: OutboundInboundType,
-  order?: 1 | 2,
+  order?: number,
   from: string,
   to: string,
   date: Date,
