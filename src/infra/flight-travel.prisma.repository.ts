@@ -39,8 +39,26 @@ export class PrismaFlightTravelRepository implements FlightTravelRepository {
     };
   }
 
-  getAllOfUser(user: string): Promise<FlightTravel[]> {
-    throw new Error("Method not implemented.");
-  }
+  async getAllOfUser(user: string): Promise<FlightTravel[]> {
+    const flightTravels = await this.prismaClient.flightTravel.findMany(
+      {
+        where: { user },
+        include: { routes: true }
+      }
+    )
 
+    return flightTravels.map(flightTravel => ({
+      id: flightTravel.id,
+      user: flightTravel.user,
+      routes: flightTravel.routes.map(r => ({
+        from: r.from,
+        to: r.to,
+        date: r.date,
+        distance: r.distance,
+        kgCO2eq: r.kgCO2eq,
+        type: r.type,
+        ...(r.order ? { order: r.order } : {})
+      }))
+    }))
+  }
 }

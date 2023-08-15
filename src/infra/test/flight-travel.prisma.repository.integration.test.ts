@@ -162,7 +162,7 @@ describe('PrismaFlightTravelRepository', () => {
     ));
   })
 
-  test.only('getById() returns the correct Flight Travel', async () => {
+  test('getById() returns the correct Flight Travel', async () => {
 
     const id = 365;
 
@@ -197,13 +197,108 @@ describe('PrismaFlightTravelRepository', () => {
           routeBuilder()
             .from('MAD')
             .to('BRU')
-            .travelledOn(new Date('2023-05-18'))
+            .travelledOn(new Date('2023-05-17'))
             .withDistance(1000)
-            .withCarbonFootprint(100)
+            .withCarbonFootprint(120)
             .withType('outbound')
             .build()]
         )
         .build()
+    )
+
+
+  })
+
+  test('getAllOfUser() returns all the flight travels for that user', async () => {
+
+
+    await prismaClient.flightTravel.create({
+      data: {
+        id: 1,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'BRU',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 120,
+            type: 'outbound',
+            distance: 1000
+          }]
+        }
+      }
+    })
+
+    await prismaClient.flightTravel.create({
+      data: {
+        id: 2,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'TLS',
+            date: new Date('2023-12-23'),
+            kgCO2eq: 90,
+            type: 'outbound',
+            distance: 600
+          }]
+        }
+      }
+    })
+    await prismaClient.flightTravel.create({
+      data: {
+        id: 3,
+        user: 'Arnaud',
+        routes: {
+          create: [{
+            from: 'BOD',
+            to: 'DUB',
+            date: new Date('2022-12-09'),
+            kgCO2eq: 130,
+            type: 'outbound',
+            distance: 1100
+          }]
+        }
+      }
+    })
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    const actualFlightTravels = await flightTravelRepository.getAllOfUser('Nicolas');
+
+    expect(actualFlightTravels).toHaveLength(2);
+
+    expect(actualFlightTravels).toEqual(
+      [flightTravelBuilder()
+        .withId(1)
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-17'))
+            .withDistance(1000)
+            .withCarbonFootprint(120)
+            .withType('outbound')
+            .build()]
+        )
+        .build(),
+      flightTravelBuilder()
+        .withId(2)
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('TLS')
+            .travelledOn(new Date('2023-12-23'))
+            .withDistance(600)
+            .withCarbonFootprint(90)
+            .withType('outbound')
+            .build()]
+        )
+        .build()
+      ]
     )
 
 
