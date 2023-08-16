@@ -1,8 +1,10 @@
 import { FlightTravelRepository } from "../application/flight-travel.repository";
 import { FlightTravel, FlightTravelWithoutId } from "../domain/flight-travel";
+import { Injectable } from '@nestjs/common'
 
 export const DEFAULT_ID = 1;
 
+@Injectable()
 export class InMemoryFlightTravelRepository implements FlightTravelRepository {
 
 

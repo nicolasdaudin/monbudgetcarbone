@@ -9,6 +9,8 @@ import { RealDistanceCalculator } from './infra/real-distance-calculator';
 import { FileAirportRepository } from './infra/airport.file.repository';
 import { FlightTravelController } from './flight-travel.controller';
 import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-travels.usecase';
+import { PrismaClient } from '@prisma/client'
+import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repository';
 
 
 @Module({
@@ -17,13 +19,14 @@ import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-tra
   providers: [
     AddFlightTravelUseCase,
     ViewFlightTravelsUseCase,
+    PrismaClient,
     {
       provide: AirportRepository,
       useClass: FileAirportRepository
     },
     {
       provide: FlightTravelRepository,
-      useClass: InMemoryFlightTravelRepository
+      useClass: PrismaFlightTravelRepository
     },
     {
       provide: DistanceCalculator,

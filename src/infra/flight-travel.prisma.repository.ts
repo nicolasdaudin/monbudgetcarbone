@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 import { FlightTravelRepository } from "src/application/flight-travel.repository";
 import { FlightTravelWithoutId, FlightTravel } from "src/domain/flight-travel";
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export class PrismaFlightTravelRepository implements FlightTravelRepository {
   constructor(private readonly prismaClient: PrismaClient) { }
 
