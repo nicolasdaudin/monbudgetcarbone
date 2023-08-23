@@ -7,7 +7,7 @@ import { StubDistanceCalculator } from '../infra/stub-distance-calculator';
 import { DEFAULT_ID, InMemoryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
 import e from 'express';
 import { ViewFlightTravelsUseCase } from '../application/usecases/view-flight-travels.usecase';
-
+import { EditFlightTravelCommand, EditFlightTravelUseCase } from '../application/usecases/edit-flight-travel.usecase';
 
 export const createTravelFixture = () => {
   const airportRepository = new InMemoryAirportRepository();
@@ -17,6 +17,7 @@ export const createTravelFixture = () => {
 
   const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
   const viewFlightTravelsUseCase = new ViewFlightTravelsUseCase(flightTravelRepository);
+  const editFlightTravelUseCase = new EditFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
 
   let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[];
   return {
@@ -36,6 +37,11 @@ export const createTravelFixture = () => {
 
     async whenUserAddsTravel(addFlightTravelCommand: AddFlightTravelCommand) {
       await addFlightTravelUseCase.handle(addFlightTravelCommand);
+    },
+
+    async whenUserEditsTravel(editFlightTravelCommand: EditFlightTravelCommand
+    ) {
+      await editFlightTravelUseCase.handle(editFlightTravelCommand);
     },
 
     async whenUserViewFlightTravelsOf(user: string) {

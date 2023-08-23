@@ -1,61 +1,57 @@
-import { convertDistance, getDistance, getPreciseDistance } from "geolib";
 import { FlightTravel, OutboundInboundType, Route } from "../../domain/flight-travel";
 import { Airport, AirportRepository } from "../airport.repository";
 import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"
+import { AddFlightTravelCommand } from "./add-flight-travel.usecase";
 
-export type AddFlightTravelCommand = {
-  user: string,
-  fromIataCode: string,
-  toIataCode: string,
-  outboundDate: Date,
-  outboundConnection?: string,
-  inboundDate?: Date,
-  inboundConnection?: string,
+export type EditFlightTravelCommand = AddFlightTravelCommand & {
+  id: number
 }
 
 
 @Injectable()
-export class AddFlightTravelUseCase {
+export class EditFlightTravelUseCase {
 
   constructor(
     private readonly airportRepository: AirportRepository,
     private readonly flightTravelRepository: FlightTravelRepository,
     private readonly distanceCalculator: DistanceCalculator) { }
 
-  async handle(addFlightTravelCommand: AddFlightTravelCommand): Promise<void> {
-    const fromAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.fromIataCode);
-    const toAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.toIataCode);
+  async handle(editFlightTravelCommand: EditFlightTravelCommand): Promise<void> {
+
+    const fromAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.fromIataCode);
+    const toAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.toIataCode);
 
     let routes: Route[] = [];
 
     let outboundRoutes: Route[];
-    if (addFlightTravelCommand.outboundConnection) {
-      const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.outboundConnection);
+    if (editFlightTravelCommand.outboundConnection) {
+      const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.outboundConnection);
 
-      outboundRoutes = this.computeRoutesWithConnection({ fromAirport, toAirport, connectionAirport, type: 'outbound', date: addFlightTravelCommand.outboundDate })
+      outboundRoutes = this.computeRoutesWithConnection({ fromAirport, toAirport, connectionAirport, type: 'outbound', date: editFlightTravelCommand.outboundDate })
     } else {
-      outboundRoutes = this.computeRouteWithoutConnection({ fromAirport, toAirport, type: 'outbound', date: addFlightTravelCommand.outboundDate });
+      outboundRoutes = this.computeRouteWithoutConnection({ fromAirport, toAirport, type: 'outbound', date: editFlightTravelCommand.outboundDate });
     }
     routes = routes.concat(outboundRoutes);
 
 
 
-    if (addFlightTravelCommand.inboundDate) {
+    if (editFlightTravelCommand.inboundDate) {
       let inboundRoutes: Route[];
-      if (addFlightTravelCommand.inboundConnection) {
-        const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.inboundConnection);
+      if (editFlightTravelCommand.inboundConnection) {
+        const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.inboundConnection);
 
-        inboundRoutes = this.computeRoutesWithConnection({ fromAirport: toAirport, toAirport: fromAirport, connectionAirport, type: 'inbound', date: addFlightTravelCommand.inboundDate })
+        inboundRoutes = this.computeRoutesWithConnection({ fromAirport: toAirport, toAirport: fromAirport, connectionAirport, type: 'inbound', date: editFlightTravelCommand.inboundDate })
       } else {
-        inboundRoutes = this.computeRouteWithoutConnection({ fromAirport: toAirport, toAirport: fromAirport, type: 'inbound', date: addFlightTravelCommand.inboundDate });
+        inboundRoutes = this.computeRouteWithoutConnection({ fromAirport: toAirport, toAirport: fromAirport, type: 'inbound', date: editFlightTravelCommand.inboundDate });
       }
       routes = routes.concat(inboundRoutes);
     }
 
-    return await this.flightTravelRepository.add({
-      user: addFlightTravelCommand.user,
+    return await this.flightTravelRepository.edit({
+      id: editFlightTravelCommand.id,
+      user: editFlightTravelCommand.user,
       routes
     })
   }
