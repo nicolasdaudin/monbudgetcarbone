@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AddFlightTravelCommand, AddFlightTravelUseCase } from './application/usecases/add-flight-travel.usecase';
 import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-travels.usecase';
 
-@Controller('flight-travel')
+@Controller('api/flight-travels')
 export class FlightTravelController {
   constructor(
     private readonly addFlightTravelUseCase: AddFlightTravelUseCase,

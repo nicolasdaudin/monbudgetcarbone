@@ -71,7 +71,7 @@ describe('AppController (e2e)', () => {
       .expect('Bienvenue sur Mon Budget Carbone');
   });
 
-  test('GET /flight-travel?user', async () => {
+  test('GET /api/flight-travels?user', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
     await flightTravelRepository.add(
@@ -91,7 +91,7 @@ describe('AppController (e2e)', () => {
 
     expect.assertions(1);
     await request(app.getHttpServer())
-      .get('/flight-travel?user=Nicolas').expect(200).then(response => {
+      .get('/api/flight-travels?user=Nicolas').expect(200).then(response => {
         expect(response.body).toEqual([
           {
             id: 1,
@@ -104,9 +104,9 @@ describe('AppController (e2e)', () => {
       })
   })
 
-  test('POST /flight-travel', async () => {
+  test('POST /api/flight-travels', async () => {
     await request(app.getHttpServer())
-      .post('/flight-travel')
+      .post('/api/flight-travels')
       .send({
         fromIataCode: 'MAD',
         toIataCode: 'BRU',
