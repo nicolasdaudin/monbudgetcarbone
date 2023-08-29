@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common'
 export class PrismaFlightTravelRepository implements FlightTravelRepository {
   constructor(private readonly prismaClient: PrismaClient) { }
 
+
   async add(travel: FlightTravelWithoutId): Promise<void> {
     await this.prismaClient.flightTravel.create({
       data: {
@@ -14,6 +15,36 @@ export class PrismaFlightTravelRepository implements FlightTravelRepository {
         routes: {
           create: travel.routes
         }
+      }
+    })
+  }
+
+  async edit(travel: FlightTravel): Promise<void> {
+    await this.prismaClient.flightTravel.update({
+      where: {
+        id: travel.id
+      },
+      data: {
+        user: travel.user,
+        routes: {
+          deleteMany: {},
+          create: travel.routes
+        }
+        // posts: {
+        //   upsert: [
+        //     {
+        //       create: { title: 'This is my first post' },
+        //       update: { title: 'This is my first post' },
+        //       where: { id: 32 },
+        //     },
+        //     {
+        //       create: { title: 'This is mt second post' },
+        //       update: { title: 'This is mt second post' },
+        //       where: { id: 23 },
+        //     },
+        //   ],
+        // },
+
       }
     })
   }

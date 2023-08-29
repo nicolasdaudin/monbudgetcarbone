@@ -61,8 +61,6 @@ describe('PrismaFlightTravelRepository', () => {
       include: { routes: true }
     })
 
-    console.log({ actualFlightTravel });
-    console.log('routes', actualFlightTravel.routes)
     expect(actualFlightTravel).toMatchObject(expect.objectContaining(
       {
         user: 'Nicolas',
@@ -77,7 +75,7 @@ describe('PrismaFlightTravelRepository', () => {
     ));
   })
 
-  test('add() adds a return flight travel with connections in database', async () => {
+  test('add() adds in database a return flight travel with connections ', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
     const outboundRouteBeforeConnection = routeBuilder()
@@ -127,8 +125,6 @@ describe('PrismaFlightTravelRepository', () => {
       include: { routes: true }
     })
 
-    console.log({ actualFlightTravel });
-    console.log('routes', actualFlightTravel.routes)
     expect(actualFlightTravel).toMatchObject(expect.objectContaining(
       {
         user: 'Nicolas',
@@ -156,6 +152,199 @@ describe('PrismaFlightTravelRepository', () => {
             to: 'MAD',
             date: new Date('2023-06-04'),
             kgCO2eq: 1213.134
+          }),
+        ]
+      }
+    ));
+  })
+
+  test('edit() edits a single way flight travel in database', async () => {
+
+    const id = 4241;
+
+    await prismaClient.flightTravel.create({
+      data: {
+        id,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'BRU',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 120,
+            type: 'outbound',
+            distance: 1000
+          }]
+        }
+      }
+    })
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+    await flightTravelRepository.edit(
+      flightTravelBuilder()
+        .withId(id)
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('DUB')
+            .travelledOn(new Date('2023-05-18'))
+            .withCarbonFootprint(100)
+            .build()
+        ]).build()
+    )
+
+    const actualFlightTravel = await prismaClient.flightTravel.findUnique({
+      where: { id },
+      include: { routes: true }
+    })
+
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining(
+      {
+        user: 'Nicolas',
+        routes: [
+          expect.objectContaining({
+            from: 'MAD',
+            to: 'DUB',
+            date: new Date('2023-05-18'),
+            kgCO2eq: 100
+          })]
+      }
+    ));
+  });
+
+  test('edit() edits in database a return flight travel with connections ', async () => {
+
+    const id = 32451;
+
+    await prismaClient.flightTravel.create({
+      data: {
+        id,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'AMS',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 260,
+            type: 'outbound',
+            distance: 1461
+          }, {
+            from: 'AMS',
+            to: 'UIO',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 1442,
+            type: 'outbound',
+            distance: 9551
+          },
+          {
+            from: 'UIO',
+            to: 'BOG',
+            date: new Date('2023-06-04'),
+            kgCO2eq: 700,
+            type: 'inbound',
+            distance: 160
+          },
+          {
+            from: 'BOG',
+            to: 'MAD',
+            date: new Date('2023-06-04'),
+            kgCO2eq: 1200,
+            type: 'inbound',
+            distance: 8000
+          }
+
+          ]
+        }
+      }
+    })
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+
+
+    const outboundRouteBeforeConnection = routeBuilder()
+      .from('UIO')
+      .to('AMS')
+      .travelledOn(new Date('2023-05-18'))
+      .withDistance(9551)
+      .withCarbonFootprint(1442.201)
+      .withType('outbound')
+      .withOrder(1)
+      .build();
+    const outboundRouteAfterConnection = routeBuilder()
+      .from('AMS')
+      .to('MAD')
+      .travelledOn(new Date('2023-05-18'))
+      .withDistance(1461)
+      .withCarbonFootprint(260.058)
+      .withType('outbound')
+      .withOrder(2)
+      .build();
+    const inboundRouteBeforeConnection = routeBuilder()
+      .from('MAD')
+      .to('BOG')
+      .travelledOn(new Date('2023-06-14'))
+      .withDistance(8000)
+      .withCarbonFootprint(1200)
+      .withType('inbound')
+      .withOrder(1)
+      .build();
+    const inboundRouteAfterConnection = routeBuilder()
+      .from('BOG')
+      .to('UIO')
+      .travelledOn(new Date('2023-06-14'))
+      .withDistance(710)
+      .withCarbonFootprint(163)
+      .withType('inbound')
+      .withOrder(2)
+      .build();
+
+    await flightTravelRepository.edit(
+      flightTravelBuilder()
+        .withId(id)
+        .withUser('Nicolas')
+        .withRoutes([
+          outboundRouteBeforeConnection, outboundRouteAfterConnection, inboundRouteBeforeConnection, inboundRouteAfterConnection]).build()
+    )
+
+
+    const actualFlightTravel = await prismaClient.flightTravel.findFirst({
+      where: { user: 'Nicolas' },
+      include: { routes: true }
+    })
+
+    console.log({ actualFlightTravel });
+    console.log('routes', actualFlightTravel.routes)
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining(
+      {
+        user: 'Nicolas',
+        routes: [
+          expect.objectContaining({
+            from: 'UIO',
+            to: 'AMS',
+            date: new Date('2023-05-18'),
+            kgCO2eq: 1442.201
+          }),
+          expect.objectContaining({
+            from: 'AMS',
+            to: 'MAD',
+            date: new Date('2023-05-18'),
+            kgCO2eq: 260.058
+          }),
+          expect.objectContaining({
+            from: 'MAD',
+            to: 'BOG',
+            date: new Date('2023-06-14'),
+            kgCO2eq: 1200
+          }),
+          expect.objectContaining({
+            from: 'BOG',
+            to: 'UIO',
+            date: new Date('2023-06-14'),
+            kgCO2eq: 163
           }),
         ]
       }
