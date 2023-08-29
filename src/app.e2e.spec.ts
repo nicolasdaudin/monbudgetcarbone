@@ -8,6 +8,7 @@ import { flightTravelBuilder, routeBuilder } from './tests/flight-travel.builder
 import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repository';
 import { PrismaClient } from '@prisma/client'
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql'
+import { DEFAULT_ID } from './infra/flight-travel.inmemory.repository';
 
 const asyncExec = promisify(exec);
 
@@ -122,9 +123,58 @@ describe('AppController (e2e)', () => {
 
     const actualFlightTravel = actualFlightTravels[0];
 
-    expect(actualFlightTravel.user).toEqual('Nicolas');
-    expect(actualFlightTravel.routes[0].from).toEqual('MAD');
-    expect(actualFlightTravel.routes[0].to).toEqual('BRU');
-    expect(actualFlightTravel.routes[0].date).toEqual(new Date('2023-05-11'));
+
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining({
+      user: 'Nicolas',
+      routes: [expect.objectContaining({
+        from: 'MAD',
+        to: 'BRU',
+        date: new Date('2023-05-11')
+      })]
+    }))
+  })
+
+  test('POST /api/flight-travels/:id', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Nicolas')
+        .withRoutes([routeBuilder()
+          .from('MAD')
+          .to('DUB')
+          .travelledOn(new Date('2023-05-10'))
+          .build()
+        ])
+        .build()
+    )
+
+    const addedFlightTravelId = (await flightTravelRepository.getAllOfUser('Nicolas'))[0].id;
+
+    await request(app.getHttpServer())
+      .post(`/api/flight-travels/${addedFlightTravelId}`)
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        outboundDate: '2023-05-11',
+        user: 'Nicolas'
+      })
+      .expect(201)
+
+
+    const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
+
+
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining({
+      id: addedFlightTravelId,
+      user: 'Nicolas',
+      routes: [expect.objectContaining({
+        from: 'MAD',
+        to: 'BRU',
+        date: new Date('2023-05-11')
+      })]
+    }))
+
   })
 });

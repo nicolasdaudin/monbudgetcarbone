@@ -11,6 +11,7 @@ import { FlightTravelController } from './flight-travel.controller';
 import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-travels.usecase';
 import { PrismaClient } from '@prisma/client'
 import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repository';
+import { EditFlightTravelUseCase } from './application/usecases/edit-flight-travel.usecase';
 
 
 @Module({
@@ -19,6 +20,7 @@ import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repos
   providers: [
     AddFlightTravelUseCase,
     ViewFlightTravelsUseCase,
+    EditFlightTravelUseCase,
     PrismaClient,
     {
       provide: AirportRepository,
