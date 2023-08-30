@@ -30,23 +30,23 @@ export class PrismaFlightTravelRepository implements FlightTravelRepository {
           deleteMany: {},
           create: travel.routes
         }
-        // posts: {
-        //   upsert: [
-        //     {
-        //       create: { title: 'This is my first post' },
-        //       update: { title: 'This is my first post' },
-        //       where: { id: 32 },
-        //     },
-        //     {
-        //       create: { title: 'This is mt second post' },
-        //       update: { title: 'This is mt second post' },
-        //       where: { id: 23 },
-        //     },
-        //   ],
-        // },
 
       }
     })
+  }
+
+  async deleteById(id: number): Promise<void> {
+    const deleteRoutes = this.prismaClient.route.deleteMany({
+      where: {
+        flightTravelId: id
+      }
+    })
+    const deleteFlightTravel = this.prismaClient.flightTravel.delete({
+      where: { id },
+    });
+
+    const transaction = await this.prismaClient.$transaction([deleteRoutes, deleteFlightTravel]);
+
   }
 
   async getById(id: number): Promise<FlightTravel> {

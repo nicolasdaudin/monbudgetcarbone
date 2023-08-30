@@ -8,6 +8,7 @@ import { DEFAULT_ID, InMemoryFlightTravelRepository } from '../infra/flight-trav
 import e from 'express';
 import { ViewFlightTravelsUseCase } from '../application/usecases/view-flight-travels.usecase';
 import { EditFlightTravelCommand, EditFlightTravelUseCase } from '../application/usecases/edit-flight-travel.usecase';
+import { DeleteFlightTravelUseCase } from '../application/usecases/delete-flight-travel.usecase';
 
 export const createTravelFixture = () => {
   const airportRepository = new InMemoryAirportRepository();
@@ -18,6 +19,7 @@ export const createTravelFixture = () => {
   const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
   const viewFlightTravelsUseCase = new ViewFlightTravelsUseCase(flightTravelRepository);
   const editFlightTravelUseCase = new EditFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
+  const deleteFlightTravelUseCase = new DeleteFlightTravelUseCase(flightTravelRepository);
 
   let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[];
   return {
@@ -44,6 +46,11 @@ export const createTravelFixture = () => {
       await editFlightTravelUseCase.handle(editFlightTravelCommand);
     },
 
+    async whenUserDeletesTravel(idToDelete: number
+    ) {
+      await deleteFlightTravelUseCase.handle(idToDelete);
+    },
+
     async whenUserViewFlightTravelsOf(user: string) {
       actualFlightTravelsList = await viewFlightTravelsUseCase.handle({ user });
 
@@ -53,6 +60,11 @@ export const createTravelFixture = () => {
     thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
       const actualTravel = flightTravelRepository.getFlightTravelById(expectedTravel.id);//?
       expect(actualTravel).toEqual(expectedTravel);
+    },
+
+    thenTravelWithThisIdShouldBeUndefined(id: number) {
+      const travel = flightTravelRepository.getFlightTravelById(id);
+      expect(travel).toBeUndefined();
     },
 
     thenUserShouldSee(expectedFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundConnection?: string, kgCO2eqTotal }[]) {

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpCode, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './app.module';
 import { exec } from 'child_process';
@@ -9,6 +9,8 @@ import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repos
 import { PrismaClient } from '@prisma/client'
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql'
 import { DEFAULT_ID } from './infra/flight-travel.inmemory.repository';
+import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
+import { NotFoundError } from '@prisma/client/runtime/library';
 
 const asyncExec = promisify(exec);
 
@@ -313,4 +315,49 @@ describe('AppController (e2e)', () => {
       ]
     }))
   })
+
+  test('DELETE /api/flight-travels/:id', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('DUB')
+            .travelledOn(new Date('2023-05-10'))
+            .withType('outbound')
+            .build()])
+        .build());
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Arnaud')
+        .withRoutes([
+          routeBuilder()
+            .from('BOD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-15'))
+            .withType('outbound')
+            .build()])
+        .build());
+
+
+    const idToDelete = (await flightTravelRepository.getAllOfUser('Arnaud'))[0].id;
+
+    await request(app.getHttpServer())
+      .delete(`/api/flight-travels/${idToDelete}`)
+      .send()
+      .expect(204)
+
+
+    expect.assertions(1);
+    try {
+      await flightTravelRepository.getById(idToDelete);
+    } catch (err) {
+      expect(err.name).toMatch(/NotFoundError/)
+    }
+
+  });
 });

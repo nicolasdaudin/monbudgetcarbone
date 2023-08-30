@@ -489,7 +489,70 @@ describe('PrismaFlightTravelRepository', () => {
         .build()
       ]
     )
+  })
 
+  test('delete() deletes a travel from the list of travels of a given user', async () => {
+    await prismaClient.flightTravel.create({
+      data: {
+        id: 1,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'BRU',
+            date: new Date('2023-05-17'),
+            kgCO2eq: 120,
+            type: 'outbound',
+            distance: 1000
+          }]
+        }
+      }
+    })
+
+    await prismaClient.flightTravel.create({
+      data: {
+        id: 2,
+        user: 'Nicolas',
+        routes: {
+          create: [{
+            from: 'MAD',
+            to: 'TLS',
+            date: new Date('2023-12-23'),
+            kgCO2eq: 90,
+            type: 'outbound',
+            distance: 600
+          }]
+        }
+      }
+    })
+    await prismaClient.flightTravel.create({
+      data: {
+        id: 3,
+        user: 'Arnaud',
+        routes: {
+          create: [{
+            from: 'BOD',
+            to: 'DUB',
+            date: new Date('2022-12-09'),
+            kgCO2eq: 130,
+            type: 'outbound',
+            distance: 1100
+          }]
+        }
+      }
+    })
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    const ID_TO_BE_DELETED = 3;
+    await flightTravelRepository.deleteById(ID_TO_BE_DELETED);
+
+    const flightTravelThatShouldBeDeleted = await prismaClient.flightTravel.findUnique({ where: { id: ID_TO_BE_DELETED } })
+    expect(flightTravelThatShouldBeDeleted).toBeNull();
+
+    const nbOfRemainingTravels = await prismaClient.flightTravel.count();
+    expect(nbOfRemainingTravels).toBe(2);
 
   })
 })

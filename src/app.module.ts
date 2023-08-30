@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AddFlightTravelUseCase } from './application/usecases/add-flight-travel.usecase';
 import { AirportRepository } from './application/airport.repository';
 import { FlightTravelRepository } from './application/flight-travel.repository';
-import { InMemoryFlightTravelRepository } from './infra/flight-travel.inmemory.repository';
 import { DistanceCalculator } from './application/distance-calculator';
 import { RealDistanceCalculator } from './infra/real-distance-calculator';
 import { FileAirportRepository } from './infra/airport.file.repository';
@@ -12,6 +11,7 @@ import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-tra
 import { PrismaClient } from '@prisma/client'
 import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repository';
 import { EditFlightTravelUseCase } from './application/usecases/edit-flight-travel.usecase';
+import { DeleteFlightTravelUseCase } from './application/usecases/delete-flight-travel.usecase';
 
 
 @Module({
@@ -21,6 +21,7 @@ import { EditFlightTravelUseCase } from './application/usecases/edit-flight-trav
     AddFlightTravelUseCase,
     ViewFlightTravelsUseCase,
     EditFlightTravelUseCase,
+    DeleteFlightTravelUseCase,
     PrismaClient,
     {
       provide: AirportRepository,
