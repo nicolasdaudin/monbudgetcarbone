@@ -231,7 +231,7 @@ describe('AppController (e2e)', () => {
 
   })
 
-  test.only('POST /api/flight-travels/:id (complex flight with return and connections)', async () => {
+  test('POST /api/flight-travels/:id (complex flight with return and connections)', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 

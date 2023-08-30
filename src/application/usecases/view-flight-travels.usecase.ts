@@ -5,12 +5,13 @@ import { Injectable } from "@nestjs/common";
 export class ViewFlightTravelsUseCase {
   constructor(private readonly flightTravelRepository: FlightTravelRepository) { }
 
-  async handle({ user }: { user: string }): Promise<{ id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[]> {
+  async handle({ user }: { user: string }): Promise<{ id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal: number }[]> {
     const flightTravels = await this.flightTravelRepository.getAllOfUser(user);
 
     const actualFlightTravelsList = flightTravels.map(t => {
 
-      const kgCO2eqTotal = t.routes.reduce((accKgCO2, route) => accKgCO2 + route.kgCO2eq, 0);
+      const rawKgCO2eqTotal = t.routes.reduce((accKgCO2, route) => accKgCO2 + route.kgCO2eq, 0)
+      const kgCO2eqTotal = +(rawKgCO2eqTotal.toFixed(3));
 
       if (t.routes.length === 1)
         return {
