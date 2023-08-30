@@ -15,12 +15,18 @@ export class FlightTravelController {
     fromIataCode: string,
     toIataCode: string,
     outboundDate: string,
+    inboundDate?: string,
+    outboundConnection?: string,
+    inboundConnection?: string,
     user: string
   }) {
     const addFlightTravelCommand: AddFlightTravelCommand = {
       fromIataCode: body.fromIataCode,
       toIataCode: body.toIataCode,
       outboundDate: new Date(body.outboundDate),
+      ... (body.inboundDate ? { inboundDate: new Date(body.inboundDate) } : {}),
+      ... (body.outboundConnection ? { outboundConnection: body.outboundConnection } : {}),
+      ... (body.inboundConnection ? { inboundConnection: body.inboundConnection } : {}),
       user: body.user
     }
     await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
@@ -32,6 +38,9 @@ export class FlightTravelController {
     fromIataCode: string,
     toIataCode: string,
     outboundDate: string,
+    inboundDate?: string,
+    outboundConnection?: string,
+    inboundConnection?: string,
     user: string
   }) {
 
@@ -40,6 +49,9 @@ export class FlightTravelController {
       fromIataCode: body.fromIataCode,
       toIataCode: body.toIataCode,
       outboundDate: new Date(body.outboundDate),
+      ... (body.inboundDate ? { inboundDate: new Date(body.inboundDate) } : {}),
+      ... (body.outboundConnection ? { outboundConnection: body.outboundConnection } : {}),
+      ... (body.inboundConnection ? { inboundConnection: body.inboundConnection } : {}),
       user: body.user
     }
     await this.editFlightTravelUseCase.handle(editFlightTravelCommand);

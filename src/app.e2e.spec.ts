@@ -105,7 +105,7 @@ describe('AppController (e2e)', () => {
       })
   })
 
-  test('POST /api/flight-travels', async () => {
+  test('POST /api/flight-travels (basic single flight)', async () => {
     await request(app.getHttpServer())
       .post('/api/flight-travels')
       .send({
@@ -134,7 +134,60 @@ describe('AppController (e2e)', () => {
     }))
   })
 
-  test('POST /api/flight-travels/:id', async () => {
+  test('POST /api/flight-travels (complex flight with return and connections)', async () => {
+    await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'UIO',
+        outboundDate: '2023-05-11',
+        inboundDate: '2023-06-01',
+        outboundConnection: 'AMS',
+        inboundConnection: 'BOG',
+        user: 'Nicolas'
+      })
+      .expect(201)
+
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+    const actualFlightTravels = await flightTravelRepository.getAllOfUser('Nicolas')
+
+    const actualFlightTravel = actualFlightTravels[0];
+
+
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining({
+      user: 'Nicolas',
+      routes: [
+        expect.objectContaining({
+          from: 'MAD',
+          to: 'AMS',
+          date: new Date('2023-05-11'),
+          type: 'outbound',
+        }),
+        expect.objectContaining({
+          from: 'AMS',
+          to: 'UIO',
+          date: new Date('2023-05-11'),
+          type: 'outbound',
+        }),
+        expect.objectContaining({
+          from: 'UIO',
+          to: 'BOG',
+          date: new Date('2023-06-01'),
+          type: 'inbound',
+        }),
+        expect.objectContaining({
+          from: 'BOG',
+          to: 'MAD',
+          date: new Date('2023-06-01'),
+          type: 'inbound',
+        })
+      ]
+    }))
+  })
+
+  test('POST /api/flight-travels/:id (basic single flight)', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -176,5 +229,88 @@ describe('AppController (e2e)', () => {
       })]
     }))
 
+  })
+
+  test.only('POST /api/flight-travels/:id (complex flight with return and connections)', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('DUB')
+            .travelledOn(new Date('2023-05-10'))
+            .withType('outbound')
+            .build(),
+          routeBuilder()
+            .from('DUB')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-20'))
+            .withType('inbound')
+            .withOrder(1)
+            .build(),
+          routeBuilder()
+            .from('BRU')
+            .to('MAD')
+            .travelledOn(new Date('2023-05-20'))
+            .withType('inbound')
+            .withOrder(2)
+            .build(),
+        ])
+        .build()
+    )
+
+    const addedFlightTravelId = (await flightTravelRepository.getAllOfUser('Nicolas'))[0].id;
+
+    await request(app.getHttpServer())
+      .post(`/api/flight-travels/${addedFlightTravelId}`)
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'DUB',
+        outboundDate: '2023-05-11',
+        inboundDate: '2023-05-21',
+        outboundConnection: 'BRU',
+        inboundConnection: 'AMS',
+        user: 'Nicolas'
+      })
+      .expect(201)
+
+
+    const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
+
+
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining({
+      id: addedFlightTravelId,
+      user: 'Nicolas',
+      routes: [
+        expect.objectContaining({
+          from: 'MAD',
+          to: 'BRU',
+          date: new Date('2023-05-11'),
+          type: 'outbound',
+        }),
+        expect.objectContaining({
+          from: 'BRU',
+          to: 'DUB',
+          date: new Date('2023-05-11'),
+          type: 'outbound',
+        }),
+        expect.objectContaining({
+          from: 'DUB',
+          to: 'AMS',
+          date: new Date('2023-05-21'),
+          type: 'inbound',
+        }),
+        expect.objectContaining({
+          from: 'AMS',
+          to: 'MAD',
+          date: new Date('2023-05-21'),
+          type: 'inbound',
+        })
+      ]
+    }))
   })
 });
