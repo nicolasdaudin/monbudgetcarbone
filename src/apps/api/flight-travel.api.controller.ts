@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
-import { AddFlightTravelCommand, AddFlightTravelUseCase } from './application/usecases/add-flight-travel.usecase';
-import { ViewFlightTravelsUseCase } from './application/usecases/view-flight-travels.usecase';
-import { EditFlightTravelCommand, EditFlightTravelUseCase } from './application/usecases/edit-flight-travel.usecase';
-import { DeleteFlightTravelUseCase } from './application/usecases/delete-flight-travel.usecase';
+import { AddFlightTravelUseCase, AddFlightTravelCommand } from '../../application/usecases/add-flight-travel.usecase';
+import { DeleteFlightTravelUseCase } from '../../application/usecases/delete-flight-travel.usecase';
+import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../application/usecases/edit-flight-travel.usecase';
+import { ViewFlightTravelsUseCase } from '../../application/usecases/view-flight-travels.usecase';
+
 
 @Controller('api/flight-travels')
-export class FlightTravelController {
+export class FlightTravelApiController {
   constructor(
     private readonly addFlightTravelUseCase: AddFlightTravelUseCase,
     private readonly viewFlightTravelsUseCase: ViewFlightTravelsUseCase,

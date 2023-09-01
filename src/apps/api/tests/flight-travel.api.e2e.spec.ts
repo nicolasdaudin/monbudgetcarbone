@@ -1,22 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpCode, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './app.module';
+import { AppModule } from '../../app.module';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { flightTravelBuilder, routeBuilder } from './tests/flight-travel.builder';
-import { PrismaFlightTravelRepository } from './infra/flight-travel.prisma.repository';
-import { PrismaClient } from '@prisma/client'
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql'
-import { DEFAULT_ID } from './infra/flight-travel.inmemory.repository';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { NotFoundError } from '@prisma/client/runtime/library';
+import { PrismaClient } from '@prisma/client';
+import { StartedPostgreSqlContainer, PostgreSqlContainer } from '@testcontainers/postgresql';
+import { PrismaFlightTravelRepository } from '../../../infra/flight-travel.prisma.repository';
+import { flightTravelBuilder, routeBuilder } from '../../../tests/flight-travel.builder';
+
 
 const asyncExec = promisify(exec);
 
 jest.setTimeout(10000);
 
-describe('AppController (e2e)', () => {
+describe('FlightTravelApiController (e2e)', () => {
   let app: INestApplication;
 
 
@@ -67,7 +65,7 @@ describe('AppController (e2e)', () => {
 
   });
 
-  test('GET /', () => {
+  test.only('GET /', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
