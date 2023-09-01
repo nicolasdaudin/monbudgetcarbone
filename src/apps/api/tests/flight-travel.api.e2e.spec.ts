@@ -8,6 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { StartedPostgreSqlContainer, PostgreSqlContainer } from '@testcontainers/postgresql';
 import { PrismaFlightTravelRepository } from '../../../infra/flight-travel.prisma.repository';
 import { flightTravelBuilder, routeBuilder } from '../../../tests/flight-travel.builder';
+import { ApiModule } from '../api.module';
 
 
 const asyncExec = promisify(exec);
@@ -65,7 +66,7 @@ describe('FlightTravelApiController (e2e)', () => {
 
   });
 
-  test.only('GET /', () => {
+  test('GET /', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
