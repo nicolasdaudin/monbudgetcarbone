@@ -10,7 +10,7 @@ import { PrismaFlightTravelRepository } from "../../infra/flight-travel.prisma.r
 import { RealDistanceCalculator } from "../../infra/real-distance-calculator";
 import { FlightTravelApiController } from "./flight-travel.api.controller";
 import { RootApiController } from "./root.api.controller";
-import { AirportModule } from "../airport.module";
+import { AirportModule } from "../common/airport.module";
 import { PrismaClient } from "@prisma/client";
 
 @Module({

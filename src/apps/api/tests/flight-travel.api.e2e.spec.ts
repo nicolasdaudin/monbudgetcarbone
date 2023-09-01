@@ -66,9 +66,9 @@ describe('FlightTravelApiController (e2e)', () => {
 
   });
 
-  test('GET /', () => {
+  test('API should be available and return something when hitting its entry point', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/api')
       .expect(200)
       .expect('Bienvenue sur Mon Budget Carbone');
   });

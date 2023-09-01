@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { AirportRepository } from "../application/airport.repository";
-import { FileAirportRepository } from "../infra/airport.file.repository";
+import { AirportRepository } from "../../application/airport.repository";
+import { FileAirportRepository } from "../../infra/airport.file.repository";
 
 @Module({
   providers: [
@@ -9,6 +9,6 @@ import { FileAirportRepository } from "../infra/airport.file.repository";
       useClass: FileAirportRepository
     }
   ],
-  exports: [AirportRepository]
+  exports: [AirportRepository],
 })
 export class AirportModule { }
