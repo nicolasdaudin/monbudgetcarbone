@@ -4,11 +4,13 @@
   "entryFile": "apps/main",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true,
     "assets": [
+      "**/*.hbs",
       {
         "include": "infra/datasets/airport-codes.json"
       }
-    ]
+    ],
+    "watchAssets": true,
+    "deleteOutDir": true
   }
 }

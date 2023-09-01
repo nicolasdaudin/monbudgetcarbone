@@ -5,8 +5,8 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class PrismaFlightTravelRepository implements FlightTravelRepository {
-  constructor(private readonly prismaClient: PrismaClient) { }
 
+  constructor(private readonly prismaClient: PrismaClient) { }
 
   async add(travel: FlightTravelWithoutId): Promise<void> {
     await this.prismaClient.flightTravel.create({
