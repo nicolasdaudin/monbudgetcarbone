@@ -50,11 +50,19 @@ export default defineConfig({
                   {
                     type: 'outbound',
                     from: 'MAD',
-                    to: 'TLS',
+                    to: 'AMS',
                     date: new Date('2023-09-01'),
                     distance: 678,
                     kgCO2eq: 123
-                  }
+                  },
+                  {
+                    type: 'outbound',
+                    from: 'AMS',
+                    to: 'UIO',
+                    date: new Date('2023-09-01'),
+                    distance: 8000,
+                    kgCO2eq: 1054
+                  },
                 ]
               }
             }

@@ -18,13 +18,8 @@ export class RootWebController {
   @Get('/:user')
   @Render('flight-travels')
   async rootPerUser(@Param('user') user: string) {
-
-    const flightTravels = await this.viewFlightTravelsUseCase.handle({ user })
-
     return {
-      message: `Cher ${user}, bienvenue sur la web app de Mon Budget Carbone`,
-      flightTravels,
-      kgCO2total: flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0)
+      user
     };
   }
 }

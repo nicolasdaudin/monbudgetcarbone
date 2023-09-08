@@ -64,6 +64,8 @@ export class FlightTravelApiController {
   @Get()
   async getFlightTravels(@Query('user') user: string) {
     const flightTravels = await this.viewFlightTravelsUseCase.handle({ user });
+    console.log('getting flight travels for user', user);
+    console.log({ flightTravels });
     return flightTravels;
   }
 
