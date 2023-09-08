@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {    
+    "sourceMap": false,  // <-- workaround otherwise Cypress do not compile ('TS5053: Option 'sourceMap' cannot be specified with option 'inlineSourceMap'.)
+    
+    // be explicit about types included
+    // to avoid clashing with Jest types
+    "types": ["cypress"]
+
+  },
+  "include": [
+    "../node_modules/cypress",
+    "./**/*.ts"
+  ]
+}

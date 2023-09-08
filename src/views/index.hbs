@@ -5,33 +5,8 @@
     <title>App</title>
   </head>
   <body>
-    <h1>Voici tous les voyages enregistrés</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Origine</th>
-          <th>Destination</th>
-          <th>Aller</th>
-          <th>Retour (facultatif)</th>
-          <th>Escales</th>
-          <th>Empreinte carbone</th>
-        </tr>
-      </thead>
-      <tbody>
-      {{#each flightTravels}}
-        <tr>
-          <td>{{ from }}</td>
-          <td>{{ to }}</td>
-          <td>{{ outboundDate }}</td>
-          <td>{{ inboundDate }}</td>
-          <td>{{ outboundConnection}},{{inboundConnection}}</td>
-          <td>{{kgCO2eqTotal}}</td>
-        </tr>
-        
-      {{/each}}
-      </tbody>
-    </table>
-    <h3>Total kgCO2: {{ kgCO2total }}</h5>
+    <h1 data-testid="welcome-message">{{ message }}</h1>
+    
     <img src="assets/img/pulpito_128.png">
   </body>
   <footer>
