@@ -23,6 +23,7 @@ export class FlightTravelApiController {
     inboundConnection?: string,
     user: string
   }) {
+    console.log({ body });
     const addFlightTravelCommand: AddFlightTravelCommand = {
       fromIataCode: body.fromIataCode,
       toIataCode: body.toIataCode,
@@ -64,8 +65,8 @@ export class FlightTravelApiController {
   @Get()
   async getFlightTravels(@Query('user') user: string) {
     const flightTravels = await this.viewFlightTravelsUseCase.handle({ user });
-    console.log('getting flight travels for user', user);
-    console.log({ flightTravels });
+    // console.log('getting flight travels for user', user);
+    // console.log({ flightTravels });
     return flightTravels;
   }
 

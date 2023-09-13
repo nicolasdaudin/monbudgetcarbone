@@ -5,10 +5,91 @@
     <title>App</title>
   </head>
   <body>
-    <h1 data-testid="message">Cher {{ user }}, bienvenue sur la web app de Mon Budget Carbone</h1>
-    <span class="span-user" data-user="{{user}}"></span>
-    <div class="flight-travels-container">
-      <h3>Voici tous vos voyages enregistrés</h3>
+    <h1 data-test-id="message">Cher {{ user }}, bienvenue sur la web app de Mon Budget Carbone</h1>
+    <span class="user-span" data-user="{{user}}"></span>
+    <form class="add-travel-form">
+      <label for="fromIataCode">Origine*</label>
+      <select name="fromIataCode" data-test-id="add-travel-form-from-iata-code" required>
+        <option value="">Tu partais d'où?</option>
+        <option value="MAD">Madrid</option>
+        <option value="PRG">Prague</option>
+        <option value="LYS">Lyon</option>
+        <option value="UIO">Quito</option>
+        <option value="AMS">Amsterdam</option>
+        <option value="BOG">Bogota</option>
+        <option value="JFK">New York</option>
+        <option value="BRU">Bruxelles</option>
+      </select>
+
+      <label for="toIataCode">Destination*</label>
+      <select name="toIataCode" data-test-id="add-travel-form-to-iata-code" required>
+        <option value="">Tu allais où?</option>
+        <option value="MAD">Madrid</option>
+        <option value="PRG">Prague</option>
+        <option value="LYS">Lyon</option>
+        <option value="UIO">Quito</option>
+        <option value="AMS">Amsterdam</option>
+        <option value="BOG">Bogota</option>
+        <option value="JFK">New York</option>
+        <option value="BRU">Bruxelles</option>
+      </select>
+
+      <br/>
+      <label for="outboundDate">Date aller*</label>
+      <input name="outboundDate" type="date" 
+      data-test-id="add-travel-form-outbound-date" required/>
+
+      <label for="outboundConnection">Escale aller</label>
+      <select name="outboundConnection" data-test-id="add-travel-form-outbound-connection" >
+        <option value="">Escale aller</option>
+        <option value="MAD">Madrid</option>
+        <option value="PRG">Prague</option>
+        <option value="LYS">Lyon</option>
+        <option value="UIO">Quito</option>
+        <option value="AMS">Amsterdam</option>
+        <option value="BOG">Bogota</option>
+        <option value="JFK">New York</option>
+        <option value="BRU">Bruxelles</option>
+      </select>
+      <br/>
+      <label for="inboundDate">Date retour</label>
+      <input name="inboundDate" type="date" 
+      data-test-id="add-travel-form-inbound-date"/>
+
+      <label for="inboundConnection">Escale retour</label>      
+      <select name="inboundConnection" data-test-id="add-travel-form-inbound-connection" >
+        <option value="">Escale retour</option>
+        <option value="MAD">Madrid</option>
+        <option value="PRG">Prague</option>
+        <option value="LYS">Lyon</option>
+        <option value="UIO">Quito</option>
+        <option value="AMS">Amsterdam</option>
+        <option value="BOG">Bogota</option>
+        <option value="JFK">New York</option>
+        <option value="BRU">Bruxelles</option>
+      </select>
+
+
+      <button type="submit" class="add-travel-btn" data-test-id="add-travel-btn">Ajouter un voyage</button>
+    </form>
+    
+    <div class="flight-travels-container" style="display: none;">
+      <h3>Voici tous vos voyages enregistrés</h3>      
+      <table class="flight-travels-table" >
+        <thead>
+          <tr>
+            <th>Origine</th>
+            <th>Destination</th>
+            <th>Aller</th>
+            <th>Retour </th>
+            <th>Escale aller</th>
+            <th>Escale retour</th>
+            <th>Empreinte carbone</th>
+          </tr>
+        </thead>
+      </table>
+      <h3>Total kgCO2: <span class="total-kg-co2-span" data-test-id="total-kg-co2-span"></span></h3>
+
     </div>    
     <img src="assets/img/pulpito_128.png">
   </body>

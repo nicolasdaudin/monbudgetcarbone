@@ -1,10 +1,21 @@
 moment.locale('fr');
 console.log('here in flight travels');
-const userSpan = document.querySelector('.span-user');
+const userSpan = document.querySelector('.user-span');
 const user = userSpan.dataset.user;
-const container = document.querySelector('.flight-travels-container');
+const flightTravelsContainer = document.querySelector('.flight-travels-container');
+const flightTravelsTable = document.querySelector('.flight-travels-table');
+const spanKgCO2 = document.querySelector('.total-kg-co2-span');
+const btnAddFlightTravel = document.querySelector('.add-travel-btn');
+const formAddFlightTravel = document.querySelector('.add-travel-form')
 
 const DATA_TEST_ATTRIBUTE_KEY = "data-test-id";
+
+
+formAddFlightTravel.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  addFlightTravel();
+})
+
 
 
 const appendCellToRow = (row, text, testAttributeValue) => {
@@ -23,6 +34,40 @@ const appendDateCellToRow = (row, date) => {
     appendCellToRow(row, '');
 }
 
+const emptyElement = (element) => {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
+const addFlightTravel = async () => {
+  if (!user) return;
+
+  console.log(`Adding a flight travel for user ${user}`);
+
+  const formData = new FormData(formAddFlightTravel);
+  const bodyParams = Object.fromEntries(formData.entries());
+  const res = await axios.post(`/api/flight-travels`, {
+    ...bodyParams,
+    user: 'test-user-cypress'
+  });
+
+
+  // const res = await axios.post(`/api/flight-travels`, {
+  //   fromIataCode: 'MAD',
+  //   toIataCode: 'TLS',
+  //   outboundDate: new Date('2023-08-30').toISOString(),
+  //   user: 'test-user-cypress'
+  // });
+
+  console.log('response status from axios', res.status);
+
+  if (res.status !== 201 || res.data === undefined)
+    return;
+
+  fetchFlightTravels();
+}
+
 const fetchFlightTravels = async () => {
   console.log(`Fetching flight travels for user ${user}`);
 
@@ -38,22 +83,21 @@ const fetchFlightTravels = async () => {
 
   const flightTravels = res.data;
 
-  if (flightTravels && flightTravels.length === 0) return;
+  if (flightTravels && flightTravels.length === 0) {
+    //TODO: update with css classes instead of changing thru JS
+    flightTravelsContainer.style.display = 'none';
+    return;
+  }
+  //TODO: update with css classes instead of changing thru JS
+  flightTravelsContainer.style.display = 'block';
 
   console.log(flightTravels);
 
-  const table = document.createElement('table');
-  const thead = table.createTHead();
-  const row = thead.insertRow();
-  const headers = ['Origine', 'Destination', 'Aller', 'Retour (facultatif)', 'Escales', 'Empreinte carbone'];
-  headers.forEach(header => {
-    let th = document.createElement("th");
-    let text = document.createTextNode(header);
-    th.appendChild(text);
-    row.appendChild(th);
-  });
+  let tbody = flightTravelsTable.querySelector('tbody');
+  if (!tbody) tbody = flightTravelsTable.createTBody();
+  emptyElement(tbody);
 
-  const tbody = table.createTBody();
+
   flightTravels.forEach(flightTravel => {
     let row = tbody.insertRow();
     row.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'flight-travel');
@@ -67,17 +111,7 @@ const fetchFlightTravels = async () => {
 
   });
 
-  container.appendChild(table);
-
-  const totalKgCO2H3 = document.createElement('h3');
-  const totalKgCO2H3Span = document.createElement('span');
-  totalKgCO2H3Span.innerText = (flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0))
-  totalKgCO2H3Span.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'total-kg-co2');
-
-  totalKgCO2H3.append(`Total kgCO2: `);
-  totalKgCO2H3.appendChild(totalKgCO2H3Span);
-
-  container.appendChild(totalKgCO2H3);
+  spanKgCO2.innerText = (flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0))
 
 }
 fetchFlightTravels();
