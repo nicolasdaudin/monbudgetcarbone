@@ -81,6 +81,21 @@ describe('RootWebController (e2e)', () => {
     cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-inbound-date"]').should('have.text', '24 septembre 2023')
   });
 
+  it.only('deletes a flight travel and updates the list of users travels', () => {
+
+    cy.visit('/test-user-cypress');
+
+    // Deleting the flight
+    cy.get('[data-test-id="row-delete-travel-btn"]').first().click();
+
+    // Checking it doesn't appear anymore in the list
+    cy.get('[data-test-id="flight-travel"]').as('flightTravels');
+    cy.get('@flightTravels').should('have.length', 2);
+    cy.get('@flightTravels').first().as('firstFlightTravel');
+
+    cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'CDG')
+    cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'DUB')
+  })
 
 })
 

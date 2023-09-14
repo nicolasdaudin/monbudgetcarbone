@@ -16,41 +16,25 @@ const DATA_ID = "data-flight-travel-id";
 
 
 flightTravelsTable.addEventListener('click', e => {
-  const clicked = e.target.closest('.row-edit-travel-btn');
+  const editButtonClicked = e.target.closest('.row-edit-travel-btn');
+  const deleteButtonClicked = e.target.closest('.row-delete-travel-btn');
 
-  // if we click outside of any buttons of the tabs, we get undefined for clicked, and we want to return since there is nothing to do
-  if (!clicked) return;
 
-  const parentRowTrElement = clicked.closest('tr');
+  // if we click outside of any of the button, there is nothing to do
+  if (!editButtonClicked && !deleteButtonClicked) return;
+
+  const parentRowTrElement = editButtonClicked ? editButtonClicked.closest('tr') : deleteButtonClicked.closest('tr');
+
   const id = parentRowTrElement.dataset.flightTravelId;
 
-  // prepare edit form
-  const fromIataCodeRow = parentRowTrElement.querySelector('td:nth-child(1)');
-  const fromIataCodeEditForm = formEditFlightTravel.querySelector('select[name=fromIataCode]');
-  fromIataCodeEditForm.value = fromIataCodeRow.innerText;
+  if (editButtonClicked) {
+    prepareEditForm(parentRowTrElement, id);
+  }
 
-  const toIataCodeRow = parentRowTrElement.querySelector('td:nth-child(2)');
-  const toIataCodeEditForm = formEditFlightTravel.querySelector('select[name=toIataCode]');
-  toIataCodeEditForm.value = toIataCodeRow.innerText;
+  if (deleteButtonClicked) {
+    deleteFlightTravel(id);
+  }
 
-  const outboundDateRow = parentRowTrElement.querySelector('td:nth-child(3)');
-  const outboundDateEditForm = formEditFlightTravel.querySelector('input[name=outboundDate]');
-  outboundDateEditForm.value = DateTime.fromFormat(outboundDateRow.innerText, "DDD").toISODate();
-
-  const inboundDateRow = parentRowTrElement.querySelector('td:nth-child(4)');
-  const inboundDateEditForm = formEditFlightTravel.querySelector('input[name=inboundDate]');
-  inboundDateEditForm.value = DateTime.fromFormat(inboundDateRow.innerText, "DDD").toISODate();
-
-  const outboundConnectionRow = parentRowTrElement.querySelector('td:nth-child(5)');
-  const outboundConnectionEditForm = formEditFlightTravel.querySelector('select[name=outboundConnection]');
-  outboundConnectionEditForm.value = outboundConnectionRow.innerText;
-
-
-  const inboundConnectionRow = parentRowTrElement.querySelector('td:nth-child(6)');
-  const inboundConnectionEditForm = formEditFlightTravel.querySelector('select[name=inboundConnection]');
-  inboundConnectionEditForm.value = inboundConnectionRow.innerText;
-
-  formEditFlightTravel.setAttribute('data-flight-travel-id', id);
 
 });
 
@@ -130,6 +114,19 @@ const editFlightTravel = async (id) => {
   fetchFlightTravels();
 }
 
+const deleteFlightTravel = async (id) => {
+  if (!id) return;
+
+  console.log(`Deleting flight travel with id ${id}`);
+
+  const res = await axios.delete(`/api/flight-travels/${id}`);
+
+  if (res.status !== 204 || res.data === undefined)
+    return;
+
+  fetchFlightTravels();
+}
+
 const fetchFlightTravels = async () => {
   console.log(`Fetching flight travels for user ${user}`);
 
@@ -159,26 +156,64 @@ const fetchFlightTravels = async () => {
 
 
   flightTravels.forEach(flightTravel => {
-    let row = tbody.insertRow();
-    row.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'flight-travel');
-    row.setAttribute(DATA_ID, flightTravel.id);
-    appendCellToRowWithText(row, flightTravel.from, 'flight-travel-from');
-    appendCellToRowWithText(row, flightTravel.to, 'flight-travel-to');
-    appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date');
-    appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date');
-    appendCellToRowWithText(row, flightTravel.outboundConnection);
-    appendCellToRowWithText(row, flightTravel.inboundConnection);
-    appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
-
-    const button = document.createElement('button');
-    button.classList.add('row-edit-travel-btn');
-    button.textContent = 'Éditer ce voyage';
-    button.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-edit-travel-btn');
-    appendCellToRowWithElement(row, button);
-
+    addFlightTravelToTable(tbody, flightTravel);
   });
 
   spanKgCO2.innerText = (flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0))
 
 }
 fetchFlightTravels();
+
+function prepareEditForm(parentRowTrElement, id) {
+  const fromIataCodeRow = parentRowTrElement.querySelector('td:nth-child(1)');
+  const fromIataCodeEditForm = formEditFlightTravel.querySelector('select[name=fromIataCode]');
+  fromIataCodeEditForm.value = fromIataCodeRow.innerText;
+
+  const toIataCodeRow = parentRowTrElement.querySelector('td:nth-child(2)');
+  const toIataCodeEditForm = formEditFlightTravel.querySelector('select[name=toIataCode]');
+  toIataCodeEditForm.value = toIataCodeRow.innerText;
+
+  const outboundDateRow = parentRowTrElement.querySelector('td:nth-child(3)');
+  const outboundDateEditForm = formEditFlightTravel.querySelector('input[name=outboundDate]');
+  outboundDateEditForm.value = DateTime.fromFormat(outboundDateRow.innerText, "DDD").toISODate();
+
+  const inboundDateRow = parentRowTrElement.querySelector('td:nth-child(4)');
+  const inboundDateEditForm = formEditFlightTravel.querySelector('input[name=inboundDate]');
+  inboundDateEditForm.value = DateTime.fromFormat(inboundDateRow.innerText, "DDD").toISODate();
+
+  const outboundConnectionRow = parentRowTrElement.querySelector('td:nth-child(5)');
+  const outboundConnectionEditForm = formEditFlightTravel.querySelector('select[name=outboundConnection]');
+  outboundConnectionEditForm.value = outboundConnectionRow.innerText;
+
+
+  const inboundConnectionRow = parentRowTrElement.querySelector('td:nth-child(6)');
+  const inboundConnectionEditForm = formEditFlightTravel.querySelector('select[name=inboundConnection]');
+  inboundConnectionEditForm.value = inboundConnectionRow.innerText;
+
+  formEditFlightTravel.setAttribute('data-flight-travel-id', id);
+}
+
+function addFlightTravelToTable(tbody, flightTravel) {
+  let row = tbody.insertRow();
+  row.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'flight-travel');
+  row.setAttribute(DATA_ID, flightTravel.id);
+  appendCellToRowWithText(row, flightTravel.from, 'flight-travel-from');
+  appendCellToRowWithText(row, flightTravel.to, 'flight-travel-to');
+  appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date');
+  appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date');
+  appendCellToRowWithText(row, flightTravel.outboundConnection);
+  appendCellToRowWithText(row, flightTravel.inboundConnection);
+  appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
+
+  const editButton = document.createElement('button');
+  editButton.classList.add('row-edit-travel-btn');
+  editButton.textContent = 'Éditer ce voyage';
+  editButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-edit-travel-btn');
+  appendCellToRowWithElement(row, editButton);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.classList.add('row-delete-travel-btn');
+  deleteButton.textContent = 'Supprimer ce voyage';
+  deleteButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-delete-travel-btn');
+  appendCellToRowWithElement(row, deleteButton);
+}
