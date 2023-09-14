@@ -29,14 +29,7 @@ describe('RootWebController (e2e)', () => {
 
   })
 
-  it.only('adds a flight travel to the list of users travels', () => {
-    // await axios.post(`http://localhost:3000/api/flight-travels`, {
-    //   fromIataCode: 'MAD',
-    //   toIataCode: 'TLS',
-    //   outboundDate: new Date('2023-08-30').toISOString(),
-    //   user: 'test-user-cypress'
-    // });
-
+  it('adds a flight travel to the list of users travels', () => {
     cy.visit('/test-user-cypress');
     cy.get('[data-test-id="add-travel-form-from-iata-code"]').select('BRU', { force: true });
     cy.get('[data-test-id="add-travel-form-to-iata-code"]').select('UIO');
@@ -55,6 +48,27 @@ describe('RootWebController (e2e)', () => {
 
     cy.get('@lastFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'BRU')
     cy.get('@lastFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'UIO')
+  });
+
+  it('edits a flight travel and updates the list of users travels', () => {
+
+
+    cy.visit('/test-user-cypress');
+
+
+    cy.get('[data-test-id="row-edit-travel-btn"]').first().click();
+
+    cy.get('[data-test-id="edit-travel-form-to-iata-code"]').select("MAD");
+    cy.get('[data-test-id="edit-travel-btn"]').click();
+
+    cy.get('[data-test-id="flight-travel"]').as('flightTravels');
+
+    cy.get('@flightTravels').should('have.length', 2);
+
+    cy.get('@flightTravels').first().as('firstFlightTravel');
+
+    cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'CDG')
+    cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'MAD')
   });
 
 
