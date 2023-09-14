@@ -87,7 +87,7 @@ const addFlightTravel = async () => {
   const bodyParams = Object.fromEntries(formData.entries());
   const res = await axios.post(`/api/flight-travels`, {
     ...bodyParams,
-    user: 'test-user-cypress'
+    user
   });
 
   if (res.status !== 201 || res.data === undefined)
@@ -104,8 +104,7 @@ const editFlightTravel = async (id) => {
   const formData = new FormData(formEditFlightTravel);
   const bodyParams = Object.fromEntries(formData.entries());
   const res = await axios.post(`/api/flight-travels/${id}`, {
-    ...bodyParams,
-    user: 'test-user-cypress'
+    ...bodyParams
   });
 
   if (res.status !== 201 || res.data === undefined)
