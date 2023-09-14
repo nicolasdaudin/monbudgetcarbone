@@ -11,8 +11,8 @@
       <fieldset>
         <legend>Ajouter un voyage</legend>
         
-        <label for="fromIataCode">Origine*</label>
-        <select id="fromIataCode" name="fromIataCode" data-test-id="add-travel-form-from-iata-code" required>
+        <label for="addTravelfromIataCode">Origine*</label>
+        <select id="addTravelfromIataCode" name="fromIataCode" data-test-id="add-travel-form-from-iata-code" required>
           <option value="">Tu partais d'où?</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -26,8 +26,8 @@
           <option value="DUB">Dublin</option>
         </select>
 
-        <label for="toIataCode">Destination*</label>
-        <select id="toIataCode"  name="toIataCode" data-test-id="add-travel-form-to-iata-code" required>
+        <label for="addTraveltoIataCode">Destination*</label>
+        <select id="addTraveltoIataCode"  name="toIataCode" data-test-id="add-travel-form-to-iata-code" required>
           <option value="">Tu allais où?</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -42,12 +42,12 @@
         </select>
 
         <br/>
-        <label for="outboundDate">Date aller*</label>
-        <input id="outboundDate" name="outboundDate" type="date" 
+        <label for="addTraveloutboundDate">Date aller*</label>
+        <input id="addTraveloutboundDate" name="outboundDate" type="date" 
         data-test-id="add-travel-form-outbound-date" required/>
 
-        <label for="outboundConnection">Escale aller</label>
-        <select id="outboundConnection" name="outboundConnection" data-test-id="add-travel-form-outbound-connection" >
+        <label for="addTraveloutboundConnection">Escale aller</label>
+        <select id="addTraveloutboundConnection" name="outboundConnection" data-test-id="add-travel-form-outbound-connection" >
           <option value="">Escale aller</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -61,12 +61,12 @@
           <option value="DUB">Dublin</option>
         </select>
         <br/>
-        <label for="inboundDate">Date retour</label>
-        <input id="inboundDate" name="inboundDate" type="date" 
+        <label for="addTravelinboundDate">Date retour</label>
+        <input id="addTravelinboundDate" name="inboundDate" type="date" 
         data-test-id="add-travel-form-inbound-date"/>
 
-        <label for="inboundConnection">Escale retour</label>      
-        <select id="inboundConnection" name="inboundConnection" data-test-id="add-travel-form-inbound-connection" >
+        <label for="addTravelinboundConnection">Escale retour</label>      
+        <select id="addTravelinboundConnection" name="inboundConnection" data-test-id="add-travel-form-inbound-connection" >
           <option value="">Escale retour</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -88,8 +88,8 @@
     <form class="edit-travel-form" data-flight-travel-id="">
       <fieldset>
         <legend>Éditer un voyage</legend>
-        <label for="fromIataCode">Origine*</label>
-        <select id="fromIataCode" name="fromIataCode" data-test-id="edit-travel-form-from-iata-code" required>
+        <label for="editTravelfromIataCode">Origine*</label>
+        <select id="editTravelfromIataCode" name="fromIataCode" data-test-id="edit-travel-form-from-iata-code" required>
           <option value="">Tu partais d'où?</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -103,8 +103,8 @@
           <option value="DUB">Dublin</option>
         </select>
 
-        <label for="toIataCode">Destination*</label>
-        <select id="toIataCode" name="toIataCode" data-test-id="edit-travel-form-to-iata-code" required>
+        <label for="editTraveltoIataCode">Destination*</label>
+        <select id="editTraveltoIataCode" name="toIataCode" data-test-id="edit-travel-form-to-iata-code" required>
           <option value="">Tu allais où?</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -119,12 +119,12 @@
         </select>
 
         <br/>
-        <label for="outboundDate">Date aller*</label>
-        <input id="outboundDate" name="outboundDate" type="date" 
+        <label for="editTraveloutboundDate">Date aller*</label>
+        <input id="editTraveloutboundDate" name="outboundDate" type="date" 
         data-test-id="edit-travel-form-outbound-date" required />
 
-        <label for="outboundConnection">Escale aller</label>
-        <select id="outboundConnection" name="outboundConnection" data-test-id="edit-travel-form-outbound-connection" >
+        <label for="editTraveloutboundConnection">Escale aller</label>
+        <select id="editTraveloutboundConnection" name="outboundConnection" data-test-id="edit-travel-form-outbound-connection" >
           <option value="">Escale aller</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>
@@ -138,12 +138,12 @@
           <option value="DUB">Dublin</option>
         </select>
         <br/>
-        <label for="inboundDate">Date retour</label>
-        <input id="inboundDate" name="inboundDate" type="date" 
+        <label for="editTravelinboundDate">Date retour</label>
+        <input id="editTravelinboundDate" name="inboundDate" type="date" 
         data-test-id="edit-travel-form-inbound-date"/>
 
-        <label for="inboundConnection">Escale retour</label>      
-        <select id="inboundConnection" name="inboundConnection" data-test-id="edit-travel-form-inbound-connection" >
+        <label for="editTravelinboundConnection">Escale retour</label>      
+        <select id="editTravelinboundConnection" name="inboundConnection" data-test-id="edit-travel-form-inbound-connection" >
           <option value="">Escale retour</option>
           <option value="MAD">Madrid</option>
           <option value="PRG">Prague</option>

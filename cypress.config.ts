@@ -51,6 +51,48 @@ export default defineConfig({
                     type: 'outbound',
                     from: 'MAD',
                     to: 'AMS',
+                    date: new Date('2023-09-10'),
+                    distance: 1500,
+                    kgCO2eq: 257
+                  },
+                  {
+                    type: 'outbound',
+                    from: 'AMS',
+                    to: 'UIO',
+                    date: new Date('2023-09-10'),
+                    distance: 9000,
+                    kgCO2eq: 1054
+                  },
+                  {
+                    type: 'inbound',
+                    from: 'UIO',
+                    to: 'BOG',
+                    date: new Date('2023-09-25'),
+                    distance: 800,
+                    kgCO2eq: 150
+                  },
+                  {
+                    type: 'inbound',
+                    from: 'BOG',
+                    to: 'MAD',
+                    date: new Date('2023-09-25'),
+                    distance: 8000,
+                    kgCO2eq: 998
+                  },
+                ]
+              }
+            }
+          })
+
+          await prismaClient.flightTravel.create({
+            data: {
+              user: TEST_USER_CYPRESS,
+              routes: {
+                create: [
+                  {
+                    type: 'outbound',
+                    from: 'MAD',
+                    to: 'AMS',
                     date: new Date('2023-09-01'),
                     distance: 678,
                     kgCO2eq: 123

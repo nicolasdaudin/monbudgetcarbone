@@ -63,6 +63,7 @@ formEditFlightTravel.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = formEditFlightTravel.dataset.flightTravelId;
   editFlightTravel(id);
+  formEditFlightTravel.reset();
 })
 
 
@@ -81,10 +82,10 @@ const appendCellToRowWithElement = (row, element) => {
   originCell.appendChild(element);
 }
 
-const appendDateCellToRow = (row, date) => {
+const appendDateCellToRow = (row, date, testAttributeValue) => {
   date ?
-    appendCellToRowWithText(row, DateTime.fromISO(date).toLocaleString(DateTime.DATE_FULL)) :
-    appendCellToRowWithText(row, '');
+    appendCellToRowWithText(row, DateTime.fromISO(date).toLocaleString(DateTime.DATE_FULL), testAttributeValue) :
+    appendCellToRowWithText(row, '', testAttributeValue);
 }
 
 const emptyElement = (element) => {
@@ -163,8 +164,8 @@ const fetchFlightTravels = async () => {
     row.setAttribute(DATA_ID, flightTravel.id);
     appendCellToRowWithText(row, flightTravel.from, 'flight-travel-from');
     appendCellToRowWithText(row, flightTravel.to, 'flight-travel-to');
-    appendDateCellToRow(row, flightTravel.outboundDate);
-    appendDateCellToRow(row, flightTravel.inboundDate);
+    appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date');
+    appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date');
     appendCellToRowWithText(row, flightTravel.outboundConnection);
     appendCellToRowWithText(row, flightTravel.inboundConnection);
     appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
