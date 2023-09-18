@@ -21,6 +21,8 @@ export const createTravelFixture = () => {
   const editFlightTravelUseCase = new EditFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
   const deleteFlightTravelUseCase = new DeleteFlightTravelUseCase(flightTravelRepository);
 
+  let thrownError: Error;
+
   let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[];
   return {
 
@@ -43,12 +45,24 @@ export const createTravelFixture = () => {
 
     async whenUserEditsTravel(editFlightTravelCommand: EditFlightTravelCommand
     ) {
-      await editFlightTravelUseCase.handle(editFlightTravelCommand);
+      try {
+        await editFlightTravelUseCase.handle(editFlightTravelCommand);
+      } catch (err) {
+        thrownError = err;
+      }
+    },
+
+    async thenErrorShouldBe(expectedClass: new () => Error) {
+      expect(thrownError).toBeInstanceOf(expectedClass);
     },
 
     async whenUserDeletesTravel(idToDelete: number
     ) {
-      await deleteFlightTravelUseCase.handle(idToDelete);
+      try {
+        await deleteFlightTravelUseCase.handle(idToDelete);
+      } catch (err) {
+        thrownError = err;
+      }
     },
 
     async whenUserViewFlightTravelsOf(user: string) {
@@ -58,7 +72,7 @@ export const createTravelFixture = () => {
     },
 
     thenAddedTravelShouldBe(expectedTravel: FlightTravel) {
-      const actualTravel = flightTravelRepository.getFlightTravelById(expectedTravel.id);//?
+      const actualTravel = flightTravelRepository.getFlightTravelById(expectedTravel.id);
       expect(actualTravel).toEqual(expectedTravel);
     },
 

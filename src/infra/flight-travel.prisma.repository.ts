@@ -49,13 +49,14 @@ export class PrismaFlightTravelRepository implements FlightTravelRepository {
 
   }
 
-  async getById(id: number): Promise<FlightTravel> {
-    const flightTravel = await this.prismaClient.flightTravel.findUniqueOrThrow(
+  async getById(id: number): Promise<FlightTravel | null> {
+    const flightTravel = await this.prismaClient.flightTravel.findUnique(
       {
         where: { id },
         include: { routes: true }
       }
-    )
+    );
+    if (!flightTravel) return null;
 
     return {
       id: flightTravel.id,

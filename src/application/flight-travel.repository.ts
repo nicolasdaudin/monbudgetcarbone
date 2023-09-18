@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common'
 export abstract class FlightTravelRepository {
   abstract add(travel: FlightTravelWithoutId): Promise<void>;
   abstract edit(travel: FlightTravel): Promise<void>;
-  abstract getById(id: number): Promise<FlightTravel>;
+  abstract getById(id: number): Promise<FlightTravel | null>;
   abstract deleteById(id: number): Promise<void>;
   abstract getAllOfUser(user: string): Promise<FlightTravel[]>;
 }

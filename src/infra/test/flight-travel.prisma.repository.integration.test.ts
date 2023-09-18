@@ -351,7 +351,22 @@ describe('PrismaFlightTravelRepository', () => {
     ));
   })
 
-  test('getById() returns the correct Flight Travel', async () => {
+  test('getById() returns null when the flight does not exist', async () => {
+
+    const id = 365;
+
+
+
+
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    const actualFlightTravel = await flightTravelRepository.getById(id);
+
+    expect(actualFlightTravel).toBeNull();
+  })
+
+  test('getById() returns the correct flight travel when it exists', async () => {
 
     const id = 365;
 

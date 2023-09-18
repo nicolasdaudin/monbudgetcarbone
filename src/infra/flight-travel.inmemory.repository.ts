@@ -29,7 +29,7 @@ export class InMemoryFlightTravelRepository implements FlightTravelRepository {
     this.travels.delete(id);
   }
 
-  async getById(id: number): Promise<FlightTravel> {
+  async getById(id: number): Promise<FlightTravel | null> {
     return this.getFlightTravelById(id);
   }
 
@@ -38,7 +38,7 @@ export class InMemoryFlightTravelRepository implements FlightTravelRepository {
 
   }
 
-  getFlightTravelById(id: number): FlightTravel {
+  getFlightTravelById(id: number): FlightTravel | null {
     return this.travels.get(id)!;
   }
 

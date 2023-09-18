@@ -2,12 +2,21 @@ import { airportBuilder } from "./airport.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
+import { FlightTravelNotFound } from "../application/exceptions/flight-travel.exceptions";
 
 describe('Feature: Edit a flight travel and calculate again its corresponding carboon footprint', () => {
   let fixture: FlightTravelFixture;
   beforeEach(() => {
     fixture = createTravelFixture();
   })
+
+  describe('Rule: We can not edit a flight travel that does not exist', () => {
+    test("Nicolas tries to edit a flight travel that does not exist, an error is thrown", async () => {
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
+
+      await fixture.thenErrorShouldBe(FlightTravelNotFound);
+    })
+  });
   describe('Rule: An edited flight travel should have a departure and arrival airport and can be outbound only. A carbon footprint should be recalculated', () => {
 
     test("Nicolas edits an existing outbound flight travel with no connections and carbon footprint is calculated again", async () => {

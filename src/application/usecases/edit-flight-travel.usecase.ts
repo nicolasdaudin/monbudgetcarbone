@@ -4,6 +4,7 @@ import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"
 import { AddFlightTravelCommand } from "./add-flight-travel.usecase";
+import { FlightTravelNotFound } from "../exceptions/flight-travel.exceptions";
 
 export type EditFlightTravelCommand = AddFlightTravelCommand & {
   id: number
@@ -19,6 +20,8 @@ export class EditFlightTravelUseCase {
     private readonly distanceCalculator: DistanceCalculator) { }
 
   async handle(editFlightTravelCommand: EditFlightTravelCommand): Promise<void> {
+    const flightTravelById = await this.flightTravelRepository.getById(editFlightTravelCommand.id);
+    if (!flightTravelById) throw new FlightTravelNotFound();
 
     const fromAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.fromIataCode);
     const toAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.toIataCode);

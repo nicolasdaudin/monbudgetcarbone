@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpCode, INestApplication } from '@nestjs/common';
+import { HttpCode, INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
 import { exec } from 'child_process';
@@ -59,6 +59,10 @@ describe('FlightTravelApiController (e2e)', () => {
 
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({
+      whitelist: true
+    }));
+
     await app.init();
 
     await prismaClient.route.deleteMany();
@@ -106,7 +110,7 @@ describe('FlightTravelApiController (e2e)', () => {
       })
   })
 
-  test('POST /api/flight-travels (basic single flight)', async () => {
+  test('POST /api/flight-travels - creates a basic single flight', async () => {
     await request(app.getHttpServer())
       .post('/api/flight-travels')
       .send({
@@ -135,7 +139,25 @@ describe('FlightTravelApiController (e2e)', () => {
     }))
   })
 
-  test('POST /api/flight-travels (complex flight with return and connections)', async () => {
+  test('POST /api/flight-travels - tries to create a basic single flight and fails when one required param is missing', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        user: 'Nicolas'
+      })
+      .expect(400);
+
+    expect(res.body.message).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('toIataCode'),
+        expect.stringContaining('outboundDate')
+      ])
+    );
+  });
+
+
+  test('POST /api/flight-travels - creates a complex flight with return and connections', async () => {
     await request(app.getHttpServer())
       .post('/api/flight-travels')
       .send({
@@ -188,7 +210,7 @@ describe('FlightTravelApiController (e2e)', () => {
     }))
   })
 
-  test('POST /api/flight-travels/:id (basic single flight)', async () => {
+  test('POST /api/flight-travels/:id - edits a basic single flight', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -232,7 +254,26 @@ describe('FlightTravelApiController (e2e)', () => {
 
   })
 
-  test('POST /api/flight-travels/:id (complex flight with return and connections)', async () => {
+  test('POST /api/flight-travels/:id - tries to edit a basic single flight and fails when the id does not exist', async () => {
+
+    const addedFlightTravelId = 43587878;
+
+    const res = await request(app.getHttpServer())
+      .post(`/api/flight-travels/${addedFlightTravelId}`)
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        outboundDate: '2023-05-11',
+        user: 'Nicolas'
+      })
+      .expect(404)
+
+    expect(res.body.message).toEqual(expect.stringContaining(addedFlightTravelId.toString()));
+  })
+
+
+
+  test('POST /api/flight-travels/:id - edits a complex flight with return and connections', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -315,7 +356,7 @@ describe('FlightTravelApiController (e2e)', () => {
     }))
   })
 
-  test('DELETE /api/flight-travels/:id', async () => {
+  test('DELETE /api/flight-travels/:id - deletes a flight', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -351,12 +392,19 @@ describe('FlightTravelApiController (e2e)', () => {
       .expect(204)
 
 
-    expect.assertions(1);
-    try {
-      await flightTravelRepository.getById(idToDelete);
-    } catch (err) {
-      expect(err.name).toMatch(/NotFoundError/)
-    }
+    const flightTravel = await flightTravelRepository.getById(idToDelete);
+    expect(flightTravel).toBeNull();
 
+  });
+
+  test('DELETE /api/flight-travels/:id - tries to delete a flight that does not exist', async () => {
+    const idToDelete = 533424;
+
+    const res = await request(app.getHttpServer())
+      .delete(`/api/flight-travels/${idToDelete}`)
+      .send()
+      .expect(404)
+
+    expect(res.body.message).toEqual(expect.stringContaining(idToDelete.toString()));
   });
 });
