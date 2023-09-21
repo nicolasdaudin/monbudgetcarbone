@@ -1,4 +1,5 @@
-import { IsDateString, IsNotEmpty, IsOptional } from "class-validator";
+import { IsDateString, IsNotEmpty, IsOptional, ValidateIf } from "class-validator";
+import { PartialType } from '@nestjs/swagger';
 
 export class CreateFlightTravelDto {
   @IsNotEmpty()
@@ -25,6 +26,7 @@ export class CreateFlightTravelDto {
   @IsOptional()
   inboundConnection: string;
 
-
-
 }
+
+// TODO: this depends on nest framework so it should be moved away from domain
+export class UpdateFlightTravelDTO extends PartialType(CreateFlightTravelDto) { }

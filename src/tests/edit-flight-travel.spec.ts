@@ -17,7 +17,7 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
       await fixture.thenErrorShouldBe(FlightTravelNotFound);
     })
   });
-  describe('Rule: An edited flight travel should have a departure and arrival airport and can be outbound only. A carbon footprint should be recalculated', () => {
+  describe('Rule: An edited flight travel can have a departure and arrival airport and can be outbound only. A carbon footprint should be recalculated', () => {
 
     test("Nicolas edits an existing outbound flight travel with no connections and carbon footprint is calculated again", async () => {
 
@@ -146,7 +146,6 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
         outboundDate: new Date('2023-05-17')
       });
 
-
       fixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([editedRouteBuilder
@@ -179,7 +178,6 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
         toIataCode: 'CCC',
         outboundDate: new Date('2023-05-17')
       });
-
 
       fixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
@@ -329,6 +327,75 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
           .withDefaultId()
           .withUser('Nicolas')
           .withRoutes([routeBeforeConnection, routeAfterConnection])
+          .build()
+      )
+    });
+
+    test("Nicolas edits an existing return flight travel with connections and now it's an outbound flight travel with NO connections. Carbon footprint is calculated again", async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+      ]
+      fixture.givenAirportsAre(airports);
+
+
+
+      const routeOutboundBeforeConnection = routeBuilder()
+        .from('MAD')
+        .to('AMS')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(1461)
+        .withCarbonFootprint(260.058)
+        .withType('outbound')
+        .withOrder(1)
+        .build();
+      const routeOutboundAfterConnection = routeBuilder()
+        .from('AMS')
+        .to('UIO')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(9551)
+        .withCarbonFootprint(1442.201)
+        .withType('outbound')
+        .withOrder(2)
+        .build();
+      const routeInboundWithoutConnection = routeBuilder()
+        .from('UIO')
+        .to('MAD')
+        .travelledOn(new Date('2023-05-28'))
+        .withDistance(9100)
+        .withCarbonFootprint(1300)
+        .withType('inbound')
+        .build();
+
+      const routeWithoutConnection = routeBuilder()
+        .from('MAD')
+        .to('UIO')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(8738)
+        .withCarbonFootprint(1319.438)
+        .withType('outbound')
+        .build();
+
+      const existingFlightTravel = flightTravelBuilder()
+        .withDefaultId()
+        .withUser('Nicolas')
+        .withRoutes([routeOutboundBeforeConnection, routeOutboundAfterConnection, routeInboundWithoutConnection])
+        .build();
+
+
+      fixture.givenFollowingFlightTravelsExist([
+        existingFlightTravel
+      ])
+
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
+
+      fixture.thenAddedTravelShouldBe(
+        flightTravelBuilder()
+          .withDefaultId()
+          .withUser('Nicolas')
+          .withRoutes([routeWithoutConnection])
           .build()
       )
     });

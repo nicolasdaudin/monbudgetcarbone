@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { AddFlightTravelUseCase, AddFlightTravelCommand } from '../../application/usecases/add-flight-travel.usecase';
 import { DeleteFlightTravelUseCase } from '../../application/usecases/delete-flight-travel.usecase';
 import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../application/usecases/edit-flight-travel.usecase';
 import { ViewFlightTravelsUseCase } from '../../application/usecases/view-flight-travels.usecase';
-import { CreateFlightTravelDto } from '../../domain/flight-travel.dto';
+import { CreateFlightTravelDto, UpdateFlightTravelDTO } from '../../domain/flight-travel.dto';
 import { FlightTravelNotFound } from '../../application/exceptions/flight-travel.exceptions';
 
 
@@ -30,16 +30,8 @@ export class FlightTravelApiController {
 
   }
 
-  @Post(':id')
-  async editFlightTravel(@Param('id') id: string, @Body() body: {
-    fromIataCode: string,
-    toIataCode: string,
-    outboundDate: string,
-    inboundDate?: string,
-    outboundConnection?: string,
-    inboundConnection?: string,
-    user: string
-  }) {
+  @Put(':id')
+  async editFlightTravel(@Param('id') id: string, @Body() body: UpdateFlightTravelDTO) {
 
     const editFlightTravelCommand: EditFlightTravelCommand = {
       id: +id,

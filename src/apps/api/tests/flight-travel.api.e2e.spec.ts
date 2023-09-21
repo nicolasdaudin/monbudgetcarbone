@@ -210,7 +210,7 @@ describe('FlightTravelApiController (e2e)', () => {
     }))
   })
 
-  test('POST /api/flight-travels/:id - edits a basic single flight', async () => {
+  test('PUT /api/flight-travels/:id - edits a basic single flight', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -226,17 +226,19 @@ describe('FlightTravelApiController (e2e)', () => {
         .build()
     )
 
-    const addedFlightTravelId = (await flightTravelRepository.getAllOfUser('Nicolas'))[0].id;
+    const addedFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
+    const addedFlightTravelId = addedFlightTravel.id;
+
 
     await request(app.getHttpServer())
-      .post(`/api/flight-travels/${addedFlightTravelId}`)
+      .put(`/api/flight-travels/${addedFlightTravelId}`)
       .send({
         fromIataCode: 'MAD',
         toIataCode: 'BRU',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
       })
-      .expect(201)
+      .expect(200)
 
 
     const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
@@ -254,12 +256,12 @@ describe('FlightTravelApiController (e2e)', () => {
 
   })
 
-  test('POST /api/flight-travels/:id - tries to edit a basic single flight and fails when the id does not exist', async () => {
+  test('PUT /api/flight-travels/:id - tries to edit a basic single flight and fails when the id does not exist', async () => {
 
     const addedFlightTravelId = 43587878;
 
     const res = await request(app.getHttpServer())
-      .post(`/api/flight-travels/${addedFlightTravelId}`)
+      .put(`/api/flight-travels/${addedFlightTravelId}`)
       .send({
         fromIataCode: 'MAD',
         toIataCode: 'BRU',
@@ -273,7 +275,7 @@ describe('FlightTravelApiController (e2e)', () => {
 
 
 
-  test('POST /api/flight-travels/:id - edits a complex flight with return and connections', async () => {
+  test('PUT /api/flight-travels/:id - edits a complex flight with return and connections', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -308,7 +310,7 @@ describe('FlightTravelApiController (e2e)', () => {
     const addedFlightTravelId = (await flightTravelRepository.getAllOfUser('Nicolas'))[0].id;
 
     await request(app.getHttpServer())
-      .post(`/api/flight-travels/${addedFlightTravelId}`)
+      .put(`/api/flight-travels/${addedFlightTravelId}`)
       .send({
         fromIataCode: 'MAD',
         toIataCode: 'DUB',
@@ -317,12 +319,9 @@ describe('FlightTravelApiController (e2e)', () => {
         outboundConnection: 'BRU',
         inboundConnection: 'AMS',
         user: 'Nicolas'
-      })
-      .expect(201)
-
+      }).expect(200);
 
     const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
-
 
     expect(actualFlightTravel).toMatchObject(expect.objectContaining({
       id: addedFlightTravelId,
@@ -351,6 +350,64 @@ describe('FlightTravelApiController (e2e)', () => {
           to: 'MAD',
           date: new Date('2023-05-21'),
           type: 'inbound',
+        })
+      ]
+    }))
+  })
+
+  test('PUT /api/flight-travels/:id - edits a complex flight with return and connections and make it simple i.e. only outbound and no connections', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('DUB')
+            .travelledOn(new Date('2023-05-10'))
+            .withType('outbound')
+            .build(),
+          routeBuilder()
+            .from('DUB')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-20'))
+            .withType('inbound')
+            .withOrder(1)
+            .build(),
+          routeBuilder()
+            .from('BRU')
+            .to('MAD')
+            .travelledOn(new Date('2023-05-20'))
+            .withType('inbound')
+            .withOrder(2)
+            .build(),
+        ])
+        .build()
+    )
+
+    const addedFlightTravelId = (await flightTravelRepository.getAllOfUser('Nicolas'))[0].id;
+
+    await request(app.getHttpServer())
+      .put(`/api/flight-travels/${addedFlightTravelId}`)
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        outboundDate: '2023-05-11'
+      }).expect(200);
+
+    const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
+
+    expect(actualFlightTravel).toMatchObject(expect.objectContaining({
+      id: addedFlightTravelId,
+      user: 'Nicolas',
+      routes: [
+        expect.objectContaining({
+          from: 'MAD',
+          to: 'BRU',
+          date: new Date('2023-05-11'),
+          type: 'outbound',
         })
       ]
     }))
