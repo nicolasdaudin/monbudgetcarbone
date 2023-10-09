@@ -40,7 +40,11 @@ export const createTravelFixture = () => {
 
 
     async whenUserAddsTravel(addFlightTravelCommand: AddFlightTravelCommand) {
-      await addFlightTravelUseCase.handle(addFlightTravelCommand);
+      try {
+        await addFlightTravelUseCase.handle(addFlightTravelCommand);
+      } catch (err) {
+        thrownError = err;
+      }
     },
 
     async whenUserEditsTravel(editFlightTravelCommand: EditFlightTravelCommand

@@ -4,7 +4,7 @@ import { DeleteFlightTravelUseCase } from '../../application/usecases/delete-fli
 import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../application/usecases/edit-flight-travel.usecase';
 import { ViewFlightTravelsUseCase } from '../../application/usecases/view-flight-travels.usecase';
 import { CreateFlightTravelDto, UpdateFlightTravelDTO } from '../../domain/flight-travel.dto';
-import { FlightTravelNotFound } from '../../application/exceptions/flight-travel.exceptions';
+import { FlightTravelNotFound } from '../../application/exceptions';
 
 
 @Controller('api/flight-travels')

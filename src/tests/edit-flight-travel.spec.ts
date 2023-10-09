@@ -2,7 +2,7 @@ import { airportBuilder } from "./airport.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
-import { FlightTravelNotFound } from "../application/exceptions/flight-travel.exceptions";
+import { FlightTravelNotFound } from "../application/exceptions";
 
 describe('Feature: Edit a flight travel and calculate again its corresponding carboon footprint', () => {
   let fixture: FlightTravelFixture;

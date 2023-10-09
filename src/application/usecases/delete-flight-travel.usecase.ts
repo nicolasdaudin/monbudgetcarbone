@@ -1,4 +1,4 @@
-import { FlightTravelNotFound } from "../exceptions/flight-travel.exceptions";
+import { FlightTravelNotFound } from "../exceptions";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common";
 

@@ -1,4 +1,5 @@
 import { Airport } from "../application/airport.repository";
+import { AirportNotFound } from "../application/exceptions";
 import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
 import { airportBuilder } from "./airport.builder";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
@@ -400,4 +401,171 @@ describe('Feature: Add a flight travel and calculate its corresponding carbon fo
       );
     })
   })
+
+  describe('Rule: The carbon footprint of a flight travel can be calculated for flights with 0 or 1 connections', () => {
+    test('Nicolas adds an outbound flight travel from Madrid MAD to Quito UIO with a connection in Amsterdam AMS to his list of travels', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
+
+      const routeBeforeConnection = routeBuilder()
+        .from('MAD')
+        .to('AMS')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(1461)
+        .withCarbonFootprint(260.058)
+        .withType('outbound')
+        .withOrder(1)
+        .build();
+      const routeAfterConnection = routeBuilder()
+        .from('AMS')
+        .to('UIO')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(9551)
+        .withCarbonFootprint(1442.201)
+        .withType('outbound')
+        .withOrder(2)
+        .build();
+
+
+      fixture.thenAddedTravelShouldBe(
+        flightTravelBuilder()
+          .withDefaultId()
+          .withUser('Nicolas')
+          .withRoutes([routeBeforeConnection, routeAfterConnection])
+          .build()
+      );
+
+    })
+
+    test('Nicolas adds an outbound and inbound flight travel from Madrid MAD to Quito UIO with an outbound connection in Amsterdam AMS and an inbound connection in Bogota BOG to his list of travels', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('BOG').locatedAt("-74.1469, 4.70159").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
+
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
+
+      const outboundRouteBeforeConnection = routeBuilder()
+        .from('MAD')
+        .to('AMS')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(1461)
+        .withCarbonFootprint(260.058)
+        .withType('outbound')
+        .withOrder(1)
+        .build();
+      const outboundRouteAfterConnection = routeBuilder()
+        .from('AMS')
+        .to('UIO')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(9551)
+        .withCarbonFootprint(1442.201)
+        .withType('outbound')
+        .withOrder(2)
+        .build();
+      const inboundRouteBeforeConnection = routeBuilder()
+        .from('UIO')
+        .to('BOG')
+        .travelledOn(new Date('2023-06-04'))
+        .withDistance(710)
+        .withCarbonFootprint(163.3)
+        .withType('inbound')
+        .withOrder(1)
+        .build();
+      const inboundRouteAfterConnection = routeBuilder()
+        .from('BOG')
+        .to('MAD')
+        .travelledOn(new Date('2023-06-04'))
+        .withDistance(8034)
+        .withCarbonFootprint(1213.134)
+        .withType('inbound')
+        .withOrder(2)
+        .build();
+
+
+      fixture.thenAddedTravelShouldBe(
+        flightTravelBuilder()
+          .withId(1)
+          .withUser('Nicolas')
+          .withRoutes([outboundRouteBeforeConnection, outboundRouteAfterConnection, inboundRouteBeforeConnection, inboundRouteAfterConnection])
+          .build()
+      );
+
+    })
+
+    test('Nicolas adds an outbound and inbound flight travel from Madrid MAD to Quito UIO with an outbound connection in Amsterdam AMS and no inbound connection', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
+
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
+
+      const outboundRouteBeforeConnection = routeBuilder()
+        .from('MAD')
+        .to('AMS')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(1461)
+        .withCarbonFootprint(260.058)
+        .withType('outbound')
+        .withOrder(1)
+        .build();
+      const outboundRouteAfterConnection = routeBuilder()
+        .from('AMS')
+        .to('UIO')
+        .travelledOn(new Date('2023-05-17'))
+        .withDistance(9551)
+        .withCarbonFootprint(1442.201)
+        .withType('outbound')
+        .withOrder(2)
+        .build();
+      const inboundRoute = routeBuilder()
+        .from('UIO')
+        .to('MAD')
+        .travelledOn(new Date('2023-06-04'))
+        .withDistance(8738)
+        .withCarbonFootprint(1319.438)
+        .withType('inbound')
+        .build();
+
+
+      fixture.thenAddedTravelShouldBe(
+        flightTravelBuilder()
+          .withDefaultId()
+          .withUser('Nicolas')
+          .withRoutes([outboundRouteBeforeConnection, outboundRouteAfterConnection, inboundRoute])
+          .build()
+      );
+
+    })
+
+    test('Nicolas tries to add a travel with a non existing airport, and an error is thrown', async () => {
+      fixture.givenAirportsAre([]);
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
+
+      await fixture.thenErrorShouldBe(AirportNotFound);
+    })
+  })
+
+
 });

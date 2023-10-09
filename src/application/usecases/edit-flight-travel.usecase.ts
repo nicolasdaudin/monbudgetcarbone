@@ -4,7 +4,7 @@ import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"
 import { AddFlightTravelCommand } from "./add-flight-travel.usecase";
-import { FlightTravelNotFound } from "../exceptions/flight-travel.exceptions";
+import { FlightTravelNotFound } from "../exceptions";
 
 export type EditFlightTravelCommand = AddFlightTravelCommand & {
   id: number

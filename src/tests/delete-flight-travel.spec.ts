@@ -1,4 +1,4 @@
-import { FlightTravelNotFound } from "../application/exceptions/flight-travel.exceptions";
+import { FlightTravelNotFound } from "../application/exceptions";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 
