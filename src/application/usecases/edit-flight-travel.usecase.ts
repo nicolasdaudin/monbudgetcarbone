@@ -4,7 +4,7 @@ import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"
 import { AddFlightTravelCommand } from "./add-flight-travel.usecase";
-import { FlightTravelNotFound } from "../exceptions";
+import { AirportNotFound, FlightTravelNotFound } from "../exceptions";
 
 export type EditFlightTravelCommand = AddFlightTravelCommand & {
   id: number
@@ -25,12 +25,15 @@ export class EditFlightTravelUseCase {
 
     const fromAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.fromIataCode);
     const toAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.toIataCode);
+    if (!fromAirport) { throw new AirportNotFound(editFlightTravelCommand.fromIataCode) }
+    if (!toAirport) { throw new AirportNotFound(editFlightTravelCommand.toIataCode) }
 
     let routes: Route[] = [];
 
     let outboundRoutes: Route[];
     if (editFlightTravelCommand.outboundConnection) {
       const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.outboundConnection);
+      if (!connectionAirport) throw new AirportNotFound(editFlightTravelCommand.outboundConnection)
 
       outboundRoutes = this.computeRoutesWithConnection({ fromAirport, toAirport, connectionAirport, type: 'outbound', date: editFlightTravelCommand.outboundDate })
     } else {
@@ -44,6 +47,7 @@ export class EditFlightTravelUseCase {
       let inboundRoutes: Route[];
       if (editFlightTravelCommand.inboundConnection) {
         const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.inboundConnection);
+        if (!connectionAirport) throw new AirportNotFound(editFlightTravelCommand.inboundConnection)
 
         inboundRoutes = this.computeRoutesWithConnection({ fromAirport: toAirport, toAirport: fromAirport, connectionAirport, type: 'inbound', date: editFlightTravelCommand.inboundDate })
       } else {

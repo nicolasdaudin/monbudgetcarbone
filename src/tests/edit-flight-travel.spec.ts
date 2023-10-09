@@ -2,21 +2,17 @@ import { airportBuilder } from "./airport.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
-import { FlightTravelNotFound } from "../application/exceptions";
+import { AirportNotFound, FlightTravelNotFound } from "../application/exceptions";
 
-describe('Feature: Edit a flight travel and calculate again its corresponding carboon footprint', () => {
+describe.only('Feature: Edit a flight travel and calculate again its corresponding carboon footprint', () => {
   let fixture: FlightTravelFixture;
   beforeEach(() => {
     fixture = createTravelFixture();
   })
 
-  describe('Rule: We can not edit a flight travel that does not exist', () => {
-    test("Nicolas tries to edit a flight travel that does not exist, an error is thrown", async () => {
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
 
-      await fixture.thenErrorShouldBe(FlightTravelNotFound);
-    })
-  });
+
+
   describe('Rule: An edited flight travel can have a departure and arrival airport and can be outbound only. A carbon footprint should be recalculated', () => {
 
     test("Nicolas edits an existing outbound flight travel with no connections and carbon footprint is calculated again", async () => {
@@ -400,4 +396,142 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
       )
     });
   });
+
+  describe('Rule: We can not edit a flight travel that does not exist', () => {
+    test("Nicolas tries to edit a flight travel that does not exist, an error is thrown", async () => {
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
+
+      await fixture.thenErrorShouldBe(FlightTravelNotFound);
+    })
+  });
+
+  describe('Rule: We cannot edit a flight travel with a unknown airport', () => {
+    test('Nicolas tries to edit a travel with a non existing from airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+        airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+      const existingFlightTravel = flightTravelBuilder()
+        .withDefaultId()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-17'))
+            .withDistance(1316)
+            .withCarbonFootprint(234.248)
+            .build()])
+        .build();
+
+
+      fixture.givenFollowingFlightTravelsExist([
+        existingFlightTravel
+      ])
+
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'XXX', toIataCode: 'BRU', outboundDate: new Date('2023-05-19') });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+    })
+
+    test('Nicolas tries to edit a travel with a non existing to airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+        airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+      const existingFlightTravel = flightTravelBuilder()
+        .withDefaultId()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-17'))
+            .withDistance(1316)
+            .withCarbonFootprint(234.248)
+            .build()])
+        .build();
+
+
+      fixture.givenFollowingFlightTravelsExist([
+        existingFlightTravel
+      ])
+
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'XXX', outboundDate: new Date('2023-05-19') });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+    })
+
+    test('Nicolas tries to edit a travel with a non existing outbound connection airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+        airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+      const existingFlightTravel = flightTravelBuilder()
+        .withDefaultId()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-17'))
+            .withDistance(1316)
+            .withCarbonFootprint(234.248)
+            .build()])
+        .build();
+
+
+      fixture.givenFollowingFlightTravelsExist([
+        existingFlightTravel
+      ])
+
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundConnection: 'XXX', outboundDate: new Date('2023-05-19') });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+    })
+
+    test('Nicolas tries to edit a travel with a non existing inbound connection airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+        airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
+
+      ]
+      fixture.givenAirportsAre(airports);
+
+      const existingFlightTravel = flightTravelBuilder()
+        .withDefaultId()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-17'))
+            .withDistance(1316)
+            .withCarbonFootprint(234.248)
+            .build()])
+        .build();
+
+
+      fixture.givenFollowingFlightTravelsExist([
+        existingFlightTravel
+      ])
+
+      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-19'), inboundDate: new Date('2023-05-28'), inboundConnection: 'XXX' });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+    })
+  })
 });

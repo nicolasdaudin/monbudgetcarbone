@@ -5,7 +5,7 @@ import { airportBuilder } from "./airport.builder";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
 
-describe('Feature: Add a flight travel and calculate its corresponding carbon footprint', () => {
+describe.only('Feature: Add a flight travel and calculate its corresponding carbon footprint', () => {
   let fixture: FlightTravelFixture;
   beforeEach(() => {
     fixture = createTravelFixture();
@@ -557,14 +557,66 @@ describe('Feature: Add a flight travel and calculate its corresponding carbon fo
       );
 
     })
+  })
 
-    test('Nicolas tries to add a travel with a non existing airport, and an error is thrown', async () => {
-      fixture.givenAirportsAre([]);
+  describe('Rule: We cannot add a flight travel with a unknown airport', () => {
+    test('Nicolas tries to add a travel from a non existing airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
+      ]
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
+      fixture.givenAirportsAre(airports);
 
-      await fixture.thenErrorShouldBe(AirportNotFound);
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'XXX', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
+
+    test('Nicolas tries to add a travel to a non existing airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
+      ]
+
+      fixture.givenAirportsAre(airports);
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'YYY', outboundDate: new Date('2023-05-17') });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('YYY');
+    })
+
+    test('Nicolas tries to add a travel with a non-existing outbound connection airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
+      ]
+
+      fixture.givenAirportsAre(airports);
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'AMS', outboundConnection: 'XXX', outboundDate: new Date('2023-05-17') });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+    })
+
+    test('Nicolas tries to add a travel with a non-existing inbound connection airport, and an error is thrown', async () => {
+      const airports = [
+        airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+        airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+        airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
+      ]
+
+      fixture.givenAirportsAre(airports);
+
+      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'AMS', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-24'), inboundConnection: 'XXX' });
+
+      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+    })
+
+
   })
 
 

@@ -4,6 +4,7 @@ import { Airport, AirportRepository } from "../airport.repository";
 import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"
+import { AirportNotFound } from "../exceptions";
 
 export type AddFlightTravelCommand = {
   user: string,
@@ -25,14 +26,18 @@ export class AddFlightTravelUseCase {
     private readonly distanceCalculator: DistanceCalculator) { }
 
   async handle(addFlightTravelCommand: AddFlightTravelCommand): Promise<void> {
-    const fromAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.fromIataCode);
-    const toAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.toIataCode);
+    const fromAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.fromIataCode);//?
+    const toAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.toIataCode);//?
+    if (!fromAirport) throw new AirportNotFound(addFlightTravelCommand.fromIataCode)
+    if (!toAirport) throw new AirportNotFound(addFlightTravelCommand.toIataCode)
+
 
     let routes: Route[] = [];
 
     let outboundRoutes: Route[];
     if (addFlightTravelCommand.outboundConnection) {
       const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.outboundConnection);
+      if (!connectionAirport) throw new AirportNotFound(addFlightTravelCommand.outboundConnection)
 
       outboundRoutes = this.computeRoutesWithConnection({ fromAirport, toAirport, connectionAirport, type: 'outbound', date: addFlightTravelCommand.outboundDate })
     } else {
@@ -46,6 +51,7 @@ export class AddFlightTravelUseCase {
       let inboundRoutes: Route[];
       if (addFlightTravelCommand.inboundConnection) {
         const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.inboundConnection);
+        if (!connectionAirport) { throw new AirportNotFound(addFlightTravelCommand.inboundConnection) }
 
         inboundRoutes = this.computeRoutesWithConnection({ fromAirport: toAirport, toAirport: fromAirport, connectionAirport, type: 'inbound', date: addFlightTravelCommand.inboundDate })
       } else {

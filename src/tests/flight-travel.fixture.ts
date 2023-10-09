@@ -9,6 +9,7 @@ import e from 'express';
 import { ViewFlightTravelsUseCase } from '../application/usecases/view-flight-travels.usecase';
 import { EditFlightTravelCommand, EditFlightTravelUseCase } from '../application/usecases/edit-flight-travel.usecase';
 import { DeleteFlightTravelUseCase } from '../application/usecases/delete-flight-travel.usecase';
+import { AirportNotFound } from '../application/exceptions';
 
 export const createTravelFixture = () => {
   const airportRepository = new InMemoryAirportRepository();
@@ -58,6 +59,11 @@ export const createTravelFixture = () => {
 
     async thenErrorShouldBe(expectedClass: new () => Error) {
       expect(thrownError).toBeInstanceOf(expectedClass);
+    },
+
+    async thenErrorShouldBeAirportNotFoundWithIataCode(iataCode: string) {
+      expect(thrownError).toBeInstanceOf(AirportNotFound);
+      expect(thrownError.message).toEqual(expect.stringContaining(iataCode));
     },
 
     async whenUserDeletesTravel(idToDelete: number

@@ -4,7 +4,7 @@ import { DeleteFlightTravelUseCase } from '../../application/usecases/delete-fli
 import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../application/usecases/edit-flight-travel.usecase';
 import { ViewFlightTravelsUseCase } from '../../application/usecases/view-flight-travels.usecase';
 import { CreateFlightTravelDto, UpdateFlightTravelDTO } from '../../domain/flight-travel.dto';
-import { FlightTravelNotFound } from '../../application/exceptions';
+import { AirportNotFound, FlightTravelNotFound } from '../../application/exceptions';
 
 
 @Controller('api/flight-travels')
@@ -26,7 +26,14 @@ export class FlightTravelApiController {
       ... (body.inboundConnection ? { inboundConnection: body.inboundConnection } : {}),
       user: body.user
     }
-    await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
+    try {
+      await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
+    } catch (error) {
+      if (error instanceof AirportNotFound) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+
+    }
 
   }
 
@@ -48,6 +55,9 @@ export class FlightTravelApiController {
     } catch (error) {
       if (error instanceof FlightTravelNotFound) {
         throw new HttpException(`There is no flight travel with id ${id}`, HttpStatus.NOT_FOUND);
+      }
+      if (error instanceof AirportNotFound) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
     }
 

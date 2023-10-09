@@ -7,3 +7,11 @@ MBC utilise:
 - NestJS
 - Prisma
 - TDD
+- Cypress
+
+# Tests avec Cypress
+
+Pour effectuer les tests avec cypress, voici la commande
+```npx cypress open```
+
+Les tests des fichiers ```.cy.ts``` se lanceront. 

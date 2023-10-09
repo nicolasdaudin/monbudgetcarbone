@@ -156,6 +156,24 @@ describe('FlightTravelApiController (e2e)', () => {
     );
   });
 
+  test('POST /api/flight-travels - tries to create a basic single flight and fails when one of the airports is not found', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        outboundConnection: 'XXX',
+        outboundDate: '2023-05-11',
+        user: 'Nicolas'
+      })
+      .expect(400);
+
+    expect(res.body.message).toEqual('Airport with iata code XXX not found');
+
+  });
+
+
+
 
   test('POST /api/flight-travels - creates a complex flight with return and connections', async () => {
     await request(app.getHttpServer())
@@ -272,6 +290,39 @@ describe('FlightTravelApiController (e2e)', () => {
 
     expect(res.body.message).toEqual(expect.stringContaining(addedFlightTravelId.toString()));
   })
+
+  test('PUT /api/flight-travels/:id - tries to edit a basic single flight and fails when one of the airport does not exist', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Nicolas')
+        .withRoutes([routeBuilder()
+          .from('MAD')
+          .to('DUB')
+          .travelledOn(new Date('2023-05-10'))
+          .build()
+        ])
+        .build()
+    )
+
+    const addedFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
+    const addedFlightTravelId = addedFlightTravel.id;
+
+    const res = await request(app.getHttpServer())
+      .put(`/api/flight-travels/${addedFlightTravelId}`)
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'XXX',
+        outboundDate: '2023-05-11',
+        user: 'Nicolas'
+      })
+      .expect(400)
+
+    expect(res.body.message).toEqual('Airport with iata code XXX not found');
+
+  });
 
 
 

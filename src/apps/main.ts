@@ -13,7 +13,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
-    skipMissingProperties: true,
   }))
 
   const port = process.env.PORT || 3000
