@@ -128,6 +128,7 @@ export default defineConfig({
             }
           })
 
+          await prismaClient.$connect();
           return null;
         }
       });// implement node event listeners here

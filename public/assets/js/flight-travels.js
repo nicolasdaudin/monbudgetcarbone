@@ -84,7 +84,11 @@ const addFlightTravel = async () => {
   console.log(`Adding a flight travel for user ${user}`);
 
   const formData = new FormData(formAddFlightTravel);
-  const bodyParams = Object.fromEntries(formData.entries());
+  const bodyParams = Object.fromEntries(
+    Array.from(formData.entries())
+      .filter(([key, value]) => value !== null && value !== '')
+      .map(([key, value]) => [key, value])
+  );
   const res = await axios.post(`/api/flight-travels`, {
     ...bodyParams,
     user
@@ -102,17 +106,22 @@ const editFlightTravel = async (id) => {
   console.log(`Editing flight travel with id ${id} for user ${user}`);
 
   const formData = new FormData(formEditFlightTravel);
-  const bodyParams = Object.fromEntries(formData.entries());
-  const res = await axios.post(`/api/flight-travels/${id}`, {
+
+  const bodyParams = Object.fromEntries(
+    Array.from(formData.entries())
+      .filter(([key, value]) => value !== null && value !== '')
+      .map(([key, value]) => [key, value])
+  );
+
+  const res = await axios.put(`/api/flight-travels/${id}`, {
     ...bodyParams
   });
 
-  if (res.status !== 201 || res.data === undefined)
+  if (res.status !== 200 || res.data === undefined)
     return;
 
   fetchFlightTravels();
 }
-
 const deleteFlightTravel = async (id) => {
   if (!id) return;
 
