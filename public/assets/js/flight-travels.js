@@ -9,11 +9,34 @@ const btnAddFlightTravel = document.querySelector('.add-travel-btn');
 const formAddFlightTravel = document.querySelector('.add-travel-form')
 const btnEditFlightTravel = document.querySelector('.edit-travel-btn');
 const formEditFlightTravel = document.querySelector('.edit-travel-form');
+const btnSearchAirports = document.querySelector('.airport-btn');
+const inputSearchAirport = document.querySelector('.airport-form-autocomplete-test input[name="iataCode"]');
 
 // const btnsEditFlightTravel = document.querySelectorAll('.row-edit-travel-btn');
 const DATA_TEST_ATTRIBUTE_KEY = "data-test-id";
 const DATA_ID = "data-flight-travel-id";
 
+btnSearchAirports.addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const inputSearchAirportValue = inputSearchAirport.value;
+
+  const res = await axios({
+    method: 'GET',
+    url: `/api/airports?q=${inputSearchAirportValue}`,
+  })
+
+  if (res.status !== 200 || res.data === undefined)
+    return;
+
+  const airports = res.data.data.airports;
+
+
+  const airportsResultsTextArea = document.querySelector('.airports-results');
+  airportsResultsTextArea.textContent = airports.map(airport => `${airport.municipality} - ${airport.name} (${airport.iataCode}) - ${airport.country}`).join('\n');
+
+
+})
 
 flightTravelsTable.addEventListener('click', e => {
   const editButtonClicked = e.target.closest('.row-edit-travel-btn');

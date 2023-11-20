@@ -8,6 +8,25 @@
     <h1>Mon Budget Carbone</h1>
     <h2 data-test-id="message">Cher {{ user }}, bienvenue sur la web app de Mon Budget Carbone</h2>
     <span class="user-span" data-user="{{user}}"></span>
+    <form class="airport-form-autocomplete-test">
+      <fieldset>
+        <legend>Rechercher un aéroport</legend>
+        <label for="airportIataCode">Code IATA de l'aéroport</label>
+        <input id="airportIataCode" name="iataCode" minlength="3" type="text" data-test-id="airport-form-iata-code" />
+        <button type="submit" class="airport-btn" data-test-id="airport-btn">Rechercher</button>        
+      </fieldset>
+      <fieldset>
+        <!-- table with the results of airports retrieved -->
+        <legend>Résultat de la recherche d'aéroports</legend>
+        <!-- min and max big enough to show all the results -->
+        <textarea           
+          rows="10" cols="100"
+          data-test-id="airports-results" 
+          class="airports-results"
+        ></textarea>
+      </fieldset>
+
+    </form>
     <form class="add-travel-form">
       <fieldset>
         <legend>Ajouter un voyage</legend>
