@@ -12,16 +12,19 @@ import { FlightTravelsApiController } from "./flight-travels.api.controller";
 import { RootApiController } from "./root.api.controller";
 import { AirportModule } from "../common/airport.module";
 import { PrismaClient } from "@prisma/client";
+import { AirportsApiController } from "./airports.api.controller";
+import { GetAirportsUseCase } from "../../application/usecases/get-airports.usecase";
 
 @Module({
   imports: [AirportModule],
-  controllers: [RootApiController, FlightTravelsApiController],
+  controllers: [RootApiController, FlightTravelsApiController, AirportsApiController],
   providers: [
     PrismaClient,
     AddFlightTravelUseCase,
     ViewFlightTravelsUseCase,
     EditFlightTravelUseCase,
     DeleteFlightTravelUseCase,
+    GetAirportsUseCase,
     {
       provide: FlightTravelRepository,
       useClass: PrismaFlightTravelRepository
