@@ -58,7 +58,8 @@ describe('AirportsApiController (e2e)', () => {
         })
       })
   });
-  test.only('GET /api/airports returns an empty list of airports when no matching airports has been found', async () => {
+
+  test('GET /api/airports returns an empty list of airports when no matching airports has been found', async () => {
     expect.assertions(1);
     await request(app.getHttpServer())
       .get('/api/airports?q=XXXXXXXXX').expect(200).then(response => {
@@ -67,6 +68,20 @@ describe('AirportsApiController (e2e)', () => {
             airports: []
           }
         })
+      })
+  });
+
+  test('GET /api/airports returns an error when there are less than 3 characters in the search string', async () => {
+    await request(app.getHttpServer())
+      .get('/api/airports?q=XX').expect(400).then(response => {
+        expect(response.body.message[0]).toEqual(expect.stringContaining('q must be longer than or equal to 3 characters'))
+      })
+  });
+
+  test('GET /api/airports returns an error when there is no search string', async () => {
+    await request(app.getHttpServer())
+      .get('/api/airports').expect(400).then(response => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['q should not be empty']))
       })
   });
 });
