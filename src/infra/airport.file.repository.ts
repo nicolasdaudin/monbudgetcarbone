@@ -33,7 +33,7 @@ export class FileAirportRepository implements AirportRepository {
     ),
   ) {
     const parsedAirports = JSON.parse(
-      fs.readFileSync(filePath, 'utf-8'),
+      fs.readFileSync(this.filePath, 'utf-8'),
     ) as JSONAirport[];
     const filteredAirports = parsedAirports
       .filter((airport) => AUTHORIZED_AIRPORT_TYPES.includes(airport.type as AirportType))
@@ -58,8 +58,12 @@ export class FileAirportRepository implements AirportRepository {
     return airport;
   }
 
-  filterAirportsByType(filters: string[]): Airport[] {
-    throw new Error('Method not implemented.');
+  filterAirportsByType(filters: AirportType[]): Airport[] {
+    const airports = this.airports.filter((airport) =>
+      filters.includes(airport.type),
+    );
+
+    return airports;
   }
 }
 
