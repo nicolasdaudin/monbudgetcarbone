@@ -8,7 +8,7 @@ import { EditFlightTravelUseCase } from "../../application/usecases/edit-flight-
 import { ViewFlightTravelsUseCase } from "../../application/usecases/view-flight-travels.usecase";
 import { PrismaFlightTravelRepository } from "../../infra/flight-travel.prisma.repository";
 import { RealDistanceCalculator } from "../../infra/real-distance-calculator";
-import { FlightTravelApiController } from "./flight-travel.api.controller";
+import { FlightTravelApiController } from "./flight-travels.api.controller";
 import { RootApiController } from "./root.api.controller";
 import { AirportModule } from "../common/airport.module";
 import { PrismaClient } from "@prisma/client";
