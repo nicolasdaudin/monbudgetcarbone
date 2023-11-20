@@ -1,5 +1,6 @@
 import { FlightTravel, OutboundInboundType, Route } from "../../domain/flight-travel";
-import { Airport, AirportRepository } from "../airport.repository";
+import { AirportRepository } from "../airport.repository";
+import { Airport } from '../../domain/airport';
 import { DistanceCalculator } from "../distance-calculator";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"

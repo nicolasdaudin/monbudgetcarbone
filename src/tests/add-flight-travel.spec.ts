@@ -1,14 +1,17 @@
-import { Airport } from "../application/airport.repository";
+import { Airport } from 'src/domain/airport';
 import { AirportNotFound } from "../application/exceptions";
 import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
 import { airportBuilder } from "./airport.builder";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture";
+import { AirportFixture, createAirportFixture } from './airport.fixture';
 
-describe.only('Feature: Add a flight travel and calculate its corresponding carbon footprint', () => {
-  let fixture: FlightTravelFixture;
+describe('Feature: Add a flight travel and calculate its corresponding carbon footprint', () => {
+  let travelFixture: FlightTravelFixture;
+  let airportFixture: AirportFixture;
   beforeEach(() => {
-    fixture = createTravelFixture();
+    airportFixture = createAirportFixture();
+    travelFixture = createTravelFixture(airportFixture.airportRepository);
   })
 
   describe('Rule: A flight travel should have a departure and arrival airport and can be only outbound. A carbon footprint should be calculated', () => {
@@ -19,13 +22,13 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
         airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17') });
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -60,17 +63,17 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
     test("Nicolas adds a 999km flight travel to his list of travels", async () => {
 
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(999);
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(999);
 
-      await fixture.whenUserAddsTravel({
+      await travelFixture.whenUserAddsTravel({
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
         outboundDate: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([baseRouteBuilder
             .withDistance(999)
@@ -83,17 +86,17 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
     test("Nicolas adds a 1000km flight travel to his list of travels", async () => {
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(1000)
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(1000)
 
-      await fixture.whenUserAddsTravel({
+      await travelFixture.whenUserAddsTravel({
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
         outboundDate: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([baseRouteBuilder
             .withDistance(1000)
@@ -108,17 +111,17 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
     test("Nicolas adds a 3499km flight travel to his list of travels", async () => {
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(3499)
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(3499)
 
-      await fixture.whenUserAddsTravel({
+      await travelFixture.whenUserAddsTravel({
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
         outboundDate: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([baseRouteBuilder
             .withDistance(3499)
@@ -134,17 +137,17 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
     test("Nicolas adds a 3500km flight travel to his list of travels", async () => {
 
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(3500)
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(3500)
 
-      await fixture.whenUserAddsTravel({
+      await travelFixture.whenUserAddsTravel({
         user: 'Nicolas',
         fromIataCode: 'AAA',
         toIataCode: 'BBB',
         outboundDate: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([baseRouteBuilder
             .withDistance(3500)
@@ -163,10 +166,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
         airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
 
       const outboundRoute = routeBuilder()
         .from('MAD')
@@ -185,7 +188,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .withType('inbound')
         .build()
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -203,10 +206,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
 
       const routeBeforeConnection = routeBuilder()
         .from('MAD')
@@ -228,7 +231,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -247,10 +250,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
 
       const outboundRouteBeforeConnection = routeBuilder()
         .from('MAD')
@@ -290,7 +293,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -308,10 +311,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
 
       const outboundRouteBeforeConnection = routeBuilder()
         .from('MAD')
@@ -341,7 +344,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -359,10 +362,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
 
       const outboundRoute = routeBuilder()
         .from('MAD')
@@ -392,7 +395,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -410,10 +413,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
 
       const routeBeforeConnection = routeBuilder()
         .from('MAD')
@@ -435,7 +438,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -454,10 +457,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04'), inboundConnection: 'BOG' });
 
       const outboundRouteBeforeConnection = routeBuilder()
         .from('MAD')
@@ -497,7 +500,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -515,10 +518,10 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
 
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS', inboundDate: new Date('2023-06-04') });
 
       const outboundRouteBeforeConnection = routeBuilder()
         .from('MAD')
@@ -548,7 +551,7 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         .build();
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -567,11 +570,11 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
       ]
 
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'XXX', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'XXX', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
 
     test('Nicolas tries to add a travel to a non existing airport, and an error is thrown', async () => {
@@ -581,11 +584,11 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
       ]
 
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'YYY', outboundDate: new Date('2023-05-17') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'YYY', outboundDate: new Date('2023-05-17') });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('YYY');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('YYY');
     })
 
     test('Nicolas tries to add a travel with a non-existing outbound connection airport, and an error is thrown', async () => {
@@ -595,11 +598,11 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
       ]
 
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'AMS', outboundConnection: 'XXX', outboundDate: new Date('2023-05-17') });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'AMS', outboundConnection: 'XXX', outboundDate: new Date('2023-05-17') });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
 
     test('Nicolas tries to add a travel with a non-existing inbound connection airport, and an error is thrown', async () => {
@@ -609,11 +612,11 @@ describe.only('Feature: Add a flight travel and calculate its corresponding carb
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build()
       ]
 
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
-      await fixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'AMS', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-24'), inboundConnection: 'XXX' });
+      await travelFixture.whenUserAddsTravel({ user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'AMS', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-24'), inboundConnection: 'XXX' });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
 
 

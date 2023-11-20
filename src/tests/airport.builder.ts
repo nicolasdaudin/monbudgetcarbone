@@ -1,4 +1,4 @@
-import { Airport, AirportType } from "../application/airport.repository";
+import { Airport, AirportType } from 'src/domain/airport';
 
 
 
@@ -53,7 +53,7 @@ export const airportBuilder = (
     withType(type: AirportType) {
       return airportBuilder({
         ...props,
-        isoCountry
+        type
       })
     },
 
@@ -62,7 +62,7 @@ export const airportBuilder = (
       return {
         iataCode: props.iataCode,
         coordinates: props.coordinates,
-        isoCountry: props.isoCountry,
+        country: props.isoCountry,
         municipality: props.municipality,
         name: props.name,
         type: props.type,

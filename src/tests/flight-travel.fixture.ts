@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { Airport } from "../application/airport.repository";
+import { Airport } from 'src/domain/airport';
 import { AddFlightTravelCommand, AddFlightTravelUseCase } from "../application/usecases/add-flight-travel.usecase";
 import { FlightTravel } from "../domain/flight-travel";
 import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository";
@@ -10,9 +10,10 @@ import { ViewFlightTravelsUseCase } from '../application/usecases/view-flight-tr
 import { EditFlightTravelCommand, EditFlightTravelUseCase } from '../application/usecases/edit-flight-travel.usecase';
 import { DeleteFlightTravelUseCase } from '../application/usecases/delete-flight-travel.usecase';
 import { AirportNotFound } from '../application/exceptions';
+import { AirportRepository } from '../application/airport.repository';
 
-export const createTravelFixture = () => {
-  const airportRepository = new InMemoryAirportRepository();
+export const createTravelFixture = (airportRepository: AirportRepository = new InMemoryAirportRepository()) => {
+
   const flightTravelRepository = new InMemoryFlightTravelRepository();
 
   const distanceCalculator = new StubDistanceCalculator();
@@ -27,9 +28,6 @@ export const createTravelFixture = () => {
   let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[];
   return {
 
-    givenAirportsAre(airports: Airport[]) {
-      airportRepository.givenExistingAirports(airports)
-    },
 
     givenDistanceBetweenAirportsIs(distanceInKilometers: number) {
       distanceCalculator.enforceDistance(distanceInKilometers);

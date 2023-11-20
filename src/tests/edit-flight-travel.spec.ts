@@ -3,11 +3,14 @@ import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixtur
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { DEFAULT_ID } from "../infra/flight-travel.inmemory.repository";
 import { AirportNotFound, FlightTravelNotFound } from "../application/exceptions";
+import { AirportFixture, createAirportFixture } from "./airport.fixture";
 
-describe.only('Feature: Edit a flight travel and calculate again its corresponding carboon footprint', () => {
-  let fixture: FlightTravelFixture;
+describe('Feature: Edit a flight travel and calculate again its corresponding carboon footprint', () => {
+  let travelFixture: FlightTravelFixture;
+  let airportFixture: AirportFixture;
   beforeEach(() => {
-    fixture = createTravelFixture();
+    airportFixture = createAirportFixture();
+    travelFixture = createTravelFixture(airportFixture.airportRepository);
   })
 
 
@@ -23,7 +26,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -39,13 +42,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -88,8 +91,8 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
     test("Nicolas edits a flight travel and now it's a 999 km flight travel. Carbon footprint is updated as expected.", async () => {
 
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(999);
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(999);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -98,9 +101,9 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([existingFlightTravel])
+      travelFixture.givenFollowingFlightTravelsExist([existingFlightTravel])
 
-      await fixture.whenUserEditsTravel({
+      await travelFixture.whenUserEditsTravel({
         id: DEFAULT_ID,
         user: 'Nicolas',
         fromIataCode: 'AAA',
@@ -109,7 +112,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
       });
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([editedRouteBuilder
             .withDistance(999)
@@ -122,8 +125,8 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
     test("Nicolas edits a flight travel and now it's a 1000 km flight travel. Carbon footprint is updated as expected.", async () => {
 
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(1000);
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(1000);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -132,9 +135,9 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([existingFlightTravel])
+      travelFixture.givenFollowingFlightTravelsExist([existingFlightTravel])
 
-      await fixture.whenUserEditsTravel({
+      await travelFixture.whenUserEditsTravel({
         id: DEFAULT_ID,
         user: 'Nicolas',
         fromIataCode: 'AAA',
@@ -142,7 +145,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         outboundDate: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([editedRouteBuilder
             .withDistance(1000)
@@ -155,8 +158,8 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
     test("Nicolas edits a flight travel and now it's a 3499 km flight travel. Carbon footprint is updated as expected.", async () => {
 
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(3499);
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(3499);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -165,9 +168,9 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([existingFlightTravel])
+      travelFixture.givenFollowingFlightTravelsExist([existingFlightTravel])
 
-      await fixture.whenUserEditsTravel({
+      await travelFixture.whenUserEditsTravel({
         id: DEFAULT_ID,
         user: 'Nicolas',
         fromIataCode: 'AAA',
@@ -175,7 +178,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         outboundDate: new Date('2023-05-17')
       });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([editedRouteBuilder
             .withDistance(3499)
@@ -188,8 +191,8 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
     test("Nicolas edits a flight travel and now it's a 3500 km flight travel. Carbon footprint is updated as expected.", async () => {
 
 
-      fixture.givenAirportsAre(airports);
-      fixture.givenDistanceBetweenAirportsIs(3500);
+      airportFixture.givenAirportsAre(airports);
+      travelFixture.givenDistanceBetweenAirportsIs(3500);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -198,9 +201,9 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([existingFlightTravel])
+      travelFixture.givenFollowingFlightTravelsExist([existingFlightTravel])
 
-      await fixture.whenUserEditsTravel({
+      await travelFixture.whenUserEditsTravel({
         id: DEFAULT_ID,
         user: 'Nicolas',
         fromIataCode: 'AAA',
@@ -209,7 +212,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
       });
 
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         baseFlightTravelBuilder
           .withRoutes([editedRouteBuilder
             .withDistance(3500)
@@ -226,7 +229,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
         airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const outboundRoute = routeBuilder()
         .from('MAD')
@@ -252,13 +255,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-17'), inboundDate: new Date('2023-05-20') });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -275,7 +278,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const routeWithoutConnection = routeBuilder()
         .from('MAD')
@@ -312,13 +315,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -334,7 +337,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
         airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
 
 
@@ -381,13 +384,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17') });
 
-      fixture.thenAddedTravelShouldBe(
+      travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
           .withDefaultId()
           .withUser('Nicolas')
@@ -399,9 +402,9 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
 
   describe('Rule: We can not edit a flight travel that does not exist', () => {
     test("Nicolas tries to edit a flight travel that does not exist, an error is thrown", async () => {
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'DUB', outboundDate: new Date('2023-05-19') });
 
-      await fixture.thenErrorShouldBe(FlightTravelNotFound);
+      await travelFixture.thenErrorShouldBe(FlightTravelNotFound);
     })
   });
 
@@ -413,7 +416,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -429,13 +432,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'XXX', toIataCode: 'BRU', outboundDate: new Date('2023-05-19') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'XXX', toIataCode: 'BRU', outboundDate: new Date('2023-05-19') });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
 
     test('Nicolas tries to edit a travel with a non existing to airport, and an error is thrown', async () => {
@@ -445,7 +448,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -461,13 +464,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'XXX', outboundDate: new Date('2023-05-19') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'XXX', outboundDate: new Date('2023-05-19') });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
 
     test('Nicolas tries to edit a travel with a non existing outbound connection airport, and an error is thrown', async () => {
@@ -477,7 +480,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -493,13 +496,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundConnection: 'XXX', outboundDate: new Date('2023-05-19') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundConnection: 'XXX', outboundDate: new Date('2023-05-19') });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
 
     test('Nicolas tries to edit a travel with a non existing inbound connection airport, and an error is thrown', async () => {
@@ -509,7 +512,7 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build()
 
       ]
-      fixture.givenAirportsAre(airports);
+      airportFixture.givenAirportsAre(airports);
 
       const existingFlightTravel = flightTravelBuilder()
         .withDefaultId()
@@ -525,13 +528,13 @@ describe.only('Feature: Edit a flight travel and calculate again its correspondi
         .build();
 
 
-      fixture.givenFollowingFlightTravelsExist([
+      travelFixture.givenFollowingFlightTravelsExist([
         existingFlightTravel
       ])
 
-      await fixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-19'), inboundDate: new Date('2023-05-28'), inboundConnection: 'XXX' });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-19'), inboundDate: new Date('2023-05-28'), inboundConnection: 'XXX' });
 
-      await fixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
+      await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
   })
 });

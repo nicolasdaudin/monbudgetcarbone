@@ -1,18 +1,8 @@
 import { Injectable } from '@nestjs/common'
-
-export const AUTHORIZED_AIRPORT_TYPES = ['large_airport', 'medium_airport', 'small_airport']
-export type AirportType = 'large_airport' | 'medium_airport' | 'small_airport'
-
-export type Airport = {
-  coordinates: string,
-  iataCode: string,
-  isoCountry: string,
-  municipality: string,
-  name: string,
-  type: AirportType
-}
+import { Airport, AirportType } from '../domain/airport'
 
 @Injectable()
 export abstract class AirportRepository {
-  abstract getByIataCode(iata: string): Promise<Airport>;
+  abstract getByIataCode(iata: string): Airport;
+  abstract filterAirportsByType(filters?: AirportType[]): Airport[];
 }

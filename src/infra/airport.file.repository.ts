@@ -1,11 +1,10 @@
-import buffer from 'buffer';
-import utf8 from 'utf8'
+import {
+  AirportRepository,
+} from '../application/airport.repository';
 import {
   AUTHORIZED_AIRPORT_TYPES,
-  Airport,
-  AirportRepository,
-  AirportType,
-} from '../application/airport.repository';
+  Airport, AirportType
+} from '../domain/airport';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -37,13 +36,13 @@ export class FileAirportRepository implements AirportRepository {
       fs.readFileSync(filePath, 'utf-8'),
     ) as JSONAirport[];
     const filteredAirports = parsedAirports
-      .filter((airport) => AUTHORIZED_AIRPORT_TYPES.includes(airport.type))
+      .filter((airport) => AUTHORIZED_AIRPORT_TYPES.includes(airport.type as AirportType))
       .filter((airport) => airport.iata_code);
     this.airports = filteredAirports.map((airport) => {
       return {
         coordinates: airport.coordinates,
         iataCode: airport.iata_code,
-        isoCountry: airport.iso_country,
+        country: airport.iso_country,
         municipality: airport.municipality,
         name: airport.name,
         type: airport.type as AirportType,
@@ -51,12 +50,16 @@ export class FileAirportRepository implements AirportRepository {
     });
   }
 
-  async getByIataCode(iataCode: string): Promise<Airport> {
+  getByIataCode(iataCode: string): Airport {
     const airport = this.airports.find(
       (airport) => airport.iataCode.toLowerCase() === iataCode.toLowerCase(),
     );
 
-    return Promise.resolve(airport);
+    return airport;
+  }
+
+  filterAirportsByType(filters: string[]): Airport[] {
+    throw new Error('Method not implemented.');
   }
 }
 
