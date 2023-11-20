@@ -1,14 +1,8 @@
 import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from 'supertest';
-
 import { TestingModule, Test } from "@nestjs/testing";
-import { exec } from "child_process";
-import { promisify } from "util";
 import { AppModule } from "../../app.module";
-import { FileAirportRepository } from "../../../infra/airport.file.repository";
 import { AirportsApiController } from "../airports.api.controller";
-
-const asyncExec = promisify(exec);
 
 jest.setTimeout(10000);
 
@@ -36,14 +30,13 @@ describe('AirportsApiController (e2e)', () => {
     expect(controller).toBeDefined();
   });
 
-  test('GET /api/airports returns one or several airports when the query string matches an existing airport', async () => {
+  test('GET /api/airports returns one airport when the query string matches only one existing airport', async () => {
     expect.assertions(1);
     await request(app.getHttpServer())
       .get('/api/airports?q=CDG').expect(200).then(response => {
         expect(response.body).toEqual({
           data: {
             airports: [
-
               {
                 iataCode: 'CDG',
                 name: 'Charles de Gaulle International Airport',
@@ -51,11 +44,18 @@ describe('AirportsApiController (e2e)', () => {
                 coordinates: "2.55, 49.012798",
                 country: 'FR',
                 municipality: 'Paris'
-
               }
             ]
           }
         })
+      })
+  });
+
+  test('GET /api/airports returns several airports when the query string matches several existing airports', async () => {
+    expect.assertions(1);
+    await request(app.getHttpServer())
+      .get('/api/airports?q=PAR').expect(200).then(response => {
+        expect(response.body.data.airports).toHaveLength(10);
       })
   });
 
