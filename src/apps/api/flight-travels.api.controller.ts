@@ -8,7 +8,7 @@ import { AirportNotFound, FlightTravelNotFound } from '../../application/excepti
 
 
 @Controller('api/flight-travels')
-export class FlightTravelApiController {
+export class FlightTravelsApiController {
   constructor(
     private readonly addFlightTravelUseCase: AddFlightTravelUseCase,
     private readonly viewFlightTravelsUseCase: ViewFlightTravelsUseCase,
