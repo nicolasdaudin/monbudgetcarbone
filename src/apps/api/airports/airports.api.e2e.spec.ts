@@ -2,7 +2,8 @@ import { INestApplication, ValidationPipe } from "@nestjs/common";
 import * as request from 'supertest';
 import { TestingModule, Test } from "@nestjs/testing";
 import { AppModule } from "../../app.module";
-import { AirportsApiController } from "../airports.api.controller";
+import { AirportsApiController } from "./airports.api.controller";
+import { AirportApiModule } from "./airports.api.module";
 
 jest.setTimeout(10000);
 
@@ -16,7 +17,7 @@ describe('AirportsApiController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AirportApiModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { HttpCode, INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
 import { exec } from 'child_process';
@@ -8,7 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { StartedPostgreSqlContainer, PostgreSqlContainer } from '@testcontainers/postgresql';
 import { PrismaFlightTravelRepository } from '../../../infra/flight-travel.prisma.repository';
 import { flightTravelBuilder, routeBuilder } from '../../../tests/flight-travel.builder';
-import { ApiModule } from '../api.module';
+import { FlightTravelsApiModule } from './flight-travels.api.module';
 
 
 const asyncExec = promisify(exec);
@@ -51,7 +51,7 @@ describe('FlightTravelApiController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [FlightTravelsApiModule],
     })
       .overrideProvider(PrismaClient)
       .useValue(prismaClient)
@@ -68,13 +68,6 @@ describe('FlightTravelApiController (e2e)', () => {
     await prismaClient.route.deleteMany();
     await prismaClient.flightTravel.deleteMany();
 
-  });
-
-  test('API should be available and return something when hitting its entry point', () => {
-    return request(app.getHttpServer())
-      .get('/api')
-      .expect(200)
-      .expect('Bienvenue sur Mon Budget Carbone');
   });
 
   test('GET /api/flight-travels?user', async () => {

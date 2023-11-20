@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
-import { AddFlightTravelUseCase, AddFlightTravelCommand } from '../../application/usecases/add-flight-travel.usecase';
-import { DeleteFlightTravelUseCase } from '../../application/usecases/delete-flight-travel.usecase';
-import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../application/usecases/edit-flight-travel.usecase';
-import { ViewFlightTravelsUseCase } from '../../application/usecases/view-flight-travels.usecase';
-import { CreateFlightTravelDto, UpdateFlightTravelDTO } from '../../domain/flight-travel.dto';
-import { AirportNotFound, FlightTravelNotFound } from '../../application/exceptions';
+import { AddFlightTravelUseCase, AddFlightTravelCommand } from '../../../application/usecases/add-flight-travel.usecase';
+import { DeleteFlightTravelUseCase } from '../../../application/usecases/delete-flight-travel.usecase';
+import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../../application/usecases/edit-flight-travel.usecase';
+import { ViewFlightTravelsUseCase } from '../../../application/usecases/view-flight-travels.usecase';
+import { CreateFlightTravelDto, UpdateFlightTravelDTO } from '../../../domain/flight-travel.dto';
+import { AirportNotFound, FlightTravelNotFound } from '../../../application/exceptions';
 
 
 @Controller('api/flight-travels')
