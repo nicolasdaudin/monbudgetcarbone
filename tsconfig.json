@@ -19,5 +19,5 @@
     "noFallthroughCasesInSwitch": false,
     "types":["jest"]
   },
-  "include": ["src/**/*.ts"],
+"include": ["src/**/*.ts"],
 }

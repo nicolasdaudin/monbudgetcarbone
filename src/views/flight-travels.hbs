@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>App</title>
+    <link rel="stylesheet" href="assets/css/airports.autocomplete.css" />
   </head>
   <body>
     <h1>Mon Budget Carbone</h1>
@@ -11,19 +12,18 @@
     <form class="airport-form-autocomplete-test">
       <fieldset>
         <legend>Rechercher un aéroport</legend>
-        <label for="airportIataCode">Code IATA de l'aéroport</label>
-        <input id="airportIataCode" name="iataCode" minlength="3" type="text" data-test-id="airport-form-iata-code" />
-        <button type="submit" class="airport-btn" data-test-id="airport-btn">Rechercher</button>        
+        <label for="searchTravelFrom">Aéroport</label>
+        <input id="searchTravelFrom" name="searchTravelFrom" minlength="3" type="text" data-test-id="search-travel-from" />
+        <div id="autocomplete-results" class="autocomplete-results" data-test-id="autocomplete-results"></div>       
       </fieldset>
       <fieldset>
         <!-- table with the results of airports retrieved -->
         <legend>Résultat de la recherche d'aéroports</legend>
         <!-- min and max big enough to show all the results -->
-        <textarea           
-          rows="10" cols="100"
+        <span           
           data-test-id="airports-results" 
-          class="airports-results"
-        ></textarea>
+          class="airports-results-span"
+        ></span>
       </fieldset>
 
     </form>
@@ -211,3 +211,4 @@
 <script defer src="assets/js/luxon.min.js"></script>
 <script defer src="assets/js/axios.min.js"></script>
 <script defer src="assets/js/flight-travels.js"></script>
+<script defer src="assets/js/airports.autocomplete.js"></script>

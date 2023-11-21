@@ -149,15 +149,47 @@ describe('RootWebController (e2e)', () => {
   })
 
   describe.only('Airports', () => {
-    it('retrieves a list of airport', () => {
+
+    beforeEach(() => {
+      cy.intercept('GET', '**/api/airports?q=PAR', { fixture: 'get-airports-PAR.fixture.json' })
+    })
+
+    it('retrieves a list of airport and selects one airport', () => {
       cy.visit('/test-user-cypress');
 
-      cy.get('[data-test-id="airport-form-iata-code"]').type('PAR');
-      cy.get('[data-test-id="airport-btn"]').click();
+      cy.get('[data-test-id="search-travel-from"]').type('PAR');
 
-      cy.get('[data-test-id="airports-results"]').as('airportsTextArea');
 
-      cy.get('@airportsTextArea').should('contain.text', 'Paris');
+      cy.get('[data-test-id="autocomplete-results"]').as('autocomplete');
+
+      cy.get('@autocomplete').children().last().as('lastAutocompleteResult');
+
+      // Cliquer sur un div spécifique dans autocomplete-results
+      cy.get('@lastAutocompleteResult').click().then(($div) => {
+        const selectedItemText = $div.text();
+
+        // Vérifier si airports-results-span a été mis à jour avec la même valeur
+        cy.get('.airports-results-span').should('include.text', selectedItemText);
+      });
+    })
+
+    it.only('retrieves a list of airport and moves to the first airport then to the next one using keyboard', () => {
+      cy.visit('/test-user-cypress');
+
+      cy.get('[data-test-id="search-travel-from"]').as('searchInput');
+
+      cy.get('@searchInput').type('PAR');
+
+      cy.get('@searchInput').type('{downarrow}');
+      cy.get('@searchInput').type('{downarrow}');
+
+      cy.get('.result-item.selected').should('contain.text', 'ORY');
+
+
+
+
+
+
     })
   })
 
