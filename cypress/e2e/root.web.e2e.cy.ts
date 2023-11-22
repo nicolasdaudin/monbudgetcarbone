@@ -38,18 +38,16 @@ describe('RootWebController (e2e)', () => {
     it.only('adds a basic flight travel to the list of users travels', async () => {
       cy.visit('/test-user-cypress');
 
+      const fromIataCode = "BRU"
+      const toIataCode = "MAD"
+
       // adding a flight
-      cy.get('[data-test-id="add-travel-from-input"]').type('BRU');
-      cy.get('[data-test-id="autocomplete-results-from-div"]').as('autocomplete');
-
-      cy.get('@autocomplete').children().first().click();
-      cy.get('[data-test-id="airport-from-span"]').should('include.text', 'BRU');
+      typeInsideInput('from', fromIataCode);
+      typeInsideInput('to', toIataCode);
 
 
 
 
-
-      cy.get('[data-test-id="add-travel-form-to-iata-code"]').select('UIO');
       cy.get('[data-test-id="add-travel-form-outbound-date"]').type('2023-05-09');
 
 
@@ -63,8 +61,21 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').last().as('lastFlightTravel');
 
-      cy.get('@lastFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'BRU')
-      cy.get('@lastFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'UIO')
+      cy.get('@lastFlightTravel')
+        .find('[data-test-id="flight-travel-from"]')
+        .then(($span) => {
+          const fromText = $span.text();
+          cy.get('[data-test-id="add-travel-from-input"]').should('have.value', fromText);;
+        });
+
+      cy.get('@lastFlightTravel')
+        .find('[data-test-id="flight-travel-to"]')
+        .then(($span) => {
+          const toText = $span.text();
+          cy.get('[data-test-id="add-travel-to-input"]').should('have.value', toText);;
+        });
+
+
     });
 
     it('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
@@ -202,4 +213,26 @@ describe('RootWebController (e2e)', () => {
 })
 
 
+
+function typeInsideInput(inputType: 'from' | 'to', where: string) {
+  cy.get(`[data-test-id="add-travel-${inputType}-input"]`).type(where);
+  cy.get(`[data-test-id="autocomplete-results-${inputType}-div"]`).as('autocomplete');
+
+  cy.get('@autocomplete').children().first().click();
+  cy.get(`[data-test-id="airport-${inputType}-span"]`).then(($span) => {
+    const spanText = $span.text();
+    expect(spanText.toLowerCase()).to.contain(where.toLowerCase());
+  });
+}
+
+// function typeToInput(to: string) {
+//   cy.get('[data-test-id="add-travel-to-input"]').type(to);
+//   cy.get('[data-test-id="autocomplete-results-to-div"]').as('autocomplete');
+
+//   cy.get('@autocomplete').children().first().click();
+//   cy.get('[data-test-id="airport-to-span"]').then(($span) => {
+//     const toText = $span.text();
+//     expect(toText.toLowerCase()).to.contain(to.toLowerCase());
+//   });
+// }
 
