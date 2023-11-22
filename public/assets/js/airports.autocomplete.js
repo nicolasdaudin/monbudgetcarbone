@@ -1,7 +1,7 @@
 // @ts-check
-const searchInput = /** @type HTMLInputElement */(document.querySelector('.airport-form-autocomplete-test input[name="searchTravelFrom"]'));
-const searchResultsSpan = /** @type HTMLSpanElement */(document.querySelector('.airports-results-span'));
-const autocompleteContainer =  /** @type {HTMLDivElement}*/ (document.getElementById('autocomplete-results'));
+const searchInput = /** @type HTMLInputElement */(document.querySelector('.add-travel-form input[name="fromIataCode"]'));
+const searchResultsSpan = /** @type HTMLSpanElement */(document.querySelector('.airport-from-span'));
+const autocompleteContainer =  /** @type {HTMLDivElement}*/ (document.getElementById('autocomplete-results-from-div'));
 
 searchInput.addEventListener('input', async (e) => {
   const target = /** @type {HTMLInputElement}*/(e?.target);

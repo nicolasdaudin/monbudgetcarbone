@@ -90,6 +90,7 @@ const addFlightTravel = async () => {
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => [key, value])
   );
+  console.log({ bodyParams });
   const res = await axios.post(`/api/flight-travels`, {
     ...bodyParams,
     user

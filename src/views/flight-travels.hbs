@@ -31,20 +31,12 @@
       <fieldset>
         <legend>Ajouter un voyage</legend>
         
-        <label for="addTravelfromIataCode">Origine*</label>
-        <select id="addTravelfromIataCode" name="fromIataCode" data-test-id="add-travel-form-from-iata-code" required>
-          <option value="">Tu partais d'où?</option>
-          <option value="MAD">Madrid</option>
-          <option value="PRG">Prague</option>
-          <option value="LYS">Lyon</option>
-          <option value="UIO">Quito</option>
-          <option value="AMS">Amsterdam</option>
-          <option value="BOG">Bogota</option>
-          <option value="JFK">New York</option>
-          <option value="BRU">Bruxelles</option>
-          <option value="CDG">Paris CDG</option>
-          <option value="DUB">Dublin</option>
-        </select>
+        <label for="fromIataCode">Origine*</label>
+        <input id="addTravelfromIataCode" name="fromIataCode" minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" required/>
+        <div id="autocomplete-results-from-div" class="autocomplete-results from" data-test-id="autocomplete-results-from-div"></div>
+        <span class="airport-from-span" data-test-id="airport-from-span"></span>
+
+        </br>
 
         <label for="addTraveltoIataCode">Destination*</label>
         <select id="addTraveltoIataCode"  name="toIataCode" data-test-id="add-travel-form-to-iata-code" required>

@@ -11,6 +11,8 @@ describe('RootWebController (e2e)', () => {
 
     beforeEach(() => {
       cy.task("db:seed");
+      // cy.intercept('GET', '**/api/airports?q=PAR', { fixture: 'get-airports-PAR.fixture.json' })
+
     })
 
     it('gets a list of test user travels', () => {
@@ -33,11 +35,20 @@ describe('RootWebController (e2e)', () => {
 
     })
 
-    it('adds a basic flight travel to the list of users travels', () => {
+    it.only('adds a basic flight travel to the list of users travels', async () => {
       cy.visit('/test-user-cypress');
 
       // adding a flight
-      cy.get('[data-test-id="add-travel-form-from-iata-code"]').select('BRU', { force: true });
+      cy.get('[data-test-id="add-travel-from-input"]').type('BRU');
+      cy.get('[data-test-id="autocomplete-results-from-div"]').as('autocomplete');
+
+      cy.get('@autocomplete').children().first().click();
+      cy.get('[data-test-id="airport-from-span"]').should('include.text', 'BRU');
+
+
+
+
+
       cy.get('[data-test-id="add-travel-form-to-iata-code"]').select('UIO');
       cy.get('[data-test-id="add-travel-form-outbound-date"]').type('2023-05-09');
 
@@ -148,7 +159,7 @@ describe('RootWebController (e2e)', () => {
     })
   })
 
-  describe.only('Airports', () => {
+  describe('Airports', () => {
 
     beforeEach(() => {
       cy.intercept('GET', '**/api/airports?q=PAR', { fixture: 'get-airports-PAR.fixture.json' })
@@ -173,7 +184,7 @@ describe('RootWebController (e2e)', () => {
       });
     })
 
-    it.only('retrieves a list of airport and moves to the first airport then to the next one using keyboard', () => {
+    it('retrieves a list of airport and moves to the first airport then to the next one using keyboard', () => {
       cy.visit('/test-user-cypress');
 
       cy.get('[data-test-id="search-travel-from"]').as('searchInput');
@@ -184,11 +195,6 @@ describe('RootWebController (e2e)', () => {
       cy.get('@searchInput').type('{downarrow}');
 
       cy.get('.result-item.selected').should('contain.text', 'ORY');
-
-
-
-
-
 
     })
   })
