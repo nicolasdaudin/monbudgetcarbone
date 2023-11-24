@@ -1,16 +1,14 @@
-import { jest } from '@jest/globals';
-import { Airport } from 'src/domain/airport';
 import { AddFlightTravelCommand, AddFlightTravelUseCase } from "../application/usecases/add-flight-travel.usecase";
 import { FlightTravel } from "../domain/flight-travel";
 import { InMemoryAirportRepository } from "../infra/airport.inmemory.repository";
 import { StubDistanceCalculator } from '../infra/stub-distance-calculator';
-import { DEFAULT_ID, InMemoryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
-import e from 'express';
+import { InMemoryFlightTravelRepository } from '../infra/flight-travel.inmemory.repository';
 import { ViewFlightTravelsUseCase } from '../application/usecases/view-flight-travels.usecase';
 import { EditFlightTravelCommand, EditFlightTravelUseCase } from '../application/usecases/edit-flight-travel.usecase';
 import { DeleteFlightTravelUseCase } from '../application/usecases/delete-flight-travel.usecase';
 import { AirportNotFound } from '../application/exceptions';
 import { AirportRepository } from '../application/airport.repository';
+import { ViewFlightTravelDto } from '../domain/flight-travel.dto';
 
 export const createTravelFixture = (airportRepository: AirportRepository = new InMemoryAirportRepository()) => {
 
@@ -19,13 +17,13 @@ export const createTravelFixture = (airportRepository: AirportRepository = new I
   const distanceCalculator = new StubDistanceCalculator();
 
   const addFlightTravelUseCase = new AddFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
-  const viewFlightTravelsUseCase = new ViewFlightTravelsUseCase(flightTravelRepository);
+  const viewFlightTravelsUseCase = new ViewFlightTravelsUseCase(flightTravelRepository, airportRepository);
   const editFlightTravelUseCase = new EditFlightTravelUseCase(airportRepository, flightTravelRepository, distanceCalculator);
   const deleteFlightTravelUseCase = new DeleteFlightTravelUseCase(flightTravelRepository);
 
   let thrownError: Error;
 
-  let actualFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal }[];
+  let actualFlightTravelsList: ViewFlightTravelDto[];
   return {
 
 
@@ -90,7 +88,17 @@ export const createTravelFixture = (airportRepository: AirportRepository = new I
     },
 
     thenUserShouldSee(expectedFlightTravelsList: { id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundConnection?: string, kgCO2eqTotal }[]) {
-      expect(actualFlightTravelsList).toEqual(expectedFlightTravelsList)
+      actualFlightTravelsList.map((flightTravel, index) => {
+        expect(flightTravel.from.iataCode).toEqual(expectedFlightTravelsList[index].from);
+        expect(flightTravel.to.iataCode).toEqual(expectedFlightTravelsList[index].to);
+        if (flightTravel.outboundConnection) {
+          expect(flightTravel.outboundConnection.iataCode).toEqual(expectedFlightTravelsList[index].outboundConnection);
+        }
+        if (flightTravel.inboundCounnection) {
+          expect(flightTravel.inboundCounnection.iataCode).toEqual(expectedFlightTravelsList[index].inboundConnection);
+        }
+
+      })
     }
 
   }

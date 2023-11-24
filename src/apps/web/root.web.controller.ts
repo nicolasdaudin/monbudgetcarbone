@@ -4,7 +4,7 @@ import { ViewFlightTravelsUseCase } from '../../application/usecases/view-flight
 @Controller()
 export class RootWebController {
   constructor
-    (private readonly viewFlightTravelsUseCase: ViewFlightTravelsUseCase) { }
+    () { }
 
   @Get()
   @Render('index')

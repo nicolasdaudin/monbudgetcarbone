@@ -1,11 +1,13 @@
+import { ViewFlightTravelDto } from "../../domain/flight-travel.dto";
+import { AirportRepository } from "../airport.repository";
 import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class ViewFlightTravelsUseCase {
-  constructor(private readonly flightTravelRepository: FlightTravelRepository) { }
+  constructor(private readonly flightTravelRepository: FlightTravelRepository, private readonly airportRepository: AirportRepository) { }
 
-  async handle({ user }: { user: string }): Promise<{ id: number, from: string, to: string, outboundDate: Date, inboundDate?: Date, outboundConnection?: string, inboundCounnection?: string, kgCO2eqTotal: number }[]> {
+  async handle({ user }: { user: string }): Promise<ViewFlightTravelDto[]> {
     const flightTravels = await this.flightTravelRepository.getAllOfUser(user);
 
     const actualFlightTravelsList = flightTravels.map(t => {
@@ -85,7 +87,23 @@ export class ViewFlightTravelsUseCase {
       }
     })
 
-    return actualFlightTravelsList.sort((a, b) => b.outboundDate.getTime() - a.outboundDate.getTime());
+    const sortedFlightTravelsList = actualFlightTravelsList.sort((a, b) => b.outboundDate.getTime() - a.outboundDate.getTime());
+
+    // for each sorted flight travels in the list, we want to return a similar object, but with fields from, to, outboundConnection (if it exists), inboundConnection (if it exists), turned into Airport objects
+    const flightTravelsWithAirports = sortedFlightTravelsList.map(t => {
+      return {
+        id: t.id,
+        from: this.airportRepository.getByIataCode(t.from),
+        to: this.airportRepository.getByIataCode(t.to),
+        outboundDate: t.outboundDate,
+        inboundDate: t.inboundDate,
+        outboundConnection: t.outboundConnection ? this.airportRepository.getByIataCode(t.outboundConnection) : undefined,
+        inboundConnection: t.inboundConnection ? this.airportRepository.getByIataCode(t.inboundConnection) : undefined,
+        kgCO2eqTotal: t.kgCO2eqTotal
+      }
+    })
+
+    return flightTravelsWithAirports
 
   }
 }

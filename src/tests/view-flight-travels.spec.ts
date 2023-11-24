@@ -1,15 +1,32 @@
+import { airportBuilder } from "./airport.builder";
+import { AirportFixture, createAirportFixture } from "./airport.fixture";
 import { flightTravelBuilder, routeBuilder } from "./flight-travel.builder";
 import { FlightTravelFixture, createTravelFixture } from "./flight-travel.fixture"
 
 describe("Feature: View carbon footprints for a user's flight travels", () => {
-  let fixture: FlightTravelFixture;
+  let travelFixture: FlightTravelFixture;
+  let airportFixture: AirportFixture;
   beforeEach(() => {
-    fixture = createTravelFixture();
+    airportFixture = createAirportFixture();
+    travelFixture = createTravelFixture(airportFixture.airportRepository);
+
+    const airports = [
+      airportBuilder().withIataCode('MAD').locatedAt("-3.56264, 40.471926").build(),
+      airportBuilder().withIataCode('BRU').locatedAt("4.48443984985, 50.901401519800004").build(),
+      airportBuilder().withIataCode("DUB").locatedAt("-6.27007, 53.421299").build(),
+      airportBuilder().withIataCode('AMS').locatedAt("4.76389, 52.308601").build(),
+      airportBuilder().withIataCode('UIO').locatedAt("-78.3575, -0.129166666667").build(),
+      airportBuilder().withIataCode('BOD').locatedAt("-0.715556025505, 44.828300476100004").build(),
+      airportBuilder().withIataCode('TLS').locatedAt("1.36382, 43.629101").build(),
+
+    ]
+    airportFixture.givenAirportsAre(airports);
   })
 
   describe('Rule: A user can see his carbon footprint for all of his flight travels', () => {
     test('Nicolas can see his carbon footprint for a single flight travel with no connection', async () => {
-      fixture.givenFollowingFlightTravelsExist(
+
+      travelFixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -26,9 +43,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'MAD',
@@ -41,6 +58,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
     )
 
     test('Nicolas can see his total carbon footprint for a single flight travel with a connection', async () => {
+
       const routeBeforeConnection = routeBuilder()
         .from('MAD')
         .to('AMS')
@@ -60,7 +78,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         .withOrder(2)
         .build();
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -69,9 +87,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'MAD',
@@ -101,7 +119,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         .withType('inbound')
         .build()
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -110,9 +128,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'MAD',
@@ -152,7 +170,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         .withType('inbound')
         .build();
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -161,9 +179,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'MAD',
@@ -204,7 +222,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         .withOrder(2)
         .build();
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -213,9 +231,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'MAD',
@@ -266,7 +284,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         .withOrder(2)
         .build();
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [flightTravelBuilder()
           .withId(1)
           .withUser('Nicolas')
@@ -275,9 +293,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'MAD',
@@ -295,7 +313,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
   describe('Rule: A user can only see his own flight travels', () => {
     test("Arnaud can see his flight travels but not Nicolas's flight travels", async () => {
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [
           flightTravelBuilder()
             .withId(1)
@@ -324,9 +342,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Arnaud');
+      await travelFixture.whenUserViewFlightTravelsOf('Arnaud');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 1,
           from: 'BOD',
@@ -341,7 +359,7 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
   describe('Rule: A user sees his flight travels in reverse chronological order', () => {
     test("Nicolas has 2 flight travels, and when he sees them he sees first the most recent one", async () => {
 
-      fixture.givenFollowingFlightTravelsExist(
+      travelFixture.givenFollowingFlightTravelsExist(
         [
           flightTravelBuilder()
             .withId(1)
@@ -370,9 +388,9 @@ describe("Feature: View carbon footprints for a user's flight travels", () => {
         ]
       );
 
-      await fixture.whenUserViewFlightTravelsOf('Nicolas');
+      await travelFixture.whenUserViewFlightTravelsOf('Nicolas');
 
-      fixture.thenUserShouldSee([
+      travelFixture.thenUserShouldSee([
         {
           id: 2,
           from: 'TLS',

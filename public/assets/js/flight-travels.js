@@ -207,12 +207,12 @@ function addFlightTravelToTable(tbody, flightTravel) {
   let row = tbody.insertRow();
   row.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'flight-travel');
   row.setAttribute(DATA_ID, flightTravel.id);
-  appendCellToRowWithText(row, flightTravel.from, 'flight-travel-from');
-  appendCellToRowWithText(row, flightTravel.to, 'flight-travel-to');
+  appendCellToRowWithText(row, flightTravel.from.iataCode, 'flight-travel-from');
+  appendCellToRowWithText(row, flightTravel.to.iataCode, 'flight-travel-to');
   appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date');
   appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date');
-  appendCellToRowWithText(row, flightTravel.outboundConnection, 'flight-travel-outbound-connection');
-  appendCellToRowWithText(row, flightTravel.inboundConnection, 'flight-travel-inbound-connection');
+  appendCellToRowWithText(row, flightTravel.outboundConnection?.iataCode, 'flight-travel-outbound-connection');
+  appendCellToRowWithText(row, flightTravel.inboundConnection?.iataCode, 'flight-travel-inbound-connection');
   appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
 
   const editButton = document.createElement('button');

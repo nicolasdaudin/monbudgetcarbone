@@ -1,7 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../../app.module';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { PrismaClient } from '@prisma/client';
@@ -15,7 +14,7 @@ const asyncExec = promisify(exec);
 
 jest.setTimeout(10000);
 
-describe('FlightTravelApiController (e2e)', () => {
+describe.only('FlightTravelApiController (e2e)', () => {
   let app: INestApplication;
 
 
@@ -94,8 +93,8 @@ describe('FlightTravelApiController (e2e)', () => {
         expect(response.body).toEqual([
           {
             id: 1,
-            from: 'MAD',
-            to: 'BRU',
+            from: expect.objectContaining({ iataCode: 'MAD' }),
+            to: expect.objectContaining({ iataCode: 'BRU' }),
             outboundDate: (new Date('2023-05-17')).toISOString(),
             kgCO2eqTotal: 230
           }
@@ -399,7 +398,7 @@ describe('FlightTravelApiController (e2e)', () => {
     }))
   })
 
-  test('PUT /api/flight-travels/:id - edits a complex flight with return and connections and make it simple i.e. only outbound and no connections', async () => {
+  test('PUT /api/flight-travels/:id - edits a complex flight with return and connections and make it simple i.e. outbound and no connections', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
