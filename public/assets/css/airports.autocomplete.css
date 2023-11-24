@@ -7,7 +7,7 @@
   background: white;
 }
 
-.autocomplete-results .result-item {
+.autocomplete-results .autocomplete-item {
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -21,7 +21,7 @@
 
 
 
-.autocomplete-results .result-item:hover {
+.autocomplete-results .autocomplete-item:hover {
   background-color: #f0f0f0;
 }
 

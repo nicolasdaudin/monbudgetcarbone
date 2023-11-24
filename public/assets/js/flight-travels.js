@@ -211,8 +211,8 @@ function addFlightTravelToTable(tbody, flightTravel) {
   appendCellToRowWithText(row, flightTravel.to, 'flight-travel-to');
   appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date');
   appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date');
-  appendCellToRowWithText(row, flightTravel.outboundConnection);
-  appendCellToRowWithText(row, flightTravel.inboundConnection);
+  appendCellToRowWithText(row, flightTravel.outboundConnection, 'flight-travel-outbound-connection');
+  appendCellToRowWithText(row, flightTravel.inboundConnection, 'flight-travel-inbound-connection');
   appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
 
   const editButton = document.createElement('button');

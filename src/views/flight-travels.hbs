@@ -31,58 +31,44 @@
       <fieldset>
         <legend>Ajouter un voyage</legend>
         
-        <label for="fromIataCode">Origine*</label>
-        <input id="addTravelfromIataCode" name="fromIataCode" minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" required/>
-        <div id="autocomplete-results-from-div" class="autocomplete-results from" data-test-id="autocomplete-results-from-div"></div>
-        <span class="airport-from-span" data-test-id="airport-from-span"></span>
+        <div>
+          <label for="fromIataCode">Origine*</label>
+          <input id="fromIataCode" name="fromIataCode" minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" required/>
+          <div id="autocomplete-results-from-div" class="autocomplete-results from" data-test-id="autocomplete-results-from-div"></div>
+          <span class="airport-span from" data-test-id="airport-from-span"></span>
+        </div>
 
-        </br>
 
-        <label for="toIataCode">Destination*</label>
-        <input id="addTraveltoIataCode" name="toIataCode" minlength="3" type="text" data-test-id="add-travel-to-input" autocomplete="off" required/>
-        <div id="autocomplete-results-to-div" class="autocomplete-results to" data-test-id="autocomplete-results-to-div"></div>
-        <span class="airport-to-span" data-test-id="airport-to-span"></span>
+        <div>
+          <label for="toIataCode">Destination*</label>
+          <input id="toIataCode" name="toIataCode" minlength="3" type="text" data-test-id="add-travel-to-input" autocomplete="off" required/>
+          <div id="autocomplete-results-to-div" class="autocomplete-results to" data-test-id="autocomplete-results-to-div"></div>
+          <span class="airport-span to" data-test-id="airport-to-span"></span>
+        </div>
 
-        <br/>
         <label for="addTraveloutboundDate">Date aller*</label>
         <input id="addTraveloutboundDate" name="outboundDate" type="date" 
         data-test-id="add-travel-form-outbound-date" required/>
 
-        <label for="addTraveloutboundConnection">Escale aller</label>
-        <select id="addTraveloutboundConnection" name="outboundConnection" data-test-id="add-travel-form-outbound-connection" >
-          <option value="">Escale aller</option>
-          <option value="MAD">Madrid</option>
-          <option value="PRG">Prague</option>
-          <option value="LYS">Lyon</option>
-          <option value="UIO">Quito</option>
-          <option value="AMS">Amsterdam</option>
-          <option value="BOG">Bogota</option>
-          <option value="JFK">New York</option>
-          <option value="BRU">Bruxelles</option>
-          <option value="CDG">Paris CDG</option>
-          <option value="DUB">Dublin</option>
-        </select>
-        <br/>
+
+        <div>
+          <label for="outboundConnection">Escale aller</label>
+          <input id="outboundConnection" name="outboundConnection" minlength="3" type="text" data-test-id="add-travel-outbound-connection-input" autocomplete="off"/>
+          <div id="autocomplete-results-outbound-connection-div" class="autocomplete-results outbound-connection" data-test-id="autocomplete-results-outbound-connection-div"></div>
+          <span class="airport-span outbound-connection" data-test-id="airport-outbound-connection-span"></span>
+        </div>
+
+        
         <label for="addTravelinboundDate">Date retour</label>
         <input id="addTravelinboundDate" name="inboundDate" type="date" 
         data-test-id="add-travel-form-inbound-date"/>
 
-        <label for="addTravelinboundConnection">Escale retour</label>      
-        <select id="addTravelinboundConnection" name="inboundConnection" data-test-id="add-travel-form-inbound-connection" >
-          <option value="">Escale retour</option>
-          <option value="MAD">Madrid</option>
-          <option value="PRG">Prague</option>
-          <option value="LYS">Lyon</option>
-          <option value="UIO">Quito</option>
-          <option value="AMS">Amsterdam</option>
-          <option value="BOG">Bogota</option>
-          <option value="JFK">New York</option>
-          <option value="BRU">Bruxelles</option>
-          <option value="CDG">Paris CDG</option>
-          <option value="DUB">Dublin</option>
-        </select>
-
-
+        <div>
+          <label for="inboundConnection">Escale retour</label>
+          <input id="inboundConnection" name="inboundConnection" minlength="3" type="text" data-test-id="add-travel-inbound-connection-input" autocomplete="off"/>
+          <div id="autocomplete-results-inbound-connection-div" class="autocomplete-results inbound-connection" data-test-id="autocomplete-results-inbound-connection-div"></div>
+          <span class="airport-span inbound-connection" data-test-id="airport-inbound-connection-span"></span>
+        </div>  
         <button type="submit" class="add-travel-btn" data-test-id="add-travel-btn">Ajouter un voyage</button>
       </fieldset>      
     </form>
