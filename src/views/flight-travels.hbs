@@ -9,24 +9,7 @@
     <h1>Mon Budget Carbone</h1>
     <h2 data-test-id="message">Cher {{ user }}, bienvenue sur la web app de Mon Budget Carbone</h2>
     <span class="user-span" data-user="{{user}}"></span>
-    <form class="airport-form-autocomplete-test">
-      <fieldset>
-        <legend>Rechercher un aéroport</legend>
-        <label for="searchTravelFrom">Aéroport</label>
-        <input id="searchTravelFrom" name="searchTravelFrom" minlength="3" type="text" data-test-id="search-travel-from" />
-        <div id="autocomplete-results" class="autocomplete-results" data-test-id="autocomplete-results"></div>       
-      </fieldset>
-      <fieldset>
-        <!-- table with the results of airports retrieved -->
-        <legend>Résultat de la recherche d'aéroports</legend>
-        <!-- min and max big enough to show all the results -->
-        <span           
-          data-test-id="airports-results" 
-          class="airports-results-span"
-        ></span>
-      </fieldset>
-
-    </form>
+    
     <form class="add-travel-form">
       <fieldset>
         <legend>Ajouter un voyage</legend>

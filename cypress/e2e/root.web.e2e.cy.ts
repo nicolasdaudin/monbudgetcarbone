@@ -63,7 +63,7 @@ describe('RootWebController (e2e)', () => {
 
     });
 
-    it.only('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
+    it('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
       cy.visit('/test-user-cypress');
 
       // Arrange
@@ -156,50 +156,7 @@ describe('RootWebController (e2e)', () => {
       cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'DUB')
     })
   })
-
-  describe('Airports', () => {
-
-    beforeEach(() => {
-      cy.intercept('GET', '**/api/airports?q=PAR', { fixture: 'get-airports-PAR.fixture.json' })
-    })
-
-    it('retrieves a list of airport and selects one airport', () => {
-      cy.visit('/test-user-cypress');
-
-      cy.get('[data-test-id="search-travel-from"]').type('PAR');
-
-
-      cy.get('[data-test-id="autocomplete-results"]').as('autocomplete');
-
-      cy.get('@autocomplete').children().last().as('lastAutocompleteResult');
-
-      // Cliquer sur un div spécifique dans autocomplete-results
-      cy.get('@lastAutocompleteResult').click().then(($div) => {
-        const selectedItemText = $div.text();
-
-        // Vérifier si airports-results-span a été mis à jour avec la même valeur
-        cy.get('.airports-results-span').should('include.text', selectedItemText);
-      });
-    })
-
-    it('retrieves a list of airport and moves to the first airport then to the next one using keyboard', () => {
-      cy.visit('/test-user-cypress');
-
-      cy.get('[data-test-id="search-travel-from"]').as('searchInput');
-
-      cy.get('@searchInput').type('PAR');
-
-      cy.get('@searchInput').type('{downarrow}');
-      cy.get('@searchInput').type('{downarrow}');
-
-      cy.get('.result-item.selected').should('contain.text', 'ORY');
-
-    })
-  })
-
 })
-
-
 
 function typeInsideInput(inputType: 'from' | 'to' | 'outbound-connection' | 'inbound-connection', where: string) {
   cy.get(`[data-test-id="add-travel-${inputType}-input"]`).type(where);
@@ -211,7 +168,6 @@ function typeInsideInput(inputType: 'from' | 'to' | 'outbound-connection' | 'inb
     expect(spanText.toLowerCase()).to.contain(where.toLowerCase());
   });
 }
-
 
 function checkAddedTravelIsCorrect(alias: string,
   check: { checkOutboundConnection?: boolean, checkInboundConnection?: boolean } = { checkOutboundConnection: false, checkInboundConnection: false }) {
