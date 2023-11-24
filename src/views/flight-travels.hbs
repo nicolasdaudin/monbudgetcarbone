@@ -10,45 +10,45 @@
     <h2 data-test-id="message">Cher {{ user }}, bienvenue sur la web app de Mon Budget Carbone</h2>
     <span class="user-span" data-user="{{user}}"></span>
     
-    <form class="add-travel-form">
+    <form class="add-travel-form" data-flight-travel-id="">
       <fieldset>
-        <legend>Ajouter un voyage</legend>
+        <legend>Ajouter/Éditer un voyage</legend>
         
         <div>
-          <label for="fromIataCode">Origine*</label>
-          <input id="fromIataCode" name="fromIataCode" minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" required/>
+          <label for="from-iata-code">Origine*</label>
+          <input id="from-iata-code" name="from-iata-code" minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" required/>
           <div id="autocomplete-results-from-div" class="autocomplete-results from" data-test-id="autocomplete-results-from-div"></div>
           <span class="airport-span from" data-test-id="airport-from-span"></span>
         </div>
 
 
         <div>
-          <label for="toIataCode">Destination*</label>
-          <input id="toIataCode" name="toIataCode" minlength="3" type="text" data-test-id="add-travel-to-input" autocomplete="off" required/>
+          <label for="to-iata-code">Destination*</label>
+          <input id="to-iata-code" name="to-iata-code" minlength="3" type="text" data-test-id="add-travel-to-input" autocomplete="off" required/>
           <div id="autocomplete-results-to-div" class="autocomplete-results to" data-test-id="autocomplete-results-to-div"></div>
           <span class="airport-span to" data-test-id="airport-to-span"></span>
         </div>
 
-        <label for="addTraveloutboundDate">Date aller*</label>
-        <input id="addTraveloutboundDate" name="outboundDate" type="date" 
+        <label for="outbound-date">Date aller*</label>
+        <input id="outbound-date" name="outbound-date" type="date" 
         data-test-id="add-travel-form-outbound-date" required/>
 
 
         <div>
-          <label for="outboundConnection">Escale aller</label>
-          <input id="outboundConnection" name="outboundConnection" minlength="3" type="text" data-test-id="add-travel-outbound-connection-input" autocomplete="off"/>
+          <label for="outbound-connection-iata-code">Escale aller</label>
+          <input id="outbound-connection-iata-code" name="outbound-connection-iata-code" minlength="3" type="text" data-test-id="add-travel-outbound-connection-input" autocomplete="off"/>
           <div id="autocomplete-results-outbound-connection-div" class="autocomplete-results outbound-connection" data-test-id="autocomplete-results-outbound-connection-div"></div>
           <span class="airport-span outbound-connection" data-test-id="airport-outbound-connection-span"></span>
         </div>
 
         
-        <label for="addTravelinboundDate">Date retour</label>
-        <input id="addTravelinboundDate" name="inboundDate" type="date" 
+        <label for="inbound-date">Date retour</label>
+        <input id="inbound-date" name="inbound-date" type="date" 
         data-test-id="add-travel-form-inbound-date"/>
 
         <div>
-          <label for="inboundConnection">Escale retour</label>
-          <input id="inboundConnection" name="inboundConnection" minlength="3" type="text" data-test-id="add-travel-inbound-connection-input" autocomplete="off"/>
+          <label for="inbound-connection-iata-code">Escale retour</label>
+          <input id="inbound-connection-iata-code" name="inbound-connection-iata-code" minlength="3" type="text" data-test-id="add-travel-inbound-connection-input" autocomplete="off"/>
           <div id="autocomplete-results-inbound-connection-div" class="autocomplete-results inbound-connection" data-test-id="autocomplete-results-inbound-connection-div"></div>
           <span class="airport-span inbound-connection" data-test-id="airport-inbound-connection-span"></span>
         </div>  

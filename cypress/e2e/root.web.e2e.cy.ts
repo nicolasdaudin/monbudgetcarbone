@@ -28,8 +28,8 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').first().as('firstFlightTravel');
 
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'MAD')
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'UIO')
+      checkAddedTravelIsCorrect('firstFlightTravel', { from: 'MAD', to: 'UIO' });
+
 
       cy.get('[data-test-id="total-kg-co2"]').should('not.equal', '0');
 
@@ -56,10 +56,7 @@ describe('RootWebController (e2e)', () => {
       cy.get('@flightTravels').should('have.length', 4);
       cy.get('@flightTravels').last().as('lastFlightTravel');
 
-      checkAddedTravelIsCorrect('lastFlightTravel');
-
-
-
+      checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'MAD' });
 
     });
 
@@ -87,22 +84,27 @@ describe('RootWebController (e2e)', () => {
       cy.get('@flightTravels').should('have.length', 4);
       cy.get('@flightTravels').last().as('lastFlightTravel');
 
-      checkAddedTravelIsCorrect('lastFlightTravel', { checkOutboundConnection: true, checkInboundConnection: true });
+      checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'JFK' });
     });
 
     it('edits a basic flight travel and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 
-      // Editing the flight
       cy.get('[data-test-id="row-edit-travel-btn"]').eq(1).click();
 
-      cy.get('[data-test-id="edit-travel-form-to-iata-code"]').select("PRG");
+      // Arrange
+      // Editing the flight
+      // const fromIataCode = "BRU"
+      const toIataCode = "PRG";
+      typeInsideInput('to', toIataCode);
+      cy.get('[data-test-id="add-travel-form-outbound-date"]').type("2023-09-04");
 
-      cy.get('[data-test-id="edit-travel-form-outbound-date"]').type("2023-09-04");
-      cy.get('[data-test-id="edit-travel-btn"]').click();
+      // Act
+      cy.get('[data-test-id="add-travel-btn"]').click();
 
-      // Checking if it's correctly edited
+
+      // Assert
 
       cy.get('[data-test-id="flight-travel"]').as('flightTravels');
 
@@ -110,9 +112,8 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').eq(1).as('secondFlightTravel');
 
-      cy.get('@secondFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'CDG')
-      cy.get('@secondFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'PRG')
-      cy.get('@secondFlightTravel').find('[data-test-id="flight-travel-outbound-date"]').should('have.text', '4 septembre 2023')
+      checkAddedTravelIsCorrect('secondFlightTravel', { from: 'CDG', to: toIataCode, outboundDate: '4 septembre 2023' });
+
     });
 
     it('edits a complex flight travel (with connections and return flights) and updates the list of users travels', () => {
@@ -122,12 +123,20 @@ describe('RootWebController (e2e)', () => {
       // Editing the flight
       cy.get('[data-test-id="row-edit-travel-btn"]').first().click();
 
-      cy.get('[data-test-id="edit-travel-form-to-iata-code"]').select("PRG");
-      cy.get('[data-test-id="edit-travel-form-inbound-connection"]').select("BRU");
-      cy.get('[data-test-id="edit-travel-form-inbound-date"]').type("2023-09-24");
-      cy.get('[data-test-id="edit-travel-btn"]').click();
+      // Arrange
 
-      // Checking if it's correctly edited
+      const toIataCode = "PRG";
+      const inboundConnectionIataCode = "BRU";
+      const inboundDate = "2023-09-24";
+
+      typeInsideInput('to', toIataCode);
+      typeInsideInput('inbound-connection', inboundConnectionIataCode);
+      cy.get('[data-test-id="add-travel-form-inbound-date"]').type(inboundDate);
+
+      // Act
+      cy.get('[data-test-id="add-travel-btn"]').click();
+
+      // Assert
 
       cy.get('[data-test-id="flight-travel"]').as('flightTravels');
 
@@ -135,9 +144,7 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').first().as('firstFlightTravel');
 
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'MAD')
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'PRG')
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-inbound-date"]').should('have.text', '24 septembre 2023')
+      checkAddedTravelIsCorrect('firstFlightTravel', { from: 'MAD', to: toIataCode, inboundConnection: inboundConnectionIataCode, inboundDate: '24 septembre 2023' });
     });
 
     it('deletes a flight travel and updates the list of users travels', () => {
@@ -159,6 +166,7 @@ describe('RootWebController (e2e)', () => {
 })
 
 function typeInsideInput(inputType: 'from' | 'to' | 'outbound-connection' | 'inbound-connection', where: string) {
+  cy.get(`[data-test-id="add-travel-${inputType}-input"]`).clear();
   cy.get(`[data-test-id="add-travel-${inputType}-input"]`).type(where);
   cy.get(`[data-test-id="autocomplete-results-${inputType}-div"]`).as('autocomplete');
 
@@ -170,37 +178,32 @@ function typeInsideInput(inputType: 'from' | 'to' | 'outbound-connection' | 'inb
 }
 
 function checkAddedTravelIsCorrect(alias: string,
-  check: { checkOutboundConnection?: boolean, checkInboundConnection?: boolean } = { checkOutboundConnection: false, checkInboundConnection: false }) {
-  cy.get(`@${alias}`)
-    .find('[data-test-id="flight-travel-from"]')
-    .then(($span) => {
-      const fromText = $span.text();
-      cy.get('[data-test-id="add-travel-from-input"]').should('have.value', fromText);;
-    });
+  expected: { from: string, to: string, outboundConnection?: string, inboundConnection?: string, outboundDate?: string, inboundDate?: string }) {
 
   cy.get(`@${alias}`)
-    .find('[data-test-id="flight-travel-to"]')
-    .then(($span) => {
-      const toText = $span.text();
-      cy.get('[data-test-id="add-travel-to-input"]').should('have.value', toText);;
-    });
+    .find('[data-test-id="flight-travel-from"]').should('have.text', expected.from);
 
-  if (check.checkOutboundConnection) {
+  cy.get(`@${alias}`)
+    .find('[data-test-id="flight-travel-to"]').should('have.text', expected.to);
+
+  if (expected.outboundConnection) {
     cy.get(`@${alias}`)
-      .find('[data-test-id="flight-travel-outbound-connection"]')
-      .then(($span) => {
-        const outboundConnectionText = $span.text();
-        cy.get('[data-test-id="add-travel-outbound-connection-input"]').should('have.value', outboundConnectionText);
-      });
+      .find('[data-test-id="flight-travel-outbound-connection"]').should('have.text', expected.outboundConnection);
   }
 
-  if (check.checkInboundConnection) {
+  if (expected.inboundConnection) {
     cy.get(`@${alias}`)
-      .find('[data-test-id="flight-travel-inbound-connection"]')
-      .then(($span) => {
-        const inboundConnectionText = $span.text();
-        cy.get('[data-test-id="add-travel-inbound-connection-input"]').should('have.value', inboundConnectionText);
-      });
+      .find('[data-test-id="flight-travel-inbound-connection"]').should('have.text', expected.inboundConnection);
+  }
+
+  if (expected.outboundDate) {
+    cy.get(`@${alias}`)
+      .find('[data-test-id="flight-travel-outbound-date"]').should('have.text', expected.outboundDate);
+  }
+
+  if (expected.inboundDate) {
+    cy.get(`@${alias}`)
+      .find('[data-test-id="flight-travel-inbound-date"]').should('have.text', expected.inboundDate);
   }
 
 }

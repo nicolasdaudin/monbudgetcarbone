@@ -12,9 +12,9 @@ export type AddFlightTravelCommand = {
   fromIataCode: string,
   toIataCode: string,
   outboundDate: Date,
-  outboundConnection?: string,
+  outboundConnectionIataCode?: string,
   inboundDate?: Date,
-  inboundConnection?: string,
+  inboundConnectionIataCode?: string,
 }
 
 
@@ -36,9 +36,9 @@ export class AddFlightTravelUseCase {
     let routes: Route[] = [];
 
     let outboundRoutes: Route[];
-    if (addFlightTravelCommand.outboundConnection) {
-      const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.outboundConnection);
-      if (!connectionAirport) throw new AirportNotFound(addFlightTravelCommand.outboundConnection)
+    if (addFlightTravelCommand.outboundConnectionIataCode) {
+      const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.outboundConnectionIataCode);
+      if (!connectionAirport) throw new AirportNotFound(addFlightTravelCommand.outboundConnectionIataCode)
 
       outboundRoutes = this.computeRoutesWithConnection({ fromAirport, toAirport, connectionAirport, type: 'outbound', date: addFlightTravelCommand.outboundDate })
     } else {
@@ -50,9 +50,9 @@ export class AddFlightTravelUseCase {
 
     if (addFlightTravelCommand.inboundDate) {
       let inboundRoutes: Route[];
-      if (addFlightTravelCommand.inboundConnection) {
-        const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.inboundConnection);
-        if (!connectionAirport) { throw new AirportNotFound(addFlightTravelCommand.inboundConnection) }
+      if (addFlightTravelCommand.inboundConnectionIataCode) {
+        const connectionAirport = await this.airportRepository.getByIataCode(addFlightTravelCommand.inboundConnectionIataCode);
+        if (!connectionAirport) { throw new AirportNotFound(addFlightTravelCommand.inboundConnectionIataCode) }
 
         inboundRoutes = this.computeRoutesWithConnection({ fromAirport: toAirport, toAirport: fromAirport, connectionAirport, type: 'inbound', date: addFlightTravelCommand.inboundDate })
       } else {

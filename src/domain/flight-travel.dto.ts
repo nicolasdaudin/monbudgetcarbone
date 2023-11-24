@@ -22,10 +22,10 @@ export class CreateFlightTravelDto {
   inboundDate: string;
 
   @IsOptional()
-  outboundConnection: string;
+  outboundConnectionIataCode: string;
 
   @IsOptional()
-  inboundConnection: string;
+  inboundConnectionIataCode: string;
 
 }
 

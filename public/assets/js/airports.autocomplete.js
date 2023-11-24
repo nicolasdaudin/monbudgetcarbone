@@ -1,12 +1,12 @@
 // @ts-check
-const searchInputFrom = /** @type HTMLInputElement */(document.querySelector('.add-travel-form input[name="fromIataCode"]'));
+const searchInputFrom = /** @type HTMLInputElement */(document.querySelector('.add-travel-form input[name="from-iata-code"]'));
 // same as above but for to
-const searchInputTo = /** @type HTMLInputElement */(document.querySelector('.add-travel-form input[name="toIataCode"]'));
+const searchInputTo = /** @type HTMLInputElement */(document.querySelector('.add-travel-form input[name="to-iata-code"]'));
 // same as above but for outbound connection ,and another one for inbound connection
 const searchInputOutboundConnection = /** @type HTMLInputElement */(document
-  .querySelector('.add-travel-form input[name="outboundConnection"]'));
+  .querySelector('.add-travel-form input[name="outbound-connection-iata-code"]'));
 const searchInputInboundConnection = /** @type HTMLInputElement */(document
-  .querySelector('.add-travel-form input[name="inboundConnection"]'));
+  .querySelector('.add-travel-form input[name="inbound-connection-iata-code"]'));
 
 
 
@@ -143,6 +143,13 @@ autocomplete(searchInputTo);
 autocomplete(searchInputOutboundConnection);
 autocomplete(searchInputInboundConnection);
 
+/**
+ * @typedef {import ('../../../src/domain/airport.ts').Airport} Airport
+ */
+/**
+ * 
+ * @param {Partial<Airport>} airport 
+ */
 function getAirportDescriptionFromAirport(airport) {
   return `${airport.municipality} - ${airport.name} (${airport.iataCode}) - ${airport.country}`
 }

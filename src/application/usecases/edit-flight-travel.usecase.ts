@@ -32,9 +32,9 @@ export class EditFlightTravelUseCase {
     let routes: Route[] = [];
 
     let outboundRoutes: Route[];
-    if (editFlightTravelCommand.outboundConnection) {
-      const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.outboundConnection);
-      if (!connectionAirport) throw new AirportNotFound(editFlightTravelCommand.outboundConnection)
+    if (editFlightTravelCommand.outboundConnectionIataCode) {
+      const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.outboundConnectionIataCode);
+      if (!connectionAirport) throw new AirportNotFound(editFlightTravelCommand.outboundConnectionIataCode)
 
       outboundRoutes = this.computeRoutesWithConnection({ fromAirport, toAirport, connectionAirport, type: 'outbound', date: editFlightTravelCommand.outboundDate })
     } else {
@@ -46,9 +46,9 @@ export class EditFlightTravelUseCase {
 
     if (editFlightTravelCommand.inboundDate) {
       let inboundRoutes: Route[];
-      if (editFlightTravelCommand.inboundConnection) {
-        const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.inboundConnection);
-        if (!connectionAirport) throw new AirportNotFound(editFlightTravelCommand.inboundConnection)
+      if (editFlightTravelCommand.inboundConnectionIataCode) {
+        const connectionAirport = await this.airportRepository.getByIataCode(editFlightTravelCommand.inboundConnectionIataCode);
+        if (!connectionAirport) throw new AirportNotFound(editFlightTravelCommand.inboundConnectionIataCode)
 
         inboundRoutes = this.computeRoutesWithConnection({ fromAirport: toAirport, toAirport: fromAirport, connectionAirport, type: 'inbound', date: editFlightTravelCommand.inboundDate })
       } else {

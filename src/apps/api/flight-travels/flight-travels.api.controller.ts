@@ -22,8 +22,8 @@ export class FlightTravelsApiController {
       toIataCode: body.toIataCode,
       outboundDate: new Date(body.outboundDate),
       ... (body.inboundDate ? { inboundDate: new Date(body.inboundDate) } : {}),
-      ... (body.outboundConnection ? { outboundConnection: body.outboundConnection } : {}),
-      ... (body.inboundConnection ? { inboundConnection: body.inboundConnection } : {}),
+      ... (body.outboundConnectionIataCode ? { outboundConnectionIataCode: body.outboundConnectionIataCode } : {}),
+      ... (body.inboundConnectionIataCode ? { inboundConnectionIataCode: body.inboundConnectionIataCode } : {}),
       user: body.user
     }
     try {
@@ -46,8 +46,8 @@ export class FlightTravelsApiController {
       toIataCode: body.toIataCode,
       outboundDate: new Date(body.outboundDate),
       ... (body.inboundDate ? { inboundDate: new Date(body.inboundDate) } : {}),
-      ... (body.outboundConnection ? { outboundConnection: body.outboundConnection } : {}),
-      ... (body.inboundConnection ? { inboundConnection: body.inboundConnection } : {}),
+      ... (body.outboundConnectionIataCode ? { outboundConnectionIataCode: body.outboundConnectionIataCode } : {}),
+      ... (body.inboundConnectionIataCode ? { inboundConnectionIataCode: body.inboundConnectionIataCode } : {}),
       user: body.user
     }
     try {

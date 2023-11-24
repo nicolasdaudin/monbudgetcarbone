@@ -319,7 +319,7 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
         existingFlightTravel
       ])
 
-      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnection: 'AMS' });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'UIO', outboundDate: new Date('2023-05-17'), outboundConnectionIataCode: 'AMS' });
 
       travelFixture.thenAddedTravelShouldBe(
         flightTravelBuilder()
@@ -500,7 +500,7 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
         existingFlightTravel
       ])
 
-      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundConnection: 'XXX', outboundDate: new Date('2023-05-19') });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundConnectionIataCode: 'XXX', outboundDate: new Date('2023-05-19') });
 
       await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
@@ -532,7 +532,7 @@ describe('Feature: Edit a flight travel and calculate again its corresponding ca
         existingFlightTravel
       ])
 
-      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-19'), inboundDate: new Date('2023-05-28'), inboundConnection: 'XXX' });
+      await travelFixture.whenUserEditsTravel({ id: DEFAULT_ID, user: 'Nicolas', fromIataCode: 'MAD', toIataCode: 'BRU', outboundDate: new Date('2023-05-19'), inboundDate: new Date('2023-05-28'), inboundConnectionIataCode: 'XXX' });
 
       await travelFixture.thenErrorShouldBeAirportNotFoundWithIataCode('XXX');
     })
