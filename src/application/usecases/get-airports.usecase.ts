@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { AirportRepository } from "../airport.repository";
 import { AUTHORIZED_AIRPORT_TYPES, Airport, LARGE_AIRPORT_TYPE, MEDIUM_AIRPORT_TYPE } from "../../domain/airport";
-import { airportContainsQuerySearch, airportStartsWithQuerySearch, reencodeAirport } from "../../tests/airport.helper";
+import { airportContainsQuerySearch, airportStartsWithQuerySearch } from "../../tests/airport.helper";
 
 const LIMIT_AIRPORTS_RETURNED = 10;
 
@@ -65,8 +65,8 @@ export class GetAirportsUseCase {
 
     return uniqueAirports
       .slice(0, LIMIT_AIRPORTS_RETURNED)
-      // .map(filterAirportFields)
-      .map(reencodeAirport)
+    // .map(filterAirportFields)
+    // .map(reencodeAirport)
 
   };
 }

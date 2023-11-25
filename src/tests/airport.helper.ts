@@ -1,7 +1,4 @@
-import utf8 from "utf8";
-import buffer from "buffer";
 import { Airport } from "../domain/airport";
-import { StringDecoder } from "string_decoder";
 
 
 export const airportContainsQuerySearch = (

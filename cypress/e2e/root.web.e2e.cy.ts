@@ -87,11 +87,13 @@ describe('RootWebController (e2e)', () => {
       checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'JFK' });
     });
 
-    it('edits a basic flight travel and updates the list of users travels', () => {
+    it.only('edits a basic flight travel and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 
       cy.get('[data-test-id="row-edit-travel-btn"]').eq(1).click();
+
+      checkFormInputsAreCorrect({ from: 'CDG', to: 'DUB', outboundDate: '2023-09-03' })
 
       // Arrange
       // Editing the flight
@@ -122,6 +124,9 @@ describe('RootWebController (e2e)', () => {
 
       // Editing the flight
       cy.get('[data-test-id="row-edit-travel-btn"]').first().click();
+
+      checkFormInputsAreCorrect({ from: 'MAD', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'BOG', outboundDate: '2023-09-10', inboundDate: '2023-09-25' });
+
 
       // Arrange
 
@@ -208,4 +213,20 @@ function checkAddedTravelIsCorrect(alias: string,
 
 }
 
+/**
+ * 
+ * @param expected 
+ * 
+ */
+function checkFormInputsAreCorrect(expected: { from: string; to: string; outboundConnection?: string; inboundConnection?: string; outboundDate: string; inboundDate?: string; }) {
+  cy.get('[data-test-id="add-travel-from-input"]').should('have.value', expected.from);
+  cy.get('[data-test-id="add-travel-to-input"]').should('have.value', expected.to);
+  cy.get('[data-test-id="add-travel-form-outbound-date"]').should('have.value', expected.outboundDate);
+  if (expected.outboundConnection)
+    cy.get('[data-test-id="add-travel-outbound-connection-input"]').should('have.value', expected.outboundConnection);
+  if (expected.inboundConnection)
+    cy.get('[data-test-id="add-travel-inbound-connection-input"]').should('have.value', expected.inboundConnection);
+  if (expected.inboundDate)
+    cy.get('[data-test-id="add-travel-form-inbound-date"]').should('have.value', expected.inboundDate);
+}
 

@@ -7,6 +7,7 @@ import {
 } from '../domain/airport';
 import * as fs from 'fs';
 import * as path from 'path';
+import { reencodeAirport } from '../tests/airport.helper';
 
 type JSONAirport = {
   continent: string;
@@ -55,7 +56,7 @@ export class FileAirportRepository implements AirportRepository {
       (airport) => airport.iataCode.toLowerCase() === iataCode.toLowerCase(),
     );
 
-    return airport;
+    return reencodeAirport(airport);
   }
 
   filterAirportsByType(filters: AirportType[]): Airport[] {
@@ -63,7 +64,7 @@ export class FileAirportRepository implements AirportRepository {
       filters.includes(airport.type),
     );
 
-    return airports;
+    return airports.map(reencodeAirport);
   }
 }
 

@@ -251,16 +251,18 @@ function clearForm() {
 
 /**
  * 
- * @param {*} row 
+ * @param {*} cell 
  * @param {'from'|'to'|'outbound-connection'|'inbound-connection'} inputType 
  */
-function updateFormInputTypeWithRow(row, inputType) {
+function updateFormInputTypeWithCell(cell, inputType) {
+  if (!cell.innerText || !cell.dataset.name) return;
+
   const input = /** @type HTMLInputElement */ (formAddFlightTravel.querySelector(`input[name=${inputType}-iata-code]`));
-  input.value = row.innerText;
+  input.value = cell.innerText;
   const span = /** @type HTMLSpanElement */ (document.querySelector(`.airport-span.${inputType}`));
 
   /** @type {Airport} */
-  const { name, country, municipality, iataCode } = row.dataset;
+  const { name, country, municipality, iataCode } = cell.dataset;
   span.innerText = getAirportDescriptionFromAirport({
     name,
     country,
@@ -271,39 +273,39 @@ function updateFormInputTypeWithRow(row, inputType) {
 
 
 function prepareEditForm(parentRowTrElement, id) {
-  const fromIataCodeRow = parentRowTrElement.querySelector('td:nth-child(1)');
+  const fromIataCodeCell = parentRowTrElement.querySelector('td:nth-child(1)');
   const fromIataCodeEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=fromIataCode]'));
-  fromIataCodeEditForm.value = fromIataCodeRow.innerText;
-  updateFormInputTypeWithRow(fromIataCodeRow, 'from');
+  fromIataCodeEditForm.value = fromIataCodeCell.innerText;
+  updateFormInputTypeWithCell(fromIataCodeCell, 'from');
 
-  const toIataCodeRow = parentRowTrElement.querySelector('td:nth-child(2)');
+  const toIataCodeCell = parentRowTrElement.querySelector('td:nth-child(2)');
   const toIataCodeEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=toIataCode]'));
-  toIataCodeEditForm.value = toIataCodeRow.innerText;
-  updateFormInputTypeWithRow(toIataCodeRow, 'to');
+  toIataCodeEditForm.value = toIataCodeCell.innerText;
+  updateFormInputTypeWithCell(toIataCodeCell, 'to');
 
 
-  const outboundDateRow = parentRowTrElement.querySelector('td:nth-child(3)');
+  const outboundDateCell = parentRowTrElement.querySelector('td:nth-child(3)');
   const outboundDateEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('input[name=outboundDate]'));
-  outboundDateEditForm.value = DateTime.fromFormat(outboundDateRow.innerText, "DDD").toISODate();
+  outboundDateEditForm.value = DateTime.fromFormat(outboundDateCell.innerText, "DDD").toISODate();
   const outboundDateAddForm = /** @type HTMLInputElement */(formAddFlightTravel.querySelector('input[name=outbound-date]'));
-  outboundDateAddForm.value = DateTime.fromFormat(outboundDateRow.innerText, "DDD").toISODate();
+  outboundDateAddForm.value = DateTime.fromFormat(outboundDateCell.innerText, "DDD").toISODate();
 
-  const inboundDateRow = parentRowTrElement.querySelector('td:nth-child(4)');
+  const inboundDateCell = parentRowTrElement.querySelector('td:nth-child(4)');
   const inboundDateEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('input[name=inboundDate]'));
-  inboundDateEditForm.value = DateTime.fromFormat(inboundDateRow.innerText, "DDD").toISODate();
+  inboundDateEditForm.value = DateTime.fromFormat(inboundDateCell.innerText, "DDD").toISODate();
   const inboundDateAddForm = /** @type HTMLInputElement */(formAddFlightTravel.querySelector('input[name=inbound-date]'));
-  inboundDateAddForm.value = DateTime.fromFormat(inboundDateRow.innerText, "DDD").toISODate();
+  inboundDateAddForm.value = DateTime.fromFormat(inboundDateCell.innerText, "DDD").toISODate();
 
-  const outboundConnectionRow = parentRowTrElement.querySelector('td:nth-child(5)');
+  const outboundConnectionCell = parentRowTrElement.querySelector('td:nth-child(5)');
   const outboundConnectionEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=outboundConnection]'));
-  outboundConnectionEditForm.value = outboundConnectionRow.innerText;
-  updateFormInputTypeWithRow(outboundConnectionRow, 'outbound-connection');
+  outboundConnectionEditForm.value = outboundConnectionCell.innerText;
+  updateFormInputTypeWithCell(outboundConnectionCell, 'outbound-connection');
 
 
-  const inboundConnectionRow = parentRowTrElement.querySelector('td:nth-child(6)');
+  const inboundConnectionCell = parentRowTrElement.querySelector('td:nth-child(6)');
   const inboundConnectionEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=inboundConnection]'));
-  inboundConnectionEditForm.value = inboundConnectionRow.innerText;
-  updateFormInputTypeWithRow(outboundConnectionRow, 'inbound-connection');
+  inboundConnectionEditForm.value = inboundConnectionCell.innerText;
+  updateFormInputTypeWithCell(inboundConnectionCell, 'inbound-connection');
 
   formEditFlightTravel.setAttribute('data-flight-travel-id', id);
   formAddFlightTravel.setAttribute('data-flight-travel-id', id);
@@ -334,6 +336,8 @@ function addFlightTravelToTable(tbody, flightTravel) {
   deleteButton.textContent = 'Supprimer ce voyage';
   deleteButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-delete-travel-btn');
   appendCellToRowWithElement(row, deleteButton);
+
+  console.log({ flightTravel });
 }
 function convertToCamelCase(key) {
   return key.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
