@@ -7,10 +7,9 @@ const user = userSpan.dataset.user;
 const flightTravelsContainer = /** @type HTMLDivElement */ (document.querySelector('.flight-travels-container'));
 const flightTravelsTable = /** @type HTMLTableElement */ (document.querySelector('.flight-travels-table'));
 const spanKgCO2 = /** @type HTMLSpanElement */ (document.querySelector('.total-kg-co2-span'));
-const btnAddFlightTravel = /** @type HTMLButtonElement */ (document.querySelector('.add-travel-btn'));
-const formAddFlightTravel = /** @type HTMLFormElement */ (document.querySelector('.add-travel-form'))
-// const btnEditFlightTravel = /** @type HTMLButtonElement */ (document.querySelector('.edit-travel-btn'));
-
+const formFlightTravel = /** @type HTMLFormElement */ (document.querySelector('.add-travel-form'))
+const formLegend = /** @type HTMLLegendElement **/(formFlightTravel.querySelector('legend'))
+const formSubmitButton = /** @type HTMLButtonElement **/(formFlightTravel.querySelector('button[type=submit]'))
 /**
  * @typedef {Object} Axios
  * @property {function} get
@@ -58,9 +57,9 @@ flightTravelsTable.addEventListener('click', e => {
 
 });
 
-formAddFlightTravel.addEventListener('submit', async (e) => {
+formFlightTravel.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const id = formAddFlightTravel.dataset.flightTravelId;
+  const id = formFlightTravel.dataset.flightTravelId;
   if (id) {
     editFlightTravel(id);
   } else {
@@ -133,7 +132,7 @@ const addFlightTravel = async () => {
 
   console.log(`Adding a flight travel for user ${user}`);
 
-  const formData = new FormData(formAddFlightTravel);
+  const formData = new FormData(formFlightTravel);
 
   const bodyParams = Object.fromEntries(
     Array.from(formData.entries())
@@ -159,7 +158,7 @@ const editFlightTravel = async (id) => {
 
   console.log(`Editing flight travel with id ${id} for user ${user}`);
 
-  const formData = new FormData(formAddFlightTravel);
+  const formData = new FormData(formFlightTravel);
 
   const bodyParams = Object.fromEntries(
     Array.from(formData.entries())
@@ -234,8 +233,15 @@ function clearForm() {
     airportSpan.innerText = '';
   });
 
+  // clear the content of the data id attribute of the form
+  formFlightTravel.removeAttribute('data-flight-travel-id');
 
-  formAddFlightTravel.reset();
+  // legend of the form is back to 'Ajouter un voyage'
+  formLegend.innerText = 'Ajouter un voyage';
+  // submit button of the form is back to 'Ajouter un voyage'
+  formSubmitButton.innerText = 'Ajouter un voyage';
+
+  formFlightTravel.reset();
 }
 
 /**
@@ -246,7 +252,7 @@ function clearForm() {
 function updateFormInputTypeWithCell(cell, inputType) {
   if (!cell.innerText || !cell.dataset.name) return;
 
-  const input = /** @type HTMLInputElement */ (formAddFlightTravel.querySelector(`input[name=${inputType}-iata-code]`));
+  const input = /** @type HTMLInputElement */ (formFlightTravel.querySelector(`input[name=${inputType}-iata-code]`));
   input.value = cell.innerText;
   const span = /** @type HTMLSpanElement */ (document.querySelector(`.airport-span.${inputType}`));
 
@@ -270,11 +276,11 @@ function prepareEditForm(parentRowTrElement, id) {
 
 
   const outboundDateCell = parentRowTrElement.querySelector('td:nth-child(3)');
-  const outboundDateAddForm = /** @type HTMLInputElement */(formAddFlightTravel.querySelector('input[name=outbound-date]'));
+  const outboundDateAddForm = /** @type HTMLInputElement */(formFlightTravel.querySelector('input[name=outbound-date]'));
   outboundDateAddForm.value = DateTime.fromFormat(outboundDateCell.innerText, "DDD").toISODate();
 
   const inboundDateCell = parentRowTrElement.querySelector('td:nth-child(4)');
-  const inboundDateAddForm = /** @type HTMLInputElement */(formAddFlightTravel.querySelector('input[name=inbound-date]'));
+  const inboundDateAddForm = /** @type HTMLInputElement */(formFlightTravel.querySelector('input[name=inbound-date]'));
   inboundDateAddForm.value = DateTime.fromFormat(inboundDateCell.innerText, "DDD").toISODate();
 
   const outboundConnectionCell = parentRowTrElement.querySelector('td:nth-child(5)');
@@ -284,7 +290,10 @@ function prepareEditForm(parentRowTrElement, id) {
   const inboundConnectionCell = parentRowTrElement.querySelector('td:nth-child(6)');
   updateFormInputTypeWithCell(inboundConnectionCell, 'inbound-connection');
 
-  formAddFlightTravel.setAttribute('data-flight-travel-id', id);
+  formFlightTravel.setAttribute('data-flight-travel-id', id);
+
+  formLegend.innerText = 'Éditer un voyage';
+  formSubmitButton.innerText = 'Éditer un voyage';
 }
 
 
