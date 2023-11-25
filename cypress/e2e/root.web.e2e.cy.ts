@@ -87,7 +87,7 @@ describe('RootWebController (e2e)', () => {
       checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'JFK' });
     });
 
-    it.only('edits a basic flight travel and updates the list of users travels', () => {
+    it('edits a basic flight travel and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 

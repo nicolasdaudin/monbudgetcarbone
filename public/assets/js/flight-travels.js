@@ -9,8 +9,7 @@ const flightTravelsTable = /** @type HTMLTableElement */ (document.querySelector
 const spanKgCO2 = /** @type HTMLSpanElement */ (document.querySelector('.total-kg-co2-span'));
 const btnAddFlightTravel = /** @type HTMLButtonElement */ (document.querySelector('.add-travel-btn'));
 const formAddFlightTravel = /** @type HTMLFormElement */ (document.querySelector('.add-travel-form'))
-const btnEditFlightTravel = /** @type HTMLButtonElement */ (document.querySelector('.edit-travel-btn'));
-const formEditFlightTravel = /** @type HTMLFormElement */ (document.querySelector('.edit-travel-form'));
+// const btnEditFlightTravel = /** @type HTMLButtonElement */ (document.querySelector('.edit-travel-btn'));
 
 /**
  * @typedef {Object} Axios
@@ -71,14 +70,6 @@ formAddFlightTravel.addEventListener('submit', async (e) => {
   clearForm();
 })
 
-formEditFlightTravel.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const id = formEditFlightTravel.dataset.flightTravelId;
-  editFlightTravel(id);
-  formEditFlightTravel.reset();
-})
-
-
 const appendCellToRowWithText = (row, text, testAttributeValue) => {
   let originCell = row.insertCell();
 
@@ -88,8 +79,6 @@ const appendCellToRowWithText = (row, text, testAttributeValue) => {
 
   originCell.innerText = text ?? '';
 }
-
-
 
 /**
  * 
@@ -274,40 +263,27 @@ function updateFormInputTypeWithCell(cell, inputType) {
 
 function prepareEditForm(parentRowTrElement, id) {
   const fromIataCodeCell = parentRowTrElement.querySelector('td:nth-child(1)');
-  const fromIataCodeEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=fromIataCode]'));
-  fromIataCodeEditForm.value = fromIataCodeCell.innerText;
   updateFormInputTypeWithCell(fromIataCodeCell, 'from');
 
   const toIataCodeCell = parentRowTrElement.querySelector('td:nth-child(2)');
-  const toIataCodeEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=toIataCode]'));
-  toIataCodeEditForm.value = toIataCodeCell.innerText;
   updateFormInputTypeWithCell(toIataCodeCell, 'to');
 
 
   const outboundDateCell = parentRowTrElement.querySelector('td:nth-child(3)');
-  const outboundDateEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('input[name=outboundDate]'));
-  outboundDateEditForm.value = DateTime.fromFormat(outboundDateCell.innerText, "DDD").toISODate();
   const outboundDateAddForm = /** @type HTMLInputElement */(formAddFlightTravel.querySelector('input[name=outbound-date]'));
   outboundDateAddForm.value = DateTime.fromFormat(outboundDateCell.innerText, "DDD").toISODate();
 
   const inboundDateCell = parentRowTrElement.querySelector('td:nth-child(4)');
-  const inboundDateEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('input[name=inboundDate]'));
-  inboundDateEditForm.value = DateTime.fromFormat(inboundDateCell.innerText, "DDD").toISODate();
   const inboundDateAddForm = /** @type HTMLInputElement */(formAddFlightTravel.querySelector('input[name=inbound-date]'));
   inboundDateAddForm.value = DateTime.fromFormat(inboundDateCell.innerText, "DDD").toISODate();
 
   const outboundConnectionCell = parentRowTrElement.querySelector('td:nth-child(5)');
-  const outboundConnectionEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=outboundConnection]'));
-  outboundConnectionEditForm.value = outboundConnectionCell.innerText;
   updateFormInputTypeWithCell(outboundConnectionCell, 'outbound-connection');
 
 
   const inboundConnectionCell = parentRowTrElement.querySelector('td:nth-child(6)');
-  const inboundConnectionEditForm = /** @type HTMLInputElement */(formEditFlightTravel.querySelector('select[name=inboundConnection]'));
-  inboundConnectionEditForm.value = inboundConnectionCell.innerText;
   updateFormInputTypeWithCell(inboundConnectionCell, 'inbound-connection');
 
-  formEditFlightTravel.setAttribute('data-flight-travel-id', id);
   formAddFlightTravel.setAttribute('data-flight-travel-id', id);
 }
 
@@ -337,7 +313,6 @@ function addFlightTravelToTable(tbody, flightTravel) {
   deleteButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-delete-travel-btn');
   appendCellToRowWithElement(row, deleteButton);
 
-  console.log({ flightTravel });
 }
 function convertToCamelCase(key) {
   return key.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
