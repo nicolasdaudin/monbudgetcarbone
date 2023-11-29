@@ -3,6 +3,8 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
+    viewportHeight: 1200,
+    viewportWidth: 1200,
     baseUrl: 'http://localhost:3000',
     setupNodeEvents(on, config) {
       on('task', {
@@ -128,7 +130,8 @@ export default defineConfig({
             }
           })
 
-          await prismaClient.$connect();
+          await prismaClient.$disconnect();
+
           return null;
         }
       });// implement node event listeners here

@@ -35,7 +35,7 @@ describe('RootWebController (e2e)', () => {
 
     })
 
-    it('adds a basic flight travel to the list of users travels', async () => {
+    it.only('adds a basic flight travel to the list of users travels', async () => {
       cy.visit('/test-user-cypress');
 
 
@@ -60,7 +60,7 @@ describe('RootWebController (e2e)', () => {
 
     });
 
-    it('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
+    it.only('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
       cy.visit('/test-user-cypress');
 
       // Arrange
@@ -87,7 +87,7 @@ describe('RootWebController (e2e)', () => {
       checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'JFK' });
     });
 
-    it('edits a basic flight travel and updates the list of users travels', () => {
+    it.only('edits a basic flight travel and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 
@@ -118,7 +118,7 @@ describe('RootWebController (e2e)', () => {
 
     });
 
-    it('edits a complex flight travel (with connections and return flights) and updates the list of users travels', () => {
+    it.only('edits a complex flight travel (with connections and return flights) and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 

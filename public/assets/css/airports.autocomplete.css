@@ -1,7 +1,7 @@
 .autocomplete-results {
   position: absolute;
   z-index: 1000;
-  width: 300px;
+  /* width: 300px; */
   max-height: 200px;
   overflow-y: auto;
   background: white;

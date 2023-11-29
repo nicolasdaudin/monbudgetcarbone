@@ -15,10 +15,12 @@ const KEYBOARD_UP_ARROW_CODE = 38;
 const KEYBOARD_ENTER_CODE = 13;
 
 
-function autocomplete(searchInput) {
+function autocomplete(searchInput, isNewAutocomplete = false) {
 
   const autocompleteContainer = searchInput.parentNode.querySelector('.autocomplete-results');
-  const searchResultsSpan = searchInput.parentNode.querySelector('.airport-span');
+  const searchResultsSpan = (isNewAutocomplete) ? searchInput.parentNode.parentNode.querySelector('.airport-span')
+    : searchInput.parentNode.querySelector('.airport-span');
+
 
   let selectedIndexFrom = -1;
 
@@ -138,10 +140,10 @@ function autocomplete(searchInput) {
   searchInput.addEventListener('input', handleAutocompleteSearchInput);
 }
 
-autocomplete(searchInputFrom);
-autocomplete(searchInputTo);
-autocomplete(searchInputOutboundConnection);
-autocomplete(searchInputInboundConnection);
+autocomplete(searchInputFrom, true);
+autocomplete(searchInputTo, true);
+autocomplete(searchInputOutboundConnection, true);
+autocomplete(searchInputInboundConnection, true);
 
 /**
  * @typedef {import ('../../../src/domain/airport.ts').Airport} Airport

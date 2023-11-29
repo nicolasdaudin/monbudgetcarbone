@@ -6,10 +6,12 @@ const userSpan = /** @type HTMLSpanElement */ (document.querySelector('.user-spa
 const user = userSpan.dataset.user;
 const flightTravelsContainer = /** @type HTMLDivElement */ (document.querySelector('.flight-travels-container'));
 const flightTravelsTable = /** @type HTMLTableElement */ (document.querySelector('.flight-travels-table'));
-const spanKgCO2 = /** @type HTMLSpanElement */ (document.querySelector('.total-kg-co2-span'));
 const formFlightTravel = /** @type HTMLFormElement */ (document.querySelector('.add-travel-form'))
-const formLegend = /** @type HTMLLegendElement **/(formFlightTravel.querySelector('legend'))
+const formLegend = /** @type HTMLLegendElement **/(formFlightTravel.querySelector('.travel-form-title'))
 const formSubmitButton = /** @type HTMLButtonElement **/(formFlightTravel.querySelector('button[type=submit]'))
+
+const CO2_QUOTA_KG = 2000;
+
 /**
  * @typedef {Object} Axios
  * @property {function} get
@@ -85,7 +87,6 @@ const appendCellToRowWithText = (row, text, testAttributeValue) => {
  * @param {Airport} airport 
  * @param {string} testAttributeValue 
  */
-
 const appendCellToRowWithAirport = (row, airport, testAttributeValue) => {
   let originCell = row.insertCell();
 
@@ -101,7 +102,7 @@ const appendCellToRowWithAirport = (row, airport, testAttributeValue) => {
   }
 
 
-  originCell.innerText = airport?.iataCode ?? '';
+  originCell.innerText = airport ? `${airport.municipality} (${airport.iataCode})` : '';
 }
 
 const appendCellToRowWithElement = (row, element) => {
@@ -221,10 +222,40 @@ const fetchFlightTravels = async () => {
     addFlightTravelToTable(tbody, flightTravel);
   });
 
-  spanKgCO2.innerText = (flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0))
+  const totalCO2 = flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0);
 
+  handleProgressBar(totalCO2);
 }
 fetchFlightTravels();
+
+function handleProgressBar(totalCO2) {
+  // update progress bar with totalCO2 and CO2_QUOTA_KG. Progress bar is a markup 'progress' with class 'progress co2-progress', you can use co2-progress. Its attributes are value and max, and the inner text should be the total CO2 in kg like "Vous avez utilisé 1000 kg de CO2 sur 2000 kg autorisés"
+  const progressBar = /** @type {HTMLProgressElement}*/ (document.querySelector('.co2-progress'));
+  progressBar.value = totalCO2;
+  progressBar.max = CO2_QUOTA_KG;
+  // remove all classes from the progress bar
+  progressBar.classList.remove('is-danger');
+  progressBar.classList.remove('is-warning');
+  progressBar.classList.remove('is-success');
+
+  // if totalCO2 is greater than 75% of CO2_QUOTA_KG, add the class 'is-danger' to the progress bar, otherwise remove it
+  if (totalCO2 > CO2_QUOTA_KG * 0.75) {
+    progressBar.classList.add('is-danger');
+  }
+  // if totalCO2 is between 50 and 75% of CO2_QUOTA_KG, add the class 'is-warning' to the progress bar, otherwise remove it
+  if (totalCO2 > CO2_QUOTA_KG * 0.5 && totalCO2 <= CO2_QUOTA_KG * 0.75) {
+    progressBar.classList.add('is-warning');
+  }
+  // if totalCO2 is less than 50% of CO2_QUOTA_KG, add the class 'is-success' to the progress bar, otherwise remove it
+  if (totalCO2 <= CO2_QUOTA_KG * 0.5) {
+    progressBar.classList.add('is-success');
+  }
+
+  const percentageOfCO2Used = Math.round((totalCO2 / CO2_QUOTA_KG) * 100);
+
+  const progressValueParagraph = /** @type {HTMLParagraphElement}*/ (document.querySelector('.progress-value'));
+  progressValueParagraph.innerText = `Vous avez utilisé ${totalCO2} kg de CO2 sur votre quota de ${CO2_QUOTA_KG} kg (${percentageOfCO2Used} %)`;
+}
 
 function clearForm() {
   const airportSpans = /** @type {HTMLSpanElement[]} */ (Array.from(document.querySelectorAll('.airport-span')));
@@ -310,17 +341,42 @@ function addFlightTravelToTable(tbody, flightTravel) {
   appendCellToRowWithAirport(row, flightTravel.inboundConnection, 'flight-travel-inbound-connection');
   appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
 
-  const editButton = document.createElement('button');
+  // const editButton = document.createElement('button');
+  // editButton.classList.add('row-edit-travel-btn');
+  // editButton.textContent = 'Éditer ce voyage';
+  // editButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-edit-travel-btn');
+  // appendCellToRowWithElement(row, editButton);
+
+  const editButton = document.createElement('a');
   editButton.classList.add('row-edit-travel-btn');
-  editButton.textContent = 'Éditer ce voyage';
+  // editButton.classList.add('button');
   editButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-edit-travel-btn');
+  // inside this button, add a span with class icon and is-small and a fontawesome icon pen-to-square
+  const editButtonSpan = document.createElement('span');
+  editButtonSpan.classList.add('icon');
+  editButtonSpan.classList.add('is-medium');
+  const editButtonIcon = document.createElement('i');
+  editButtonIcon.classList.add('fas');
+  editButtonIcon.classList.add('fa-pen-square');
+  editButtonSpan.appendChild(editButtonIcon);
+  editButton.appendChild(editButtonSpan);
+
   appendCellToRowWithElement(row, editButton);
 
-  const deleteButton = document.createElement('button');
+  const deleteButton = document.createElement('a');
   deleteButton.classList.add('row-delete-travel-btn');
-  deleteButton.textContent = 'Supprimer ce voyage';
+  // deleteButton.classList.add('delete');
   deleteButton.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'row-delete-travel-btn');
+  const deleteButtonSpan = document.createElement('span');
+  deleteButtonSpan.classList.add('icon');
+  deleteButtonSpan.classList.add('is-medium');
+  const deleteButtonIcon = document.createElement('i');
+  deleteButtonIcon.classList.add('fas');
+  deleteButtonIcon.classList.add('fa-trash');
+  deleteButtonSpan.appendChild(deleteButtonIcon);
+  deleteButton.appendChild(deleteButtonSpan);
   appendCellToRowWithElement(row, deleteButton);
+
 
 }
 function convertToCamelCase(key) {

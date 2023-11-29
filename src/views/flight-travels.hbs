@@ -4,82 +4,177 @@
     <meta charset="utf-8" />
     <title>App</title>
     <link rel="stylesheet" href="assets/css/airports.autocomplete.css" />
+    <link rel="stylesheet" href="assets/css/mystyles.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <script src="https://kit.fontawesome.com/1c9b993f88.js" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>Mon Budget Carbone</h1>
-    <h2 data-test-id="message">Cher {{ user }}, bienvenue sur la web app de Mon Budget Carbone</h2>
-    <span class="user-span" data-user="{{user}}"></span>
-    
-    <form class="add-travel-form" data-flight-travel-id="">
-      <fieldset>
-        <legend>Ajouter un voyage</legend>
+    <section class="hero is-primary is-small">
+      <div class="hero-body">
+        <h1 class="title is-1">Mon Budget Carbone</h1>
+        <h2 class="subtitle is-3">Ton app pour mesurer ton empreinte CO2 au quotidien</h2>
+        <span class="user-span" data-user="{{user}}"></span>
+      </div>
+    </section>
+    <section class="section">
+        <div class="container">
+          <h4 class="subtitle is-5" data-test-id="message">Bienvenue {{ user }}</h2>
+        </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <form class="add-travel-form" data-flight-travel-id="">
+            <p class="title is-3 travel-form-title">Ajouter un voyage</legend>
+            
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="from-iata-code">Origine*</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input id="from-iata-code" name="from-iata-code" class="input is-normal"  minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" placeholder="Votre aéroport de départ" required/>
+                    <span class="icon is-medium is-left">
+                      <i class="fas fa-plane-departure"></i>
+                    </span>
+                    <div id="autocomplete-results-from-div" class="autocomplete-results from" data-test-id="autocomplete-results-from-div"></div>
+                  </div>
+                  <span class="help airport-span from" data-test-id="airport-from-span"></span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="to-iata-code">Destination*</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input id="to-iata-code" name="to-iata-code" class="input is-normal"  minlength="3" type="text" data-test-id="add-travel-to-input" autocomplete="off" placeholder="Votre aéroport d'arrivée"  required/>
+                    <span class="icon is-medium is-left">
+                      <i class="fas fa-plane-arrival"></i>
+                    </span>
+                    <div id="autocomplete-results-to-div" class="autocomplete-results to" data-test-id="autocomplete-results-to-div"></div>
+                  </div>
+                  <span class="help airport-span to" data-test-id="airport-to-span"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="outbound-date">Date aller*</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <input id="outbound-date" name="outbound-date" class="input is-normal" type="date" data-test-id="add-travel-form-outbound-date" required/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="outbound-connection-iata-code">Escale aller</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input id="outbound-connection-iata-code" name="outbound-connection-iata-code" class="input is-normal" minlength="3" type="text" data-test-id="add-travel-outbound-connection-input" autocomplete="off" placeholder="Votre escale à l'aller" />
+                    <span class="icon is-medium is-left">
+                      <i class="fas fa-code-commit"></i>
+                    </span>
+                    <div id="autocomplete-results-outbound-connection-div" class="autocomplete-results outbound-connection" data-test-id="autocomplete-results-outbound-connection-div"></div>
+                  </div>
+                  <span class="help airport-span outbound-connection" data-test-id="airport-outbound-connection-span"></span>
+                </div>
+              </div>
+            </div>
+
+            
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="inbound-date">Date retour</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control">
+                    <input id="inbound-date" name="inbound-date" class="input is-normal" type="date" data-test-id="add-travel-form-inbound-date"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field is-horizontal">
+              <div class="field-label is-normal">
+                <label class="label" for="inbound-connection-iata-code">Escale retour</label>
+              </div>
+              <div class="field-body">
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <input id="inbound-connection-iata-code" name="inbound-connection-iata-code" class="input is-normal" minlength="3" type="text" data-test-id="add-travel-inbound-connection-input" autocomplete="off" placeholder="Votre escale au retour" />
+                    <span class="icon is-medium is-left">
+                      <i class="fas fa-code-commit"></i>
+                    </span>
+                    <div id="autocomplete-results-inbound-connection-div" class="autocomplete-results inbound-connection" data-test-id="autocomplete-results-inbound-connection-div"></div>
+                  </div>
+                  <span class="help airport-span inbound-connection" data-test-id="airport-inbound-connection-span"></span>
+                </div>
+              </div>
+            </div>  
+
+            <div class="buttons is-centered ">
+              <button type="submit" class="button is-primary add-travel-btn" data-test-id="add-travel-btn">Ajouter un voyage</button>
+            </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container flight-travels-container" style="display: none;">
         
-        <div>
-          <label for="from-iata-code">Origine*</label>
-          <input id="from-iata-code" name="from-iata-code" minlength="3" type="text" data-test-id="add-travel-from-input" autocomplete="off" required/>
-          <div id="autocomplete-results-from-div" class="autocomplete-results from" data-test-id="autocomplete-results-from-div"></div>
-          <span class="airport-span from" data-test-id="airport-from-span"></span>
-        </div>
+        <div class="table-wrapper has-mobile-cards">      
+          <table class="table is-narrow is-striped is-hoverable is-fullwidth  has-text-centered flight-travels-table" >
+            <thead>
+              <tr>
+                <th class="has-text-centered">Origine</th>
 
+                <th class="has-text-centered">Destination</th>
+                <th class="has-text-centered">Aller</th>
+                <th class="has-text-centered">Retour</th>
+                <th class="has-text-centered">Escale aller</th>
+                <th class="has-text-centered">Escale retour</th>
+                <th class="has-text-centered">Empreinte carbone</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <td class="is-size-5" colspan="9">                  
+                  <div class="progress-wrapper">
+                    <progress class="progress co2-progress is-success is-medium" value="0" max="100">0%</progress>
+                    <p class="progress-value has-text-black">0%</p>
+                  </div>
+                  </p>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>         
+      </div>    
+    </section>     
 
-        <div>
-          <label for="to-iata-code">Destination*</label>
-          <input id="to-iata-code" name="to-iata-code" minlength="3" type="text" data-test-id="add-travel-to-input" autocomplete="off" required/>
-          <div id="autocomplete-results-to-div" class="autocomplete-results to" data-test-id="autocomplete-results-to-div"></div>
-          <span class="airport-span to" data-test-id="airport-to-span"></span>
-        </div>
-
-        <label for="outbound-date">Date aller*</label>
-        <input id="outbound-date" name="outbound-date" type="date" 
-        data-test-id="add-travel-form-outbound-date" required/>
-
-
-        <div>
-          <label for="outbound-connection-iata-code">Escale aller</label>
-          <input id="outbound-connection-iata-code" name="outbound-connection-iata-code" minlength="3" type="text" data-test-id="add-travel-outbound-connection-input" autocomplete="off"/>
-          <div id="autocomplete-results-outbound-connection-div" class="autocomplete-results outbound-connection" data-test-id="autocomplete-results-outbound-connection-div"></div>
-          <span class="airport-span outbound-connection" data-test-id="airport-outbound-connection-span"></span>
-        </div>
-
-        
-        <label for="inbound-date">Date retour</label>
-        <input id="inbound-date" name="inbound-date" type="date" 
-        data-test-id="add-travel-form-inbound-date"/>
-
-        <div>
-          <label for="inbound-connection-iata-code">Escale retour</label>
-          <input id="inbound-connection-iata-code" name="inbound-connection-iata-code" minlength="3" type="text" data-test-id="add-travel-inbound-connection-input" autocomplete="off"/>
-          <div id="autocomplete-results-inbound-connection-div" class="autocomplete-results inbound-connection" data-test-id="autocomplete-results-inbound-connection-div"></div>
-          <span class="airport-span inbound-connection" data-test-id="airport-inbound-connection-span"></span>
-        </div>  
-        <button type="submit" class="add-travel-btn" data-test-id="add-travel-btn">Ajouter un voyage</button>
-      </fieldset>      
-    </form>
-
-    <div class="flight-travels-container" style="display: none;">
-      <h3>Voici tous vos voyages enregistrés</h3>      
-      <table class="flight-travels-table" >
-        <thead>
-          <tr>
-            <th>Origine</th>
-            <th>Destination</th>
-            <th>Aller</th>
-            <th>Retour </th>
-            <th>Escale aller</th>
-            <th>Escale retour</th>
-            <th>Empreinte carbone</th>
-            <th>Éditer ce voyage</th>
-            <th>Supprimer ce voyage</th>
-          </tr>
-        </thead>
-      </table>
-      <h3>Total kgCO2: <span class="total-kg-co2-span" data-test-id="total-kg-co2-span"></span></h3>
-
-    </div>    
+    <section class="footer">
+      <div class="container">
+        Généré par Handlebars et Webaddikt SL
+      </div>
+    </section>
   </body>
-  <footer>
-    Généré par Handlebars et Webaddikt SL
-  </footer>
+  
 </html>
 
 <script defer src="assets/js/luxon.min.js"></script>
