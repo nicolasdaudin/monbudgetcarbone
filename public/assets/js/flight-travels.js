@@ -284,7 +284,7 @@ function updateFormInputTypeWithCell(cell, inputType) {
   if (!cell.innerText || !cell.dataset.name) return;
 
   const input = /** @type HTMLInputElement */ (formFlightTravel.querySelector(`input[name=${inputType}-iata-code]`));
-  input.value = cell.innerText;
+  input.value = cell.dataset.iataCode;
   const span = /** @type HTMLSpanElement */ (document.querySelector(`.airport-span.${inputType}`));
 
   /** @type {Airport} */
@@ -299,10 +299,10 @@ function updateFormInputTypeWithCell(cell, inputType) {
 
 
 function prepareEditForm(parentRowTrElement, id) {
-  const fromIataCodeCell = parentRowTrElement.querySelector('td:nth-child(1)');
+  const fromIataCodeCell = /** @type HTMLTableCellElement */(parentRowTrElement.querySelector('td:nth-child(1)'));
   updateFormInputTypeWithCell(fromIataCodeCell, 'from');
 
-  const toIataCodeCell = parentRowTrElement.querySelector('td:nth-child(2)');
+  const toIataCodeCell = /** @type HTMLTableCellElement */(parentRowTrElement.querySelector('td:nth-child(2)'));
   updateFormInputTypeWithCell(toIataCodeCell, 'to');
 
 

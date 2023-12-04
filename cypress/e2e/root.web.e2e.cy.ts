@@ -28,14 +28,14 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').first().as('firstFlightTravel');
 
-      checkAddedTravelIsCorrect('firstFlightTravel', { from: 'MAD', to: 'UIO' });
+      checkTravelIsCorrectInListOfTravels('firstFlightTravel', { from: 'MAD', to: 'UIO' });
 
 
       cy.get('[data-test-id="total-kg-co2"]').should('not.equal', '0');
 
     })
 
-    it.only('adds a basic flight travel to the list of users travels', async () => {
+    it('adds a basic flight travel to the list of users travels', async () => {
       cy.visit('/test-user-cypress');
 
 
@@ -56,11 +56,11 @@ describe('RootWebController (e2e)', () => {
       cy.get('@flightTravels').should('have.length', 4);
       cy.get('@flightTravels').last().as('lastFlightTravel');
 
-      checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'MAD' });
+      checkTravelIsCorrectInListOfTravels('lastFlightTravel', { from: 'BRU', to: 'MAD' });
 
     });
 
-    it.only('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
+    it('adds a complex flight travel (with return flight and connections) to the list of users travels', () => {
       cy.visit('/test-user-cypress');
 
       // Arrange
@@ -84,10 +84,10 @@ describe('RootWebController (e2e)', () => {
       cy.get('@flightTravels').should('have.length', 4);
       cy.get('@flightTravels').last().as('lastFlightTravel');
 
-      checkAddedTravelIsCorrect('lastFlightTravel', { from: 'BRU', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'JFK' });
+      checkTravelIsCorrectInListOfTravels('lastFlightTravel', { from: 'BRU', to: 'UIO', outboundConnection: 'AMS', inboundConnection: 'JFK' });
     });
 
-    it.only('edits a basic flight travel and updates the list of users travels', () => {
+    it('edits a basic flight travel and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 
@@ -114,11 +114,11 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').eq(1).as('secondFlightTravel');
 
-      checkAddedTravelIsCorrect('secondFlightTravel', { from: 'CDG', to: toIataCode, outboundDate: '4 septembre 2023' });
+      checkTravelIsCorrectInListOfTravels('secondFlightTravel', { from: 'CDG', to: toIataCode, outboundDate: '4 septembre 2023' });
 
     });
 
-    it.only('edits a complex flight travel (with connections and return flights) and updates the list of users travels', () => {
+    it('edits a complex flight travel (with connections and return flights) and updates the list of users travels', () => {
 
       cy.visit('/test-user-cypress');
 
@@ -149,7 +149,7 @@ describe('RootWebController (e2e)', () => {
 
       cy.get('@flightTravels').first().as('firstFlightTravel');
 
-      checkAddedTravelIsCorrect('firstFlightTravel', { from: 'MAD', to: toIataCode, inboundConnection: inboundConnectionIataCode, inboundDate: '24 septembre 2023' });
+      checkTravelIsCorrectInListOfTravels('firstFlightTravel', { from: 'MAD', to: toIataCode, inboundConnection: inboundConnectionIataCode, inboundDate: '24 septembre 2023' });
     });
 
     it('deletes a flight travel and updates the list of users travels', () => {
@@ -164,8 +164,7 @@ describe('RootWebController (e2e)', () => {
       cy.get('@flightTravels').should('have.length', 2);
       cy.get('@flightTravels').first().as('firstFlightTravel');
 
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-from"]').should('have.text', 'CDG')
-      cy.get('@firstFlightTravel').find('[data-test-id="flight-travel-to"]').should('have.text', 'DUB')
+      checkTravelIsCorrectInListOfTravels('firstFlightTravel', { from: 'CDG', to: 'DUB' });
     })
   })
 })
@@ -182,23 +181,23 @@ function typeInsideInput(inputType: 'from' | 'to' | 'outbound-connection' | 'inb
   });
 }
 
-function checkAddedTravelIsCorrect(alias: string,
+function checkTravelIsCorrectInListOfTravels(alias: string,
   expected: { from: string, to: string, outboundConnection?: string, inboundConnection?: string, outboundDate?: string, inboundDate?: string }) {
 
   cy.get(`@${alias}`)
-    .find('[data-test-id="flight-travel-from"]').should('have.text', expected.from);
+    .find('[data-test-id="flight-travel-from"]').should('contain.text', expected.from);
 
   cy.get(`@${alias}`)
-    .find('[data-test-id="flight-travel-to"]').should('have.text', expected.to);
+    .find('[data-test-id="flight-travel-to"]').should('contain.text', expected.to);
 
   if (expected.outboundConnection) {
     cy.get(`@${alias}`)
-      .find('[data-test-id="flight-travel-outbound-connection"]').should('have.text', expected.outboundConnection);
+      .find('[data-test-id="flight-travel-outbound-connection"]').should('contain.text', expected.outboundConnection);
   }
 
   if (expected.inboundConnection) {
     cy.get(`@${alias}`)
-      .find('[data-test-id="flight-travel-inbound-connection"]').should('have.text', expected.inboundConnection);
+      .find('[data-test-id="flight-travel-inbound-connection"]').should('contain.text', expected.inboundConnection);
   }
 
   if (expected.outboundDate) {
