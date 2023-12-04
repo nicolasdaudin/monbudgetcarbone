@@ -145,6 +145,7 @@ autocomplete(searchInputTo, true);
 autocomplete(searchInputOutboundConnection, true);
 autocomplete(searchInputInboundConnection, true);
 
+// TODO: we should get a DTO, not an entity from the backend
 /**
  * @typedef {import ('../../../src/domain/airport.ts').Airport} Airport
  */

@@ -24,6 +24,20 @@ const CO2_QUOTA_KG = 2000;
 // @ts-ignore
 const axios = window.axios;
 
+/**
+ * @typedef {import ('../../../src/domain/flight-travel.dto').ViewFlightTravelDto} FlightTravel
+ */
+
+/**
+ * @typedef {Object} FlightTravelsByYear
+ * @property {number} year The year of the flight travels
+ * @property {number} totalCO2 The total CO2 for the corresponding year
+ * @property {FlightTravel[]} flightTravels The array of flight travels for the corresponding year
+ */
+
+
+
+
 // const btnsEditFlightTravel = document.querySelectorAll('.row-edit-travel-btn');
 const DATA_TEST_ATTRIBUTE_KEY = "data-test-id";
 const DATA_ID = "data-flight-travel-id";
@@ -203,6 +217,7 @@ const fetchFlightTravels = async () => {
   if (res.status !== 200 || res.data === undefined)
     return;
 
+  /** @type {FlightTravel[]} */
   const flightTravels = res.data;
 
   if (flightTravels && flightTravels.length === 0) {
@@ -213,48 +228,109 @@ const fetchFlightTravels = async () => {
   //TODO: update with css classes instead of changing thru JS
   flightTravelsContainer.style.display = 'block';
 
+  // Generate a FlightTravelsByYear array from flightTravels
+  /** @type {FlightTravelsByYear[]} */
+  const flightTravelsByYear = flightTravels.reduce((/** @type {FlightTravelsByYear[]}*/prev, curr) => {
+    const year = DateTime.fromISO(curr.outboundDate).year;
+    const yearFlightTravels = prev.find(flightTravelsByYear => flightTravelsByYear.year === year);
+    if (yearFlightTravels) {
+      yearFlightTravels.flightTravels.push(curr);
+      yearFlightTravels.totalCO2 += curr.kgCO2eqTotal;
+    } else {
+      prev.push({
+        year,
+        flightTravels: [curr],
+        totalCO2: curr.kgCO2eqTotal
+      });
+    }
+    return prev;
+  }, []);
+
+  // sort the array by year
+  flightTravelsByYear.sort((a, b) => b.year - a.year);
+
+  console.log({ flightTravelsByYear })
+
+
   let tbody = flightTravelsTable.querySelector('tbody');
   if (!tbody) tbody = flightTravelsTable.createTBody();
   emptyElement(tbody);
 
 
-  flightTravels.forEach(flightTravel => {
-    addFlightTravelToTable(tbody, flightTravel);
+  flightTravelsByYear.forEach(({ year, totalCO2, flightTravels }) => {
+    flightTravels.forEach(flightTravel => { addFlightTravelToTable(tbody, flightTravel); }
+    );
+    handleProgressBar(tbody, year, totalCO2);
   });
 
   const totalCO2 = flightTravels.reduce((prev, curr) => (curr.kgCO2eqTotal + prev), 0);
 
-  handleProgressBar(totalCO2);
+  // create tfoot with the total CO2
+  let tfoot = flightTravelsTable.querySelector('tfoot');
+  if (!tfoot) tfoot = flightTravelsTable.createTFoot();
+  emptyElement(tfoot);
+  const row = tfoot.insertRow();
+  row.classList.add('total-row');
+  const cell = row.insertCell();
+
+  cell.classList.add('is-size-5');
+  cell.setAttribute('colspan', '9');
+  cell.innerText = `Total CO2 sur votre vie : ${totalCO2} kg`;
+
+
+
+
+
+
+
+
+
 }
 fetchFlightTravels();
 
-function handleProgressBar(totalCO2) {
-  // update progress bar with totalCO2 and CO2_QUOTA_KG. Progress bar is a markup 'progress' with class 'progress co2-progress', you can use co2-progress. Its attributes are value and max, and the inner text should be the total CO2 in kg like "Vous avez utilisé 1000 kg de CO2 sur 2000 kg autorisés"
-  const progressBar = /** @type {HTMLProgressElement}*/ (document.querySelector('.co2-progress'));
-  progressBar.value = totalCO2;
+function handleProgressBar(tbody, year, yearCO2) {
+
+  const row = tbody.insertRow();
+  row.classList.add('progress-row');
+  const cell = row.insertCell();
+  cell.classList.add('is-size-5');
+  cell.setAttribute('colspan', '9');
+  const div = document.createElement('div');
+  div.classList.add('progress-wrapper');
+  const progressBar = document.createElement('progress');
+  progressBar.classList.add('progress');
+  progressBar.classList.add('co2-progress');
+  progressBar.classList.add('is-medium');
+  progressBar.value = yearCO2;
   progressBar.max = CO2_QUOTA_KG;
+  div.appendChild(progressBar);
+  cell.appendChild(div);
+
   // remove all classes from the progress bar
   progressBar.classList.remove('is-danger');
   progressBar.classList.remove('is-warning');
   progressBar.classList.remove('is-success');
 
   // if totalCO2 is greater than 75% of CO2_QUOTA_KG, add the class 'is-danger' to the progress bar, otherwise remove it
-  if (totalCO2 > CO2_QUOTA_KG * 0.75) {
+  if (yearCO2 > CO2_QUOTA_KG * 0.75) {
     progressBar.classList.add('is-danger');
   }
   // if totalCO2 is between 50 and 75% of CO2_QUOTA_KG, add the class 'is-warning' to the progress bar, otherwise remove it
-  if (totalCO2 > CO2_QUOTA_KG * 0.5 && totalCO2 <= CO2_QUOTA_KG * 0.75) {
+  if (yearCO2 > CO2_QUOTA_KG * 0.5 && yearCO2 <= CO2_QUOTA_KG * 0.75) {
     progressBar.classList.add('is-warning');
   }
   // if totalCO2 is less than 50% of CO2_QUOTA_KG, add the class 'is-success' to the progress bar, otherwise remove it
-  if (totalCO2 <= CO2_QUOTA_KG * 0.5) {
+  if (yearCO2 <= CO2_QUOTA_KG * 0.5) {
     progressBar.classList.add('is-success');
   }
 
-  const percentageOfCO2Used = Math.round((totalCO2 / CO2_QUOTA_KG) * 100);
+  const progressValueParagraph = document.createElement('p');
+  progressValueParagraph.classList.add('progress-value');
+  progressValueParagraph.classList.add('has-text-black');
+  const percentageOfCO2Used = Math.round((yearCO2 / CO2_QUOTA_KG) * 100);
+  progressValueParagraph.innerText = `En ${year}, vous avez utilisé ${yearCO2} kg de CO2 sur votre quota de ${CO2_QUOTA_KG} kg (${percentageOfCO2Used} %)`;
+  div.appendChild(progressValueParagraph);
 
-  const progressValueParagraph = /** @type {HTMLParagraphElement}*/ (document.querySelector('.progress-value'));
-  progressValueParagraph.innerText = `Vous avez utilisé ${totalCO2} kg de CO2 sur votre quota de ${CO2_QUOTA_KG} kg (${percentageOfCO2Used} %)`;
 }
 
 function clearForm() {
@@ -325,6 +401,8 @@ function prepareEditForm(parentRowTrElement, id) {
 
   formLegend.innerText = 'Éditer un voyage';
   formSubmitButton.innerText = 'Éditer un voyage';
+
+  formFlightTravel.scrollIntoView({ behavior: 'smooth' });
 }
 
 
