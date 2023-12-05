@@ -39,6 +39,6 @@ export class ViewFlightTravelDto {
   outboundDate: Date;
   inboundDate?: Date;
   outboundConnection?: Airport;
-  inboundCounnection?: Airport;
+  inboundConnection?: Airport;
   kgCO2eqTotal: number
 }

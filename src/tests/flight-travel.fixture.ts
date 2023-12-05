@@ -94,8 +94,8 @@ export const createTravelFixture = (airportRepository: AirportRepository = new I
         if (flightTravel.outboundConnection) {
           expect(flightTravel.outboundConnection.iataCode).toEqual(expectedFlightTravelsList[index].outboundConnection);
         }
-        if (flightTravel.inboundCounnection) {
-          expect(flightTravel.inboundCounnection.iataCode).toEqual(expectedFlightTravelsList[index].inboundConnection);
+        if (flightTravel.inboundConnection) {
+          expect(flightTravel.inboundConnection.iataCode).toEqual(expectedFlightTravelsList[index].inboundConnection);
         }
 
       })

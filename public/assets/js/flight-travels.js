@@ -85,7 +85,14 @@ formFlightTravel.addEventListener('submit', async (e) => {
   clearForm();
 })
 
-const appendCellToRowWithText = (row, text, testAttributeValue, columnLabel) => {
+/**
+ * @param {Object} arguments
+ * @param {HTMLTableRowElement} arguments.row - the html row to append the cell to
+ * @param {string} arguments.text - the text to append to the cell
+ * @param {string} [arguments.testAttributeValue] - the value of the data-test-id attribute
+ * @param {string} arguments.columnLabel -  the value of the data-label attribute
+ */
+const appendCellToRowWithText = ({ row, text, testAttributeValue, columnLabel }) => {
   let originCell = row.insertCell();
 
   if (testAttributeValue) {
@@ -97,13 +104,15 @@ const appendCellToRowWithText = (row, text, testAttributeValue, columnLabel) => 
   originCell.innerText = text ?? '';
 }
 
+
 /**
- * 
- * @param {HTMLTableRowElement} row 
- * @param {Airport} airport 
- * @param {string} testAttributeValue 
+ * @param {Object} arguments 
+ * @param {HTMLTableRowElement} arguments.row - the html row to append the cell to
+ * @param {Airport} [arguments.airport] - the airport to append to the cell
+ * @param {string} arguments.testAttributeValue - the value of the data-test-id attribute
+ * @param {string} arguments.columnLabel - the value of the data-label attribute
  */
-const appendCellToRowWithAirport = (row, airport, testAttributeValue, columnLabel) => {
+const appendCellToRowWithAirport = ({ row, airport, testAttributeValue, columnLabel }) => {
   let originCell = row.insertCell();
 
   if (testAttributeValue) {
@@ -124,6 +133,11 @@ const appendCellToRowWithAirport = (row, airport, testAttributeValue, columnLabe
   originCell.innerText = airport ? `${airport.municipality} (${airport.iataCode})` : '';
 }
 
+/**
+ * @param {Object} arguments
+ * @param {HTMLTableRowElement} arguments.row 
+ * @param {HTMLElement} arguments.element 
+ */
 const appendActionCellToRowWithElement = (row, element) => {
   let originCell = row.insertCell();
   originCell.classList.add('is-actions-cell');
@@ -131,15 +145,16 @@ const appendActionCellToRowWithElement = (row, element) => {
 }
 
 /**
- * 
- * @param {*} row 
- * @param {*} date 
- * @param {*} testAttributeValue 
+ * @param {Object} arguments
+ * @param {HTMLTableRowElement} arguments.row - the html row to append the cell to
+ * @param {Date} [arguments.date] - the date to append to the cell
+ * @param {string} arguments.testAttributeValue - the value of the data-test-id attribute
+ * @param {string} arguments.columnLabel - the value of the data-label attribute
  */
-const appendDateCellToRow = (row, date, testAttributeValue, columnLabel) => {
+const appendDateCellToRow = ({ row, date, testAttributeValue, columnLabel }) => {
   date ?
-    appendCellToRowWithText(row, DateTime.fromISO(date).toLocaleString(DateTime.DATE_FULL), testAttributeValue, columnLabel) :
-    appendCellToRowWithText(row, '', testAttributeValue, columnLabel);
+    appendCellToRowWithText({ row, text: DateTime.fromISO(date).toLocaleString(DateTime.DATE_FULL), testAttributeValue, columnLabel }) :
+    appendCellToRowWithText({ row, text: '', testAttributeValue, columnLabel });
 }
 
 const emptyElement = (element) => {
@@ -171,6 +186,10 @@ const addFlightTravel = async () => {
   if (res.status !== 201 || res.data === undefined)
     return;
 
+
+  showAndHideSuccessMessage('add');
+
+
   fetchFlightTravels();
 }
 
@@ -195,6 +214,8 @@ const editFlightTravel = async (id) => {
 
   if (res.status !== 200 || res.data === undefined)
     return;
+
+  showAndHideSuccessMessage('edit');
 
   fetchFlightTravels();
 }
@@ -281,7 +302,7 @@ const fetchFlightTravels = async () => {
 
   cell.classList.add('is-size-5');
   cell.setAttribute('colspan', '8');
-  cell.innerText = `Total CO2 sur votre vie : ${totalCO2} kg`;
+  cell.innerText = `Total sur votre vie : ${totalCO2.toFixed(2)} kgCO2`;
 
 
 
@@ -293,6 +314,16 @@ const fetchFlightTravels = async () => {
 
 }
 fetchFlightTravels();
+
+function showAndHideSuccessMessage(cssSelector) {
+  const notificationDiv = /** @type {HTMLDivElement}*/ (document.querySelector(`.notification.${cssSelector}`));
+  // notificationDiv.classList.add('is-success');
+  notificationDiv.classList.remove('is-hidden');
+  setTimeout(() => {
+    notificationDiv.classList.add('is-hidden');
+    // notificationDiv.classList.remove('is-success');
+  }, 3000);
+}
 
 function handleProgressBar(tbody, year, yearCO2) {
 
@@ -413,18 +444,22 @@ function prepareEditForm(parentRowTrElement, id) {
 }
 
 
-
+/**
+ * 
+ * @param {*} tbody 
+ * @param {FlightTravel} flightTravel 
+ */
 function addFlightTravelToTable(tbody, flightTravel) {
   let row = tbody.insertRow();
   row.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'flight-travel');
   row.setAttribute(DATA_ID, flightTravel.id);
-  appendCellToRowWithAirport(row, flightTravel.from, 'flight-travel-from', "Origine");
-  appendCellToRowWithAirport(row, flightTravel.to, 'flight-travel-to', "Destination");
-  appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date', "Aller");
-  appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date', "Retour");
-  appendCellToRowWithAirport(row, flightTravel.outboundConnection, 'flight-travel-outbound-connection', "Escale aller");
-  appendCellToRowWithAirport(row, flightTravel.inboundConnection, 'flight-travel-inbound-connection', "Escale retour");
-  appendCellToRowWithText(row, flightTravel.kgCO2eqTotal, '', "Empreinte carbone (kgCO2eq)");
+  appendCellToRowWithAirport({ row, airport: flightTravel.from, testAttributeValue: 'flight-travel-from', columnLabel: "Origine" });
+  appendCellToRowWithAirport({ row, airport: flightTravel.to, testAttributeValue: 'flight-travel-to', columnLabel: "Destination" });
+  appendDateCellToRow({ row, date: flightTravel.outboundDate, testAttributeValue: 'flight-travel-outbound-date', columnLabel: "Aller" });
+  appendDateCellToRow({ row, date: flightTravel.inboundDate, testAttributeValue: 'flight-travel-inbound-date', columnLabel: "Retour" });
+  appendCellToRowWithAirport({ row, airport: flightTravel.outboundConnection, testAttributeValue: 'flight-travel-outbound-connection', columnLabel: "Escale aller" });
+  appendCellToRowWithAirport({ row, airport: flightTravel.inboundConnection, testAttributeValue: 'flight-travel-inbound-connection', columnLabel: "Escale retour" });
+  appendCellToRowWithText({ row, text: `${flightTravel.kgCO2eqTotal.toFixed(2)} kgCO2`, columnLabel: "Empreinte carbone" });
 
   // const editButton = document.createElement('button');
   // editButton.classList.add('row-edit-travel-btn');
