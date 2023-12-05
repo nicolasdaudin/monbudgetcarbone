@@ -2,10 +2,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>App</title>
     <link rel="stylesheet" href="assets/css/airports.autocomplete.css" />
     <link rel="stylesheet" href="assets/css/mystyles.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    {{!-- <link rel="stylesheet" href="assets/css/bulma.responsive.tables.min.css"> --}}
     <script src="https://kit.fontawesome.com/1c9b993f88.js" crossorigin="anonymous"></script>
   </head>
   <body>
@@ -135,25 +137,25 @@
 
     <section class="section">
       <div class="container flight-travels-container" style="display: none;">
-        
-        <div class="table-wrapper has-mobile-cards">      
-          <table class="table is-narrow is-striped is-hoverable is-fullwidth  has-text-centered flight-travels-table" >
-            <thead>
-              <tr>
-                <th class="has-text-centered">Origine</th>
+        <div class="b-table">
+          <div class="table-wrapper has-mobile-cards">      
+            <table class="table is-narrow is-striped is-hoverable is-fullwidth  has-text-centered flight-travels-table" >
+              <thead>
+                <tr>
+                  <th class="has-text-centered">Origine</th>
 
-                <th class="has-text-centered">Destination</th>
-                <th class="has-text-centered">Aller</th>
-                <th class="has-text-centered">Retour</th>
-                <th class="has-text-centered">Escale aller</th>
-                <th class="has-text-centered">Escale retour</th>
-                <th class="has-text-centered">Empreinte carbone</th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>            
-          </table>
-        </div>         
+                  <th class="has-text-centered">Destination</th>
+                  <th class="has-text-centered">Aller</th>
+                  <th class="has-text-centered">Retour</th>
+                  <th class="has-text-centered">Escale aller</th>
+                  <th class="has-text-centered">Escale retour</th>
+                  <th class="has-text-centered">Empreinte carbone</th>
+                  <th></th>                  
+                </tr>
+              </thead>            
+            </table>
+          </div>         
+        </div>
       </div>    
     </section>     
 

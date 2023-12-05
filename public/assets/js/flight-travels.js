@@ -85,12 +85,14 @@ formFlightTravel.addEventListener('submit', async (e) => {
   clearForm();
 })
 
-const appendCellToRowWithText = (row, text, testAttributeValue) => {
+const appendCellToRowWithText = (row, text, testAttributeValue, columnLabel) => {
   let originCell = row.insertCell();
 
   if (testAttributeValue) {
     originCell.setAttribute(DATA_TEST_ATTRIBUTE_KEY, testAttributeValue);
   }
+
+  originCell.setAttribute('data-label', columnLabel);
 
   originCell.innerText = text ?? '';
 }
@@ -101,7 +103,7 @@ const appendCellToRowWithText = (row, text, testAttributeValue) => {
  * @param {Airport} airport 
  * @param {string} testAttributeValue 
  */
-const appendCellToRowWithAirport = (row, airport, testAttributeValue) => {
+const appendCellToRowWithAirport = (row, airport, testAttributeValue, columnLabel) => {
   let originCell = row.insertCell();
 
   if (testAttributeValue) {
@@ -116,11 +118,15 @@ const appendCellToRowWithAirport = (row, airport, testAttributeValue) => {
   }
 
 
+  originCell.setAttribute('data-label', columnLabel);
+
+
   originCell.innerText = airport ? `${airport.municipality} (${airport.iataCode})` : '';
 }
 
-const appendCellToRowWithElement = (row, element) => {
+const appendActionCellToRowWithElement = (row, element) => {
   let originCell = row.insertCell();
+  originCell.classList.add('is-actions-cell');
   originCell.appendChild(element);
 }
 
@@ -130,10 +136,10 @@ const appendCellToRowWithElement = (row, element) => {
  * @param {*} date 
  * @param {*} testAttributeValue 
  */
-const appendDateCellToRow = (row, date, testAttributeValue) => {
+const appendDateCellToRow = (row, date, testAttributeValue, columnLabel) => {
   date ?
-    appendCellToRowWithText(row, DateTime.fromISO(date).toLocaleString(DateTime.DATE_FULL), testAttributeValue) :
-    appendCellToRowWithText(row, '', testAttributeValue);
+    appendCellToRowWithText(row, DateTime.fromISO(date).toLocaleString(DateTime.DATE_FULL), testAttributeValue, columnLabel) :
+    appendCellToRowWithText(row, '', testAttributeValue, columnLabel);
 }
 
 const emptyElement = (element) => {
@@ -274,7 +280,7 @@ const fetchFlightTravels = async () => {
   const cell = row.insertCell();
 
   cell.classList.add('is-size-5');
-  cell.setAttribute('colspan', '9');
+  cell.setAttribute('colspan', '8');
   cell.innerText = `Total CO2 sur votre vie : ${totalCO2} kg`;
 
 
@@ -292,9 +298,10 @@ function handleProgressBar(tbody, year, yearCO2) {
 
   const row = tbody.insertRow();
   row.classList.add('progress-row');
+  row.classList.add('detail');
   const cell = row.insertCell();
   cell.classList.add('is-size-5');
-  cell.setAttribute('colspan', '9');
+  cell.setAttribute('colspan', '8');
   const div = document.createElement('div');
   div.classList.add('progress-wrapper');
   const progressBar = document.createElement('progress');
@@ -328,7 +335,7 @@ function handleProgressBar(tbody, year, yearCO2) {
   progressValueParagraph.classList.add('progress-value');
   progressValueParagraph.classList.add('has-text-black');
   const percentageOfCO2Used = Math.round((yearCO2 / CO2_QUOTA_KG) * 100);
-  progressValueParagraph.innerText = `En ${year}, vous avez utilisé ${yearCO2} kg de CO2 sur votre quota de ${CO2_QUOTA_KG} kg (${percentageOfCO2Used} %)`;
+  progressValueParagraph.innerText = `${year}: ${percentageOfCO2Used}% de votre quota de ${CO2_QUOTA_KG / 1000} tonnes`;
   div.appendChild(progressValueParagraph);
 
 }
@@ -411,13 +418,13 @@ function addFlightTravelToTable(tbody, flightTravel) {
   let row = tbody.insertRow();
   row.setAttribute(DATA_TEST_ATTRIBUTE_KEY, 'flight-travel');
   row.setAttribute(DATA_ID, flightTravel.id);
-  appendCellToRowWithAirport(row, flightTravel.from, 'flight-travel-from');
-  appendCellToRowWithAirport(row, flightTravel.to, 'flight-travel-to');
-  appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date');
-  appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date');
-  appendCellToRowWithAirport(row, flightTravel.outboundConnection, 'flight-travel-outbound-connection');
-  appendCellToRowWithAirport(row, flightTravel.inboundConnection, 'flight-travel-inbound-connection');
-  appendCellToRowWithText(row, flightTravel.kgCO2eqTotal);
+  appendCellToRowWithAirport(row, flightTravel.from, 'flight-travel-from', "Origine");
+  appendCellToRowWithAirport(row, flightTravel.to, 'flight-travel-to', "Destination");
+  appendDateCellToRow(row, flightTravel.outboundDate, 'flight-travel-outbound-date', "Aller");
+  appendDateCellToRow(row, flightTravel.inboundDate, 'flight-travel-inbound-date', "Retour");
+  appendCellToRowWithAirport(row, flightTravel.outboundConnection, 'flight-travel-outbound-connection', "Escale aller");
+  appendCellToRowWithAirport(row, flightTravel.inboundConnection, 'flight-travel-inbound-connection', "Escale retour");
+  appendCellToRowWithText(row, flightTravel.kgCO2eqTotal, '', "Empreinte carbone (kgCO2eq)");
 
   // const editButton = document.createElement('button');
   // editButton.classList.add('row-edit-travel-btn');
@@ -439,7 +446,7 @@ function addFlightTravelToTable(tbody, flightTravel) {
   editButtonSpan.appendChild(editButtonIcon);
   editButton.appendChild(editButtonSpan);
 
-  appendCellToRowWithElement(row, editButton);
+
 
   const deleteButton = document.createElement('a');
   deleteButton.classList.add('row-delete-travel-btn');
@@ -453,7 +460,15 @@ function addFlightTravelToTable(tbody, flightTravel) {
   deleteButtonIcon.classList.add('fa-trash');
   deleteButtonSpan.appendChild(deleteButtonIcon);
   deleteButton.appendChild(deleteButtonSpan);
-  appendCellToRowWithElement(row, deleteButton);
+
+  // create a div button with classes buttons and is-right
+  // and append edit and deleteButton to it
+  const divButtons = document.createElement('div');
+  divButtons.classList.add('buttons');
+  divButtons.classList.add('is-right');
+  divButtons.appendChild(editButton);
+  divButtons.appendChild(deleteButton);
+  appendActionCellToRowWithElement(row, divButtons);
 
 
 }
