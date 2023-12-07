@@ -30,14 +30,14 @@ export class CreateFlightTravelDto {
 }
 
 // TODO: this depends on nest framework so it should be moved away from domain
-export class UpdateFlightTravelDTO extends PartialType(CreateFlightTravelDto) { }
+export class UpdateFlightTravelDTO extends CreateFlightTravelDto { }
 
 export class ViewFlightTravelDto {
   id: number;
   from: Airport;
   to: Airport;
-  outboundDate: Date;
-  inboundDate?: Date;
+  outboundDate: Date | string;
+  inboundDate?: Date | string;
   outboundConnection?: Airport;
   inboundConnection?: Airport;
   kgCO2eqTotal: number

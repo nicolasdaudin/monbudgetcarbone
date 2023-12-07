@@ -8,13 +8,15 @@ import { StartedPostgreSqlContainer, PostgreSqlContainer } from '@testcontainers
 import { PrismaFlightTravelRepository } from '../../../infra/flight-travel.prisma.repository';
 import { flightTravelBuilder, routeBuilder } from '../../../tests/flight-travel.builder';
 import { FlightTravelsApiModule } from './flight-travels.api.module';
+import { CreateFlightTravelDto, UpdateFlightTravelDTO, ViewFlightTravelDto } from '../../../domain/flight-travel.dto';
+import { FlightTravel, Route } from '../../../domain/flight-travel';
 
 
 const asyncExec = promisify(exec);
 
 jest.setTimeout(10000);
 
-describe.only('FlightTravelApiController (e2e)', () => {
+describe('FlightTravelApiController (e2e)', () => {
   let app: INestApplication;
 
 
@@ -98,7 +100,7 @@ describe.only('FlightTravelApiController (e2e)', () => {
             outboundDate: (new Date('2023-05-17')).toISOString(),
             kgCO2eqTotal: 230
           }
-        ])
+        ] as ViewFlightTravelDto[])
       })
   })
 
@@ -109,8 +111,8 @@ describe.only('FlightTravelApiController (e2e)', () => {
         fromIataCode: 'MAD',
         toIataCode: 'BRU',
         outboundDate: '2023-05-11',
-        user: 'Nicolas'
-      })
+        user: 'Nicolas',
+      } as CreateFlightTravelDto)
       .expect(201)
 
 
@@ -128,7 +130,7 @@ describe.only('FlightTravelApiController (e2e)', () => {
         to: 'BRU',
         date: new Date('2023-05-11')
       })]
-    }))
+    } as FlightTravel))
   })
 
   test('POST /api/flight-travels - tries to create a basic single flight and fails when one required param is missing', async () => {
@@ -137,7 +139,7 @@ describe.only('FlightTravelApiController (e2e)', () => {
       .send({
         fromIataCode: 'MAD',
         user: 'Nicolas'
-      })
+      } as CreateFlightTravelDto)
       .expect(400);
 
     expect(res.body.message).toEqual(
@@ -154,10 +156,10 @@ describe.only('FlightTravelApiController (e2e)', () => {
       .send({
         fromIataCode: 'MAD',
         toIataCode: 'BRU',
-        outboundConnection: 'XXX',
+        outboundConnectionIataCode: 'XXX',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      })
+      } as CreateFlightTravelDto)
       .expect(400);
 
     expect(res.body.message).toEqual('Airport with iata code XXX not found');
@@ -175,10 +177,10 @@ describe.only('FlightTravelApiController (e2e)', () => {
         toIataCode: 'UIO',
         outboundDate: '2023-05-11',
         inboundDate: '2023-06-01',
-        outboundConnection: 'AMS',
-        inboundConnection: 'BOG',
+        outboundConnectionIataCode: 'AMS',
+        inboundConnectionIataCode: 'BOG',
         user: 'Nicolas'
-      })
+      } as CreateFlightTravelDto)
       .expect(201)
 
 
@@ -197,27 +199,27 @@ describe.only('FlightTravelApiController (e2e)', () => {
           to: 'AMS',
           date: new Date('2023-05-11'),
           type: 'outbound',
-        }),
+        } as Route),
         expect.objectContaining({
           from: 'AMS',
           to: 'UIO',
           date: new Date('2023-05-11'),
           type: 'outbound',
-        }),
+        } as Route),
         expect.objectContaining({
           from: 'UIO',
           to: 'BOG',
           date: new Date('2023-06-01'),
           type: 'inbound',
-        }),
+        } as Route),
         expect.objectContaining({
           from: 'BOG',
           to: 'MAD',
           date: new Date('2023-06-01'),
           type: 'inbound',
-        })
+        } as Route)
       ]
-    }))
+    } as FlightTravel))
   })
 
   test('PUT /api/flight-travels/:id - edits a basic single flight', async () => {
@@ -247,7 +249,7 @@ describe.only('FlightTravelApiController (e2e)', () => {
         toIataCode: 'BRU',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      })
+      } as UpdateFlightTravelDTO)
       .expect(200)
 
 
@@ -261,8 +263,8 @@ describe.only('FlightTravelApiController (e2e)', () => {
         from: 'MAD',
         to: 'BRU',
         date: new Date('2023-05-11')
-      })]
-    }))
+      } as Route)]
+    } as FlightTravel))
 
   })
 
@@ -277,7 +279,7 @@ describe.only('FlightTravelApiController (e2e)', () => {
         toIataCode: 'BRU',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      })
+      } as UpdateFlightTravelDTO)
       .expect(404)
 
     expect(res.body.message).toEqual(expect.stringContaining(addedFlightTravelId.toString()));
@@ -309,7 +311,7 @@ describe.only('FlightTravelApiController (e2e)', () => {
         toIataCode: 'XXX',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      })
+      } as UpdateFlightTravelDTO)
       .expect(400)
 
     expect(res.body.message).toEqual('Airport with iata code XXX not found');
@@ -359,10 +361,10 @@ describe.only('FlightTravelApiController (e2e)', () => {
         toIataCode: 'DUB',
         outboundDate: '2023-05-11',
         inboundDate: '2023-05-21',
-        outboundConnection: 'BRU',
-        inboundConnection: 'AMS',
+        outboundConnectionIataCode: 'BRU',
+        inboundConnectionIataCode: 'AMS',
         user: 'Nicolas'
-      }).expect(200);
+      } as UpdateFlightTravelDTO).expect(200);
 
     const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
 
@@ -375,27 +377,27 @@ describe.only('FlightTravelApiController (e2e)', () => {
           to: 'BRU',
           date: new Date('2023-05-11'),
           type: 'outbound',
-        }),
+        } as Route),
         expect.objectContaining({
           from: 'BRU',
           to: 'DUB',
           date: new Date('2023-05-11'),
           type: 'outbound',
-        }),
+        } as Route),
         expect.objectContaining({
           from: 'DUB',
           to: 'AMS',
           date: new Date('2023-05-21'),
           type: 'inbound',
-        }),
+        } as Route),
         expect.objectContaining({
           from: 'AMS',
           to: 'MAD',
           date: new Date('2023-05-21'),
           type: 'inbound',
-        })
+        } as Route)
       ]
-    }))
+    } as FlightTravel))
   })
 
   test('PUT /api/flight-travels/:id - edits a complex flight with return and connections and make it simple i.e. outbound and no connections', async () => {
@@ -437,7 +439,8 @@ describe.only('FlightTravelApiController (e2e)', () => {
       .send({
         fromIataCode: 'MAD',
         toIataCode: 'BRU',
-        outboundDate: '2023-05-11'
+        outboundDate: '2023-05-11',
+        user: 'Nicolas'
       }).expect(200);
 
     const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
