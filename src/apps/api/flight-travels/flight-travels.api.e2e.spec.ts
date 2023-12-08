@@ -169,7 +169,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -191,7 +190,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -213,7 +211,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -309,7 +306,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -331,7 +327,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -354,7 +349,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
@@ -602,7 +596,7 @@ describe('FlightTravelApiController (e2e)', () => {
   })
 
   // example of front validation errors also happening for PUT requests
-  test.only('PUT /api/flight-travels/:id - edits a complex flight with return and connections and fails when there is an inbound connection equal to the origin or destination', async () => {
+  test('PUT /api/flight-travels/:id - edits a complex flight with return and connections and fails when there is an inbound connection equal to the origin or destination', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
 
 
@@ -648,7 +642,6 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    console.log('errors', res.body.errors)
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
