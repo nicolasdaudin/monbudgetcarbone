@@ -8,8 +8,9 @@ import { StartedPostgreSqlContainer, PostgreSqlContainer } from '@testcontainers
 import { PrismaFlightTravelRepository } from '../../../infra/flight-travel.prisma.repository';
 import { flightTravelBuilder, routeBuilder } from '../../../tests/flight-travel.builder';
 import { FlightTravelsApiModule } from './flight-travels.api.module';
-import { CreateFlightTravelDto, UpdateFlightTravelDTO, ViewFlightTravelDto } from '../../../domain/flight-travel.dto';
+import { CreateFlightTravelDto, UpdateFlightTravelDto, ViewFlightTravelDto } from '../../../domain/flight-travel.dto';
 import { FlightTravel, Route } from '../../../domain/flight-travel';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 
 const asyncExec = promisify(exec);
@@ -60,9 +61,10 @@ describe('FlightTravelApiController (e2e)', () => {
 
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true
-    }));
+    // app.useGlobalPipes(new ValidationPipe({
+    //   whitelist: true
+    // }));
+    app.useGlobalPipes(new ZodValidationPipe());
 
     await app.init();
 
@@ -142,12 +144,39 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('toIataCode'),
-        expect.stringContaining('outboundDate')
-      ])
-    );
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['toIataCode'],
+        message: 'Required'
+      }),
+      expect.objectContaining({
+        path: ['outboundDate'],
+        message: 'Required'
+      })
+    ]))
+  });
+
+  test('POST /api/flight-travels - tries to create a basic single flight and fails when date is not in the YYYY-MM-DD format', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        user: 'Nicolas',
+        outboundDate: '25/11/2023'
+
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['outboundDate'],
+        message: 'Invalid date string'
+      })
+    ]))
   });
 
   test('POST /api/flight-travels - tries to create a basic single flight and fails when one of the airports is not found', async () => {
@@ -249,7 +278,7 @@ describe('FlightTravelApiController (e2e)', () => {
         toIataCode: 'BRU',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      } as UpdateFlightTravelDTO)
+      } as UpdateFlightTravelDto)
       .expect(200)
 
 
@@ -279,7 +308,7 @@ describe('FlightTravelApiController (e2e)', () => {
         toIataCode: 'BRU',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      } as UpdateFlightTravelDTO)
+      } as UpdateFlightTravelDto)
       .expect(404)
 
     expect(res.body.message).toEqual(expect.stringContaining(addedFlightTravelId.toString()));
@@ -311,7 +340,7 @@ describe('FlightTravelApiController (e2e)', () => {
         toIataCode: 'XXX',
         outboundDate: '2023-05-11',
         user: 'Nicolas'
-      } as UpdateFlightTravelDTO)
+      } as UpdateFlightTravelDto)
       .expect(400)
 
     expect(res.body.message).toEqual('Airport with iata code XXX not found');
@@ -364,7 +393,7 @@ describe('FlightTravelApiController (e2e)', () => {
         outboundConnectionIataCode: 'BRU',
         inboundConnectionIataCode: 'AMS',
         user: 'Nicolas'
-      } as UpdateFlightTravelDTO).expect(200);
+      } as UpdateFlightTravelDto).expect(200);
 
     const actualFlightTravel = (await flightTravelRepository.getAllOfUser('Nicolas'))[0]
 

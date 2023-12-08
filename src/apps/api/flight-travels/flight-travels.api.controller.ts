@@ -3,7 +3,7 @@ import { AddFlightTravelUseCase, AddFlightTravelCommand } from '../../../applica
 import { DeleteFlightTravelUseCase } from '../../../application/usecases/delete-flight-travel.usecase';
 import { EditFlightTravelUseCase, EditFlightTravelCommand } from '../../../application/usecases/edit-flight-travel.usecase';
 import { ViewFlightTravelsUseCase } from '../../../application/usecases/view-flight-travels.usecase';
-import { CreateFlightTravelDto, UpdateFlightTravelDTO } from '../../../domain/flight-travel.dto';
+import { CreateFlightTravelDto, UpdateFlightTravelDto } from '../../../domain/flight-travel.dto';
 import { AirportNotFound, FlightTravelNotFound } from '../../../application/exceptions';
 
 
@@ -29,8 +29,11 @@ export class FlightTravelsApiController {
     try {
       await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
     } catch (error) {
+      console.error(error);
       if (error instanceof AirportNotFound) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
       }
 
     }
@@ -38,7 +41,7 @@ export class FlightTravelsApiController {
   }
 
   @Put(':id')
-  async editFlightTravel(@Param('id') id: string, @Body() body: UpdateFlightTravelDTO) {
+  async editFlightTravel(@Param('id') id: string, @Body() body: UpdateFlightTravelDto) {
 
     const editFlightTravelCommand: EditFlightTravelCommand = {
       id: +id,

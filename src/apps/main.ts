@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { ValidationPipe } from '@nestjs/common';
+import { ZodValidationPipe } from 'nestjs-zod';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -11,9 +12,7 @@ async function bootstrap() {
   app.setBaseViewsDir(path.join(__dirname, '..', 'views'));
   app.setViewEngine('hbs');
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-  }))
+  app.useGlobalPipes(new ZodValidationPipe())
 
   const port = process.env.PORT || 3000
   await app.listen(port);

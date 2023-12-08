@@ -1,8 +1,22 @@
 import { IsDateString, IsNotEmpty, IsOptional, ValidateIf } from "class-validator";
 import { PartialType } from '@nestjs/swagger';
 import { Airport } from "./airport";
+import { z } from "nestjs-zod/z";
+import { createZodDto } from "nestjs-zod";
 
-export class CreateFlightTravelDto {
+const CreateFlightTravelSchema = z.object({
+  fromIataCode: z.string().min(3).max(3),
+  toIataCode: z.string().min(3).max(3),
+  outboundDate: z.dateString().format('date'),
+  inboundDate: z.dateString().format('date').optional(),
+  outboundConnectionIataCode: z.string().min(3).max(3).optional(),
+  inboundConnectionIataCode: z.string().min(3).max(3).optional(),
+  user: z.string()
+});
+
+export class CreateFlightTravelDto extends createZodDto(CreateFlightTravelSchema) { }
+
+export class CreateFlightTravelDtoOld {
   @IsNotEmpty()
   fromIataCode: string;
 
@@ -30,7 +44,7 @@ export class CreateFlightTravelDto {
 }
 
 // TODO: this depends on nest framework so it should be moved away from domain
-export class UpdateFlightTravelDTO extends CreateFlightTravelDto { }
+export class UpdateFlightTravelDto extends CreateFlightTravelDto { }
 
 export class ViewFlightTravelDto {
   id: number;
