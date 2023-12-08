@@ -179,6 +179,52 @@ describe('FlightTravelApiController (e2e)', () => {
     ]))
   });
 
+  test('POST /api/flight-travels - tries to create a basic single flight and fails when fromIataCode is equal to toIataCode', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'MAD',
+        user: 'Nicolas',
+        outboundDate: '2023-05-11'
+
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['fromIataCode', 'toIataCode'],
+        message: 'fromIataCode must be different from toIataCode'
+      })
+    ]))
+  });
+
+  test('POST /api/flight-travels - tries to create a basic single flight and fails when inboundDate is before outboundDate', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        user: 'Nicolas',
+        outboundDate: '2023-05-11',
+        inboundDate: '2023-05-10'
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['inboundDate'],
+        message: 'inbound date must be after outbound date'
+      })
+    ]))
+  });
+
+
+
   test('POST /api/flight-travels - tries to create a basic single flight and fails when one of the airports is not found', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/flight-travels')
@@ -250,6 +296,73 @@ describe('FlightTravelApiController (e2e)', () => {
       ]
     } as FlightTravel))
   })
+
+  test('POST /api/flight-travels - tries to create a complex flight and fails when there is an inbound connection without an inbound date', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        user: 'Nicolas',
+        outboundDate: '2023-05-11',
+        inboundConnectionIataCode: 'AMS'
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['inboundDate'],
+        message: 'inboundDate must be present when inboundConnectionIataCode is present'
+      })
+    ]))
+  });
+
+  test('POST /api/flight-travels - tries to create a complex flight and fails when there is an outbound connection equal to the origin or destination', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        user: 'Nicolas',
+        outboundDate: '2023-05-11',
+        outboundConnectionIataCode: 'MAD'
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['outboundConnectionIataCode'],
+        message: 'outboundConnectionIataCode must be different from fromIataCode and toIataCode'
+      })
+    ]))
+  });
+
+  test('POST /api/flight-travels - tries to create a complex flight and fails when there is an inbound connection equal to the origin or destination', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/flight-travels')
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        user: 'Nicolas',
+        outboundDate: '2023-05-11',
+        inboundDate: '2023-05-12',
+        inboundConnectionIataCode: 'BRU'
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['inboundConnectionIataCode'],
+        message: 'inboundConnectionIataCode must be different from fromIataCode and toIataCode'
+      })
+    ]))
+  });
 
   test('PUT /api/flight-travels/:id - edits a basic single flight', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
@@ -487,6 +600,63 @@ describe('FlightTravelApiController (e2e)', () => {
       ]
     }))
   })
+
+  // example of front validation errors also happening for PUT requests
+  test.only('PUT /api/flight-travels/:id - edits a complex flight with return and connections and fails when there is an inbound connection equal to the origin or destination', async () => {
+    const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
+
+
+    await flightTravelRepository.add(
+      flightTravelBuilder()
+        .withUser('Nicolas')
+        .withRoutes([
+          routeBuilder()
+            .from('MAD')
+            .to('DUB')
+            .travelledOn(new Date('2023-05-10'))
+            .withType('outbound')
+            .build(),
+          routeBuilder()
+            .from('DUB')
+            .to('BRU')
+            .travelledOn(new Date('2023-05-20'))
+            .withType('inbound')
+            .withOrder(1)
+            .build(),
+          routeBuilder()
+            .from('BRU')
+            .to('MAD')
+            .travelledOn(new Date('2023-05-20'))
+            .withType('inbound')
+            .withOrder(2)
+            .build(),
+        ])
+        .build()
+    )
+
+    const addedFlightTravelId = (await flightTravelRepository.getAllOfUser('Nicolas'))[0].id;
+
+    const res = await request(app.getHttpServer())
+      .put(`/api/flight-travels/${addedFlightTravelId}`)
+      .send({
+        fromIataCode: 'MAD',
+        toIataCode: 'BRU',
+        user: 'Nicolas',
+        outboundDate: '2023-05-11',
+        inboundDate: '2023-05-12',
+        inboundConnectionIataCode: 'BRU'
+      } as CreateFlightTravelDto)
+      .expect(400);
+
+    console.log('errors', res.body.errors)
+    expect(res.body.message).toEqual('Validation failed');
+    expect(res.body.errors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        path: ['inboundConnectionIataCode'],
+        message: 'inboundConnectionIataCode must be different from fromIataCode and toIataCode'
+      })
+    ]))
+  });
 
   test('DELETE /api/flight-travels/:id - deletes a flight', async () => {
     const flightTravelRepository = new PrismaFlightTravelRepository(prismaClient);
