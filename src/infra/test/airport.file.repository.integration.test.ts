@@ -98,7 +98,7 @@ describe('FileAirportRepository', () => {
 
     const actualAirport = await fileAirportRepository.getByIataCode('XXX');
 
-    expect(actualAirport).toBeUndefined();
+    expect(actualAirport).toBeNull();
   });
 
   test('filterAirportsByType() returns only large airports when requested for large airports', async () => {

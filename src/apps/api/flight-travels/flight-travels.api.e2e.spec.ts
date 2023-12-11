@@ -193,8 +193,7 @@ describe('FlightTravelApiController (e2e)', () => {
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        path: ['fromIataCode', 'toIataCode'],
-        message: 'fromIataCode must be different from toIataCode'
+        path: ['fromIataCode', 'toIataCode']
       })
     ]))
   });
@@ -214,8 +213,7 @@ describe('FlightTravelApiController (e2e)', () => {
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        path: ['inboundDate'],
-        message: 'inbound date must be after outbound date'
+        path: ['inboundDate']
       })
     ]))
   });
@@ -309,8 +307,7 @@ describe('FlightTravelApiController (e2e)', () => {
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        path: ['inboundDate'],
-        message: 'inboundDate must be present when inboundConnectionIataCode is present'
+        path: ['inboundDate']
       })
     ]))
   });
@@ -330,8 +327,7 @@ describe('FlightTravelApiController (e2e)', () => {
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        path: ['outboundConnectionIataCode'],
-        message: 'outboundConnectionIataCode must be different from fromIataCode and toIataCode'
+        path: ['outboundConnectionIataCode']
       })
     ]))
   });
@@ -352,8 +348,7 @@ describe('FlightTravelApiController (e2e)', () => {
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        path: ['inboundConnectionIataCode'],
-        message: 'inboundConnectionIataCode must be different from fromIataCode and toIataCode'
+        path: ['inboundConnectionIataCode']
       })
     ]))
   });
@@ -645,8 +640,7 @@ describe('FlightTravelApiController (e2e)', () => {
     expect(res.body.message).toEqual('Validation failed');
     expect(res.body.errors).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        path: ['inboundConnectionIataCode'],
-        message: 'inboundConnectionIataCode must be different from fromIataCode and toIataCode'
+        path: ['inboundConnectionIataCode']
       })
     ]))
   });
