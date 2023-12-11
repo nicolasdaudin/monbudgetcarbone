@@ -6,18 +6,17 @@ export const DEFAULT_ID = 1;
 
 @Injectable()
 export class InMemoryFlightTravelRepository implements FlightTravelRepository {
-
-
-
-
   private autoIncrementedId = DEFAULT_ID;
 
   travels = new Map<number, FlightTravel>();
 
-  async add(travel: FlightTravelWithoutId): Promise<void> {
+  async add(travel: FlightTravelWithoutId): Promise<number> {
 
+    const id = this.autoIncrementedId;
     this.travels.set(this.autoIncrementedId, { ...travel, id: this.autoIncrementedId });
     this.autoIncrementedId++;
+
+    return id;
 
   }
 

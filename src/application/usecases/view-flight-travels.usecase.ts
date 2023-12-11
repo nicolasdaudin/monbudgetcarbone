@@ -13,7 +13,7 @@ export class ViewFlightTravelsUseCase {
     const actualFlightTravelsList = flightTravels.map(t => {
 
       const rawKgCO2eqTotal = t.routes.reduce((accKgCO2, route) => accKgCO2 + route.kgCO2eq, 0)
-      const kgCO2eqTotal = +(rawKgCO2eqTotal.toFixed(3));
+      const kgCO2eqTotal = +(rawKgCO2eqTotal.toFixed(2));
 
       if (t.routes.length === 1)
         return {

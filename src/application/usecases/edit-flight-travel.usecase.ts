@@ -6,6 +6,7 @@ import { FlightTravelRepository } from "../flight-travel.repository";
 import { Injectable } from "@nestjs/common"
 import { AddFlightTravelCommand } from "./add-flight-travel.usecase";
 import { AirportNotFound, FlightTravelNotFound } from "../exceptions";
+import { ViewFlightTravelDto } from "../../domain/flight-travel.dto";
 
 export type EditFlightTravelCommand = AddFlightTravelCommand & {
   id: number
@@ -20,7 +21,7 @@ export class EditFlightTravelUseCase {
     private readonly flightTravelRepository: FlightTravelRepository,
     private readonly distanceCalculator: DistanceCalculator) { }
 
-  async handle(editFlightTravelCommand: EditFlightTravelCommand): Promise<void> {
+  async handle(editFlightTravelCommand: EditFlightTravelCommand): Promise<Partial<ViewFlightTravelDto>> {
     const flightTravelById = await this.flightTravelRepository.getById(editFlightTravelCommand.id);
     if (!flightTravelById) throw new FlightTravelNotFound();
 
@@ -57,11 +58,16 @@ export class EditFlightTravelUseCase {
       routes = routes.concat(inboundRoutes);
     }
 
-    return await this.flightTravelRepository.edit({
+    await this.flightTravelRepository.edit({
       id: editFlightTravelCommand.id,
       user: editFlightTravelCommand.user,
       routes
     })
+
+    const rawKgCO2eqTotal = routes.reduce((accKgCO2, route) => accKgCO2 + route.kgCO2eq, 0)
+    const kgCO2eqTotal = +(rawKgCO2eqTotal.toFixed(2));
+
+    return { id: editFlightTravelCommand.id, kgCO2eqTotal }
   }
 
 

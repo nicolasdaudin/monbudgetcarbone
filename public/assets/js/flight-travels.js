@@ -25,14 +25,14 @@ const CO2_QUOTA_KG = 2000;
 const axios = window.axios;
 
 /**
- * @typedef {import ('../../../src/domain/flight-travel.dto').ViewFlightTravelDto} FlightTravel
+ * @typedef {import ('../../../src/domain/flight-travel.dto').ViewFlightTravelDto} ViewFlightTravelDto
  */
 
 /**
  * @typedef {Object} FlightTravelsByYear
  * @property {number} year The year of the flight travels
  * @property {number} totalCO2 The total CO2 for the corresponding year
- * @property {FlightTravel[]} flightTravels The array of flight travels for the corresponding year
+ * @property {ViewFlightTravelDto[]} flightTravels The array of flight travels for the corresponding year
  */
 
 
@@ -178,6 +178,7 @@ const addFlightTravel = async () => {
 
   console.log('add', { bodyParams });
 
+
   let res;
 
   try {
@@ -207,8 +208,10 @@ const addFlightTravel = async () => {
     return;
   }
 
+  /** @type {Partial<ViewFlightTravelDto>} */
+  const flightTravel = res.data;
 
-  showAndHideSuccessMessageWithSelector('add');
+  showAndHideSuccessMessageWithSelector('add', /** @type {number}*/(flightTravel.kgCO2eqTotal));
 
 
   fetchFlightTravels();
@@ -230,13 +233,18 @@ const editFlightTravel = async (id) => {
   console.log('edit', { bodyParams })
 
   const res = await axios.put(`/api/flight-travels/${id}`, {
-    ...bodyParams
+    ...bodyParams,
+    user
   });
 
   if (res.status !== 200 || res.data === undefined)
     return;
 
-  showAndHideSuccessMessageWithSelector('edit');
+  /** @type {Partial<ViewFlightTravelDto>} */
+  const flightTravel = res.data;
+
+
+  showAndHideSuccessMessageWithSelector('edit', /** @type {number}*/(flightTravel.kgCO2eqTotal));
 
   fetchFlightTravels();
 }
@@ -265,7 +273,7 @@ const fetchFlightTravels = async () => {
   if (res.status !== 200 || res.data === undefined)
     return;
 
-  /** @type {FlightTravel[]} */
+  /** @type {ViewFlightTravelDto[]} */
   const flightTravels = res.data;
 
   if (flightTravels && flightTravels.length === 0) {
@@ -331,10 +339,16 @@ fetchFlightTravels();
 /**
  * 
  * @param {'add'|'edit'} cssSelector the css selector
+ * @param {number} kgCO2 the kgCO2 to display
  */
-function showAndHideSuccessMessageWithSelector(cssSelector) {
+function showAndHideSuccessMessageWithSelector(cssSelector, kgCO2) {
   const notificationDiv = /** @type {HTMLDivElement}*/ (document.querySelector(`.notification.${cssSelector}`));
   notificationDiv.classList.remove('is-hidden');
+  // update span carbon footprint with kgCO2
+  const spanCarbonFootprint = /** @type {HTMLSpanElement}*/ (notificationDiv.querySelector(`.notification.${cssSelector} .carbon-footprint`));
+  spanCarbonFootprint.innerText = `${kgCO2.toFixed(2)}`;
+
+
   setTimeout(() => {
     notificationDiv.classList.add('is-hidden');
   }, 3000);
@@ -475,7 +489,7 @@ function prepareEditForm(parentRowTrElement, id) {
 /**
  * 
  * @param {*} tbody 
- * @param {FlightTravel} flightTravel 
+ * @param {ViewFlightTravelDto} flightTravel 
  */
 function addFlightTravelToTable(tbody, flightTravel) {
   let row = tbody.insertRow();

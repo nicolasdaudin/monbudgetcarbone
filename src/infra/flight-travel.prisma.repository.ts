@@ -8,8 +8,8 @@ export class PrismaFlightTravelRepository implements FlightTravelRepository {
 
   constructor(private readonly prismaClient: PrismaClient) { }
 
-  async add(travel: FlightTravelWithoutId): Promise<void> {
-    await this.prismaClient.flightTravel.create({
+  async add(travel: FlightTravelWithoutId): Promise<number> {
+    const created = await this.prismaClient.flightTravel.create({
       data: {
         user: travel.user,
         routes: {
@@ -17,6 +17,8 @@ export class PrismaFlightTravelRepository implements FlightTravelRepository {
         }
       }
     })
+
+    return created.id
   }
 
   async edit(travel: FlightTravel): Promise<void> {
