@@ -23,7 +23,8 @@ $control-border-width: 2px;
 $input-border-color: transparent;
 $input-shadow: none;
 $table-cell-border-width: 0px;
-// $table-cell-text-align:center;
+$section-padding: 1.5rem 1.5rem;
+$section-padding-desktop: 1.5rem 1.5rem;
 
 /* Bulma Responsive Tables */
 @import "../node_modules/bulma-responsive-tables/bulma-responsive-tables.scss";

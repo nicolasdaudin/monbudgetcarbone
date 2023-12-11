@@ -147,7 +147,7 @@ const appendActionCellToRowWithElement = (row, element) => {
 /**
  * @param {Object} arguments
  * @param {HTMLTableRowElement} arguments.row - the html row to append the cell to
- * @param {Date} [arguments.date] - the date to append to the cell
+ * @param {string |  Date} [arguments.date] - the date to append to the cell
  * @param {string} arguments.testAttributeValue - the value of the data-test-id attribute
  * @param {string} arguments.columnLabel - the value of the data-label attribute
  */
@@ -178,16 +178,37 @@ const addFlightTravel = async () => {
 
   console.log('add', { bodyParams });
 
-  const res = await axios.post(`/api/flight-travels`, {
-    ...bodyParams,
-    user
-  });
+  let res;
 
-  if (res.status !== 201 || res.data === undefined)
+  try {
+    res = await axios.post(`/api/flight-travels`, {
+      ...bodyParams,
+      user
+    });
+  } catch (error) {
+    if (error.response) {
+      /**
+       * @type {{message: string, errors: {code: string, message: string, path:string[]}[]}}
+       */
+      const errorObject = error.response.data;
+      // concat all the error messages and separate them with a text return line except for the last message
+      const errorMessage = errorObject.errors.reduce((prev, curr, index) => {
+        const separator = index === errorObject.errors.length - 1 ? '' : '\n';
+        return `${prev}${curr.message}${separator}`;
+      }, '');
+
+      showAndHideErrorMessageWithText(errorMessage);
+
+    }
     return;
+  }
+
+  if (res.status !== 201 || res.data === undefined) {
+    return;
+  }
 
 
-  showAndHideSuccessMessage('add');
+  showAndHideSuccessMessageWithSelector('add');
 
 
   fetchFlightTravels();
@@ -215,7 +236,7 @@ const editFlightTravel = async (id) => {
   if (res.status !== 200 || res.data === undefined)
     return;
 
-  showAndHideSuccessMessage('edit');
+  showAndHideSuccessMessageWithSelector('edit');
 
   fetchFlightTravels();
 }
@@ -304,25 +325,32 @@ const fetchFlightTravels = async () => {
   cell.setAttribute('colspan', '8');
   cell.innerText = `Total sur votre vie : ${totalCO2.toFixed(2)} kgCO2`;
 
-
-
-
-
-
-
-
-
 }
 fetchFlightTravels();
 
-function showAndHideSuccessMessage(cssSelector) {
+/**
+ * 
+ * @param {'add'|'edit'} cssSelector the css selector
+ */
+function showAndHideSuccessMessageWithSelector(cssSelector) {
   const notificationDiv = /** @type {HTMLDivElement}*/ (document.querySelector(`.notification.${cssSelector}`));
-  // notificationDiv.classList.add('is-success');
   notificationDiv.classList.remove('is-hidden');
   setTimeout(() => {
     notificationDiv.classList.add('is-hidden');
-    // notificationDiv.classList.remove('is-success');
   }, 3000);
+}
+
+/**
+ * 
+ * @param {string} errorMessage the error message to display
+ */
+function showAndHideErrorMessageWithText(errorMessage) {
+  const notificationDiv = /** @type {HTMLDivElement}*/ (document.querySelector(`.notification.error`));
+  notificationDiv.classList.remove('is-hidden');
+  notificationDiv.innerText = errorMessage;
+  setTimeout(() => {
+    notificationDiv.classList.add('is-hidden');
+  }, 10000);
 }
 
 function handleProgressBar(tbody, year, yearCO2) {

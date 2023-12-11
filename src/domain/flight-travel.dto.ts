@@ -1,8 +1,9 @@
-import { IsDateString, IsNotEmpty, IsOptional, ValidateIf } from "class-validator";
-import { PartialType } from '@nestjs/swagger';
 import { Airport } from "./airport";
 import { z } from "nestjs-zod/z";
 import { createZodDto } from "nestjs-zod";
+import { Dictionary } from "../common/dictionary";
+
+
 
 const CreateFlightTravelSchema = z.object({
   fromIataCode: z.string().min(3).max(3),
@@ -17,7 +18,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.inboundDate && new Date(data.outboundDate) > new Date(data.inboundDate)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'inbound date must be after outbound date',
+      message: Dictionary.getMessage('error.inbound.date.after.outbound.date'),
       path: ['inboundDate']
     })
   }
@@ -26,7 +27,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.fromIataCode === data.toIataCode) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'fromIataCode must be different from toIataCode',
+      message: Dictionary.getMessage('error.from.iata.code.different.from.to.iata.code'),
       path: ['fromIataCode', 'toIataCode']
     })
   }
@@ -35,7 +36,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.inboundConnectionIataCode && !data.inboundDate) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'inboundDate must be present when inboundConnectionIataCode is present',
+      message: Dictionary.getMessage('error.inbound.date.when.inbound.connection'),
       path: ['inboundDate']
     })
   }
@@ -44,7 +45,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.outboundConnectionIataCode && (data.outboundConnectionIataCode === data.fromIataCode || data.outboundConnectionIataCode === data.toIataCode)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'outboundConnectionIataCode must be different from fromIataCode and toIataCode',
+      message: Dictionary.getMessage('error.outbound.connection.iata.code.different'),
       path: ['outboundConnectionIataCode']
     })
   }
@@ -53,7 +54,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.inboundConnectionIataCode && (data.inboundConnectionIataCode === data.fromIataCode || data.inboundConnectionIataCode === data.toIataCode)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'inboundConnectionIataCode must be different from fromIataCode and toIataCode',
+      message: Dictionary.getMessage('error.inbound.connection.iata.code.different'),
       path: ['inboundConnectionIataCode']
     })
   }

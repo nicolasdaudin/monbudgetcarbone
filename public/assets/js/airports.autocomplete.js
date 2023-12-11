@@ -13,6 +13,7 @@ const searchInputInboundConnection = /** @type HTMLInputElement */(document
 const KEYBOARD_DOWN_ARROW_CODE = 40;
 const KEYBOARD_UP_ARROW_CODE = 38;
 const KEYBOARD_ENTER_CODE = 13;
+const KEYBOARD_TAB_CODE = 9;
 
 
 function autocomplete(searchInput, isNewAutocomplete = false) {
@@ -109,7 +110,7 @@ function autocomplete(searchInput, isNewAutocomplete = false) {
       }
       event.preventDefault();
     }
-    else if (event.keyCode === KEYBOARD_ENTER_CODE) {
+    else if (event.keyCode === KEYBOARD_ENTER_CODE || event.keyCode === KEYBOARD_TAB_CODE) {
       if (selectedIndexFrom >= 0) {
         /** @type {HTMLDivElement} */(items[selectedIndexFrom]).click();
 
