@@ -2,6 +2,7 @@ import { Airport } from "./airport";
 import { z } from "nestjs-zod/z";
 import { createZodDto } from "nestjs-zod";
 import { Dictionary } from "../common/dictionary";
+import { ErrorMessages } from "../common/error.messages";
 
 
 
@@ -18,7 +19,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.inboundDate && new Date(data.outboundDate) > new Date(data.inboundDate)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: Dictionary.getMessage('error.inbound.date.after.outbound.date'),
+      message: ErrorMessages.error_inbound_date_after_outbound_date,
       path: ['inboundDate']
     })
   }
@@ -27,7 +28,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.fromIataCode === data.toIataCode) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: Dictionary.getMessage('error.from.iata.code.different.from.to.iata.code'),
+      message: ErrorMessages.error_from_iata_code_different_from_to_iata_code,
       path: ['fromIataCode', 'toIataCode']
     })
   }
@@ -36,7 +37,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.inboundConnectionIataCode && !data.inboundDate) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: Dictionary.getMessage('error.inbound.date.when.inbound.connection'),
+      message: ErrorMessages.error_inbound_date_when_inbound_connection,
       path: ['inboundDate']
     })
   }
@@ -45,7 +46,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.outboundConnectionIataCode && (data.outboundConnectionIataCode === data.fromIataCode || data.outboundConnectionIataCode === data.toIataCode)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: Dictionary.getMessage('error.outbound.connection.iata.code.different'),
+      message: ErrorMessages.error_outbound_connection_iata_code_different,
       path: ['outboundConnectionIataCode']
     })
   }
@@ -54,7 +55,7 @@ const CreateFlightTravelSchema = z.object({
   if (data.inboundConnectionIataCode && (data.inboundConnectionIataCode === data.fromIataCode || data.inboundConnectionIataCode === data.toIataCode)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: Dictionary.getMessage('error.inbound.connection.iata.code.different'),
+      message: ErrorMessages.error_inbound_connection_iata_code_different,
       path: ['inboundConnectionIataCode']
     })
   }

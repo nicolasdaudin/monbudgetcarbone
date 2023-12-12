@@ -36,6 +36,16 @@ const axios = window.axios;
  */
 
 
+const messageFrenchDictionary = {
+  "Inbound date must be after outbound date": "La date retour doit être après la date départ.",
+  "From IATA code must be different from to IATA code": "L'origine doit être différente de la destination.",
+  "Inbound date must be present when inbound connection IATA code is present": "La date retour doit être présente quand il y a une escale retour.",
+  "Outbound connection IATA code must be different from from IATA code and to IATA code": "L'escale aller doit être différente de l'origine et de la destination.",
+  "Inbound connection IATA code must be different from from IATA code and to IATA code": "L'escale retour doit être différente de l'origine et de la destination.",
+  "Airport not found with this iata code": "Aéroport introuvable avec ce code IATA",
+  "There is no flight travel with this id": "Aucun voyage en avion trouvé avec cet identifiant."
+};
+
 
 
 // const btnsEditFlightTravel = document.querySelectorAll('.row-edit-travel-btn');
@@ -81,8 +91,6 @@ formFlightTravel.addEventListener('submit', async (e) => {
   } else {
     addFlightTravel();
   }
-
-  clearForm();
 })
 
 /**
@@ -188,17 +196,8 @@ const addFlightTravel = async () => {
     });
   } catch (error) {
     if (error.response) {
-      /**
-       * @type {{message: string, errors: {code: string, message: string, path:string[]}[]}}
-       */
-      const errorObject = error.response.data;
-      // concat all the error messages and separate them with a text return line except for the last message
-      const errorMessage = errorObject.errors.reduce((prev, curr, index) => {
-        const separator = index === errorObject.errors.length - 1 ? '' : '\n';
-        return `${prev}${curr.message}${separator}`;
-      }, '');
 
-      showAndHideErrorMessageWithText(errorMessage);
+      handleAxiosError(error);
 
     }
     return;
@@ -212,6 +211,7 @@ const addFlightTravel = async () => {
   const flightTravel = res.data;
 
   showAndHideSuccessMessageWithSelector('add', /** @type {number}*/(flightTravel.kgCO2eqTotal));
+  clearForm()
 
 
   fetchFlightTravels();
@@ -232,10 +232,21 @@ const editFlightTravel = async (id) => {
 
   console.log('edit', { bodyParams })
 
-  const res = await axios.put(`/api/flight-travels/${id}`, {
-    ...bodyParams,
-    user
-  });
+  let res;
+
+  try {
+    res = await axios.put(`/api/flight-travels/${id}`, {
+      ...bodyParams,
+      user
+    });
+  } catch (error) {
+    if (error.response) {
+
+      handleAxiosError(error);
+
+    }
+    return;
+  }
 
   if (res.status !== 200 || res.data === undefined)
     return;
@@ -245,6 +256,7 @@ const editFlightTravel = async (id) => {
 
 
   showAndHideSuccessMessageWithSelector('edit', /** @type {number}*/(flightTravel.kgCO2eqTotal));
+  clearForm();
 
   fetchFlightTravels();
 }
@@ -336,6 +348,32 @@ const fetchFlightTravels = async () => {
 }
 fetchFlightTravels();
 
+/** * 
+ * @param {*} error Axios Error
+ */
+function handleAxiosError(error) {
+
+  /**
+   * @type {{message: string, statusCode:number, iataCode?:string}}
+   */
+  const errorObject = error.response.data;
+
+
+  let errorMessage = errorObject.message.split(',').map(message => {
+    let frenchMessage = messageFrenchDictionary[message.trim()];
+    if (message.toLowerCase().includes('airport not found')) {
+      frenchMessage ?
+        frenchMessage = frenchMessage.concat(`: ${errorObject.iataCode}`) :
+        message = (`: ${errorObject.iataCode}`);
+
+    }
+    return frenchMessage ? frenchMessage : message;
+  }).join('\n');
+
+
+  showAndHideErrorMessageWithText(errorMessage);
+}
+
 /**
  * 
  * @param {'add'|'edit'} cssSelector the css selector
@@ -351,7 +389,7 @@ function showAndHideSuccessMessageWithSelector(cssSelector, kgCO2) {
 
   setTimeout(() => {
     notificationDiv.classList.add('is-hidden');
-  }, 3000);
+  }, 10000);
 }
 
 /**

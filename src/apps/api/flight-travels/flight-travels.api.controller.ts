@@ -26,16 +26,16 @@ export class FlightTravelsApiController {
       ... (body.inboundConnectionIataCode ? { inboundConnectionIataCode: body.inboundConnectionIataCode } : {}),
       user: body.user
     }
-    try {
-      return await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
-    } catch (error) {
-      console.error(error);
-      if (error instanceof AirportNotFound) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      } else {
-        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-    }
+    // try {
+    return await this.addFlightTravelUseCase.handle(addFlightTravelCommand);
+    // } catch (error) {
+    //   console.error(error);
+    //   // if (error instanceof AirportNotFoundException) {
+    //   //   throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    //   // } else {
+    //   throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    //   // }
+    // }
 
   }
 
@@ -52,16 +52,16 @@ export class FlightTravelsApiController {
       ... (body.inboundConnectionIataCode ? { inboundConnectionIataCode: body.inboundConnectionIataCode } : {}),
       user: body.user
     }
-    try {
-      return await this.editFlightTravelUseCase.handle(editFlightTravelCommand);
-    } catch (error) {
-      if (error instanceof FlightTravelNotFound) {
-        throw new HttpException(`There is no flight travel with id ${id}`, HttpStatus.NOT_FOUND);
-      }
-      if (error instanceof AirportNotFound) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-      }
-    }
+    // try {
+    return await this.editFlightTravelUseCase.handle(editFlightTravelCommand);
+    // } catch (error) {
+    //   if (error instanceof FlightTravelNotFound) {
+    //     throw new HttpException(`There is no flight travel with id ${id}`, HttpStatus.NOT_FOUND);
+    //   }
+    //   // if (error instanceof AirportNotFoundException) {
+    //   //   throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    //   // }
+    // }
 
   }
 
