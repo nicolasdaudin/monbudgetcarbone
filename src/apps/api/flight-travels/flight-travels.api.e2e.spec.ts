@@ -11,6 +11,9 @@ import { FlightTravelsApiModule } from './flight-travels.api.module';
 import { CreateFlightTravelDto, UpdateFlightTravelDto, ViewFlightTravelDto } from '../../../domain/flight-travel.dto';
 import { FlightTravel, Route } from '../../../domain/flight-travel';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { ZodValidationExceptionFilter } from '../filters/zod.validation.exception.filter';
+import { AirportNotFoundExceptionFilter } from '../filters/airport.not.found.exception.filter';
+import { FlightTravelNotFoundExceptionFilter } from '../filters/flight.travel.not.found.exception.filter';
 
 
 const asyncExec = promisify(exec);
@@ -65,6 +68,9 @@ describe('FlightTravelApiController (e2e)', () => {
     //   whitelist: true
     // }));
     app.useGlobalPipes(new ZodValidationPipe());
+    app.useGlobalFilters(
+      new ZodValidationExceptionFilter(),
+      new AirportNotFoundExceptionFilter(), new FlightTravelNotFoundExceptionFilter())
 
     await app.init();
 
@@ -144,17 +150,7 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['toIataCode'],
-        message: 'Required'
-      }),
-      expect.objectContaining({
-        path: ['outboundDate'],
-        message: 'Required'
-      })
-    ]))
+    expect(res.body.message.split(',')).toEqual(expect.arrayContaining([expect.stringContaining('toIataCode'), expect.stringContaining('outboundDate')]));
   });
 
   test('POST /api/flight-travels - tries to create a basic single flight and fails when date is not in the YYYY-MM-DD format', async () => {
@@ -169,13 +165,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['outboundDate'],
-        message: 'Invalid date string'
-      })
-    ]))
+    expect(res.body.message).toEqual(expect.stringContaining('outboundDate'));
+    expect(res.body.message).toEqual(expect.stringContaining('valid date'));
   });
 
   test('POST /api/flight-travels - tries to create a basic single flight and fails when fromIataCode is equal to toIataCode', async () => {
@@ -190,12 +181,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['fromIataCode', 'toIataCode']
-      })
-    ]))
+    expect(res.body.message).toEqual('From IATA code must be different from to IATA code');
+
   });
 
   test('POST /api/flight-travels - tries to create a basic single flight and fails when inboundDate is before outboundDate', async () => {
@@ -210,12 +197,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['inboundDate']
-      })
-    ]))
+    expect(res.body.message).toEqual('Inbound date must be after outbound date');
+
   });
 
 
@@ -232,7 +215,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Airport with iata code XXX not found');
+    expect(res.body.message).toEqual('Airport not found with this iata code');
+    expect(res.body.iataCode).toEqual('XXX');
 
   });
 
@@ -304,12 +288,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['inboundDate']
-      })
-    ]))
+    expect(res.body.message).toEqual('Inbound date must be present when inbound connection IATA code is present');
+
   });
 
   test('POST /api/flight-travels - tries to create a complex flight and fails when there is an outbound connection equal to the origin or destination', async () => {
@@ -324,12 +304,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['outboundConnectionIataCode']
-      })
-    ]))
+    expect(res.body.message).toEqual('Outbound connection IATA code must be different from from IATA code and to IATA code');
+
   });
 
   test('POST /api/flight-travels - tries to create a complex flight and fails when there is an inbound connection equal to the origin or destination', async () => {
@@ -345,12 +321,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['inboundConnectionIataCode']
-      })
-    ]))
+    expect(res.body.message).toEqual('Inbound connection IATA code must be different from from IATA code and to IATA code');
+
   });
 
   test('PUT /api/flight-travels/:id - edits a basic single flight', async () => {
@@ -411,9 +383,9 @@ describe('FlightTravelApiController (e2e)', () => {
         outboundDate: '2023-05-11',
         user: 'Nicolas'
       } as UpdateFlightTravelDto)
-      .expect(404)
+      .expect(400)
 
-    expect(res.body.message).toEqual(expect.stringContaining(addedFlightTravelId.toString()));
+    expect(res.body.message).toEqual('There is no flight travel with this id');
   })
 
   test('PUT /api/flight-travels/:id - tries to edit a basic single flight and fails when one of the airport does not exist', async () => {
@@ -445,7 +417,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as UpdateFlightTravelDto)
       .expect(400)
 
-    expect(res.body.message).toEqual('Airport with iata code XXX not found');
+    expect(res.body.message).toEqual('Airport not found with this iata code');
+    expect(res.body.iataCode).toEqual('XXX')
 
   });
 
@@ -637,12 +610,8 @@ describe('FlightTravelApiController (e2e)', () => {
       } as CreateFlightTravelDto)
       .expect(400);
 
-    expect(res.body.message).toEqual('Validation failed');
-    expect(res.body.errors).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        path: ['inboundConnectionIataCode']
-      })
-    ]))
+    expect(res.body.message).toEqual('Inbound connection IATA code must be different from from IATA code and to IATA code');
+
   });
 
   test('DELETE /api/flight-travels/:id - deletes a flight', async () => {

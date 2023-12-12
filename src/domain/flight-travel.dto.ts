@@ -1,7 +1,6 @@
 import { Airport } from "./airport";
 import { z } from "nestjs-zod/z";
 import { createZodDto } from "nestjs-zod";
-import { Dictionary } from "../common/dictionary";
 import { ErrorMessages } from "../common/error.messages";
 
 

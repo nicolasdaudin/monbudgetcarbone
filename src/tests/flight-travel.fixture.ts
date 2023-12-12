@@ -59,7 +59,7 @@ export const createTravelFixture = (airportRepository: AirportRepository = new I
 
     async thenErrorShouldBeAirportNotFoundWithIataCode(iataCode: string) {
       expect(thrownError).toBeInstanceOf(AirportNotFound);
-      expect(thrownError.message).toEqual(expect.stringContaining(iataCode));
+      expect((thrownError as AirportNotFound).iataCode).toEqual(iataCode);
     },
 
     async whenUserDeletesTravel(idToDelete: number
