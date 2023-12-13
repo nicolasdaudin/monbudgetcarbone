@@ -343,7 +343,7 @@ const fetchFlightTravels = async () => {
 
   cell.classList.add('is-size-5');
   cell.setAttribute('colspan', '8');
-  cell.innerText = `Total sur votre vie : ${totalCO2.toFixed(2)} kgCO2`;
+  cell.innerText = `Total sur ta vie : ${totalCO2.toFixed(2)} kgCO2`;
 
 }
 fetchFlightTravels();
@@ -446,7 +446,7 @@ function handleProgressBar(tbody, year, yearCO2) {
   progressValueParagraph.classList.add('progress-value');
   progressValueParagraph.classList.add('has-text-black');
   const percentageOfCO2Used = Math.round((yearCO2 / CO2_QUOTA_KG) * 100);
-  progressValueParagraph.innerText = `${year}: ${percentageOfCO2Used}% de votre quota de ${CO2_QUOTA_KG / 1000} tonnes`;
+  progressValueParagraph.innerText = `${year}: ${percentageOfCO2Used}% de ton quota de ${CO2_QUOTA_KG / 1000} tonnes`;
   div.appendChild(progressValueParagraph);
 
 }
@@ -580,6 +580,8 @@ function addFlightTravelToTable(tbody, flightTravel) {
   // and append edit and deleteButton to it
   const divButtons = document.createElement('div');
   divButtons.classList.add('buttons');
+  divButtons.classList.add('has-text-centered');
+
   divButtons.classList.add('is-right');
   divButtons.appendChild(editButton);
   divButtons.appendChild(deleteButton);

@@ -4,8 +4,8 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
 
 // Set your brand colors
-$purple: #8A4D76;
-$pink: #FA7C91;
+$purple: #b1f0cc;
+$pink: #2e9f7e;
 $brown: #757763;
 $beige-light: #D0D1CD;
 $beige-lighter: #EFF0EB;
@@ -25,6 +25,7 @@ $input-shadow: none;
 $table-cell-border-width: 0px;
 $section-padding: 1.5rem 1.5rem;
 $section-padding-desktop: 1.5rem 1.5rem;
+$footer-background-color: $purple;
 
 /* Bulma Responsive Tables */
 @import "../node_modules/bulma-responsive-tables/bulma-responsive-tables.scss";
@@ -42,6 +43,8 @@ $section-padding-desktop: 1.5rem 1.5rem;
 @import "node_modules/bulma/sass/elements/notification.sass";
 
 @import "node_modules/bulma/sass/elements/container.sass";
+
+@import "node_modules/bulma/sass/grid/columns.sass";
 
 @import "node_modules/bulma/sass/layout/section.sass";
 @import "node_modules/bulma/sass/layout/footer.sass";
