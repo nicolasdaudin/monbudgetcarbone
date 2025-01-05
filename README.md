@@ -14,4 +14,6 @@ MBC utilise:
 Pour effectuer les tests avec cypress, voici la commande
 ```npx cypress open```
 
-Les tests des fichiers ```.cy.ts``` se lanceront. 
+Les tests des fichiers ```.cy.ts``` se lanceront.
+
+À compléter 
